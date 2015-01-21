@@ -45,6 +45,7 @@
     <Compile Include="Implementation\Deserializer.cs" />
     <Compile Include="Exceptions\JsonBadFormat.cs" />
     <Compile Include="Exceptions\JsonParseError.cs" />
+    <Compile Include="Implementation\RestCommunicationProxy.cs" />
     <Compile Include="Model\IDeserializer.cs" />
     <Compile Include="Model\IRest.cs" />
     <Compile Include="Model\IRestCache.cs" />
