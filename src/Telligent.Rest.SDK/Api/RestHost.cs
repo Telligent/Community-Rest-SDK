@@ -94,37 +94,37 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
       
 		#region REST
 
-		public XElement GetRestEndpointXml(int version,string endpoint,RestGetOptions options = null)
+		public XElement GetToXml(int version,string endpoint,RestGetOptions options = null)
         {
             return Rest.GetEndpointXml(this,version, endpoint,options);
         }
 
-        public XElement GetRestEndpointXml(int version,string endpoint, bool enableImpersonation,RestGetOptions options = null)
+        public XElement GetToXml(int version,string endpoint, bool enableImpersonation,RestGetOptions options = null)
         {
             return Rest.GetEndpointXml(this, version,endpoint, enableImpersonation,options);
         }
 
-        public XElement PutRestEndpointXml(int version, string endpoint, string postData,bool enableImpersonation = true,RestPutOptions options = null)
+        public XElement PutToXml(int version, string endpoint, string postData,bool enableImpersonation = true,RestPutOptions options = null)
         {
             return Rest.PutEndpointXml(this, version, endpoint, postData,enableImpersonation,options);
         }
 
-        public XElement PostRestEndpointXml(int version, string endpoint, string postData,RestPostOptions options = null)
+        public XElement PostToXml(int version, string endpoint, string postData,RestPostOptions options = null)
         {
             return Rest.PostEndpointXml(this, version, endpoint, postData,options);
         }
 
-        public XElement PostRestEndpointXml(int version, string endpoint, string postData, bool enableImpersonation,RestPostOptions options = null)
+        public XElement PostToXml(int version, string endpoint, string postData, bool enableImpersonation,RestPostOptions options = null)
         {
             return Rest.PostEndpointXml(this, version, endpoint, postData, enableImpersonation,options);
         }
 
-        public XElement PostRestEndpointXml(int version, string endpoint, string postData, HttpPostedFileBase file, bool enableImpersonation,RestPostOptions options = null)
+        public XElement PostToXml(int version, string endpoint, string postData, HttpPostedFileBase file, bool enableImpersonation,RestPostOptions options = null)
         {
             return Rest.PostEndpointXml(this, version, endpoint, postData, file, enableImpersonation,options);
         }
 
-        public XElement DeleteRestEndpointXml(int version, string endpoint,bool enableImpersonation = true, RestDeleteOptions options = null)
+        public XElement DeleteToXml(int version, string endpoint,bool enableImpersonation = true, RestDeleteOptions options = null)
         {
             return Rest.DeleteEndpointXml(this, version, endpoint,enableImpersonation,options);
         }
@@ -134,25 +134,25 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             return Rest.FormatDateTime(date);
         }
 
-        public dynamic GetRestEndpoint(int version, string endpoint,RestGetOptions options = null)
+        public dynamic GetToDynamic(int version, string endpoint,RestGetOptions options = null)
         {
             var json = Rest.GetEndpointJson(this, version, endpoint,options);
             return json != null ? JsonConvert.Deserialize(json) : null;
         }
 
-        public dynamic PutRestEndpoint(int version, string endpoint, string postData,bool enableImpersonation = true,RestPutOptions options = null)
+        public dynamic PutToDynamic(int version, string endpoint, string postData,bool enableImpersonation = true,RestPutOptions options = null)
         {
             var json = Rest.PutEndpointJson(this, version, endpoint, postData,enableImpersonation,options);
             return json != null ? JsonConvert.Deserialize(json) : null;
         }
 
-        public dynamic PostRestEndpoint(int version, string endpoint, string postData,RestPostOptions options = null)
+        public dynamic PostToDynamic(int version, string endpoint, string postData,RestPostOptions options = null)
         {
             var json = Rest.PostEndpointJson(this, version, endpoint, postData,options);
             return json != null ? JsonConvert.Deserialize(json) : null;
         }
 
-        public dynamic DeleteRestEndpoint(int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null)
+        public dynamic DeleteToDynamic(int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null)
         {
             var json = Rest.DeleteEndpointJson(this, version, endpoint,enableImpersonation,options);
             return json != null ? JsonConvert.Deserialize(json) : null;
