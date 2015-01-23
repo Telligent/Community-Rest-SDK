@@ -24,125 +24,70 @@ namespace Telligent.RestSDK.IntegrationTests.UnitTests
         }
         #region JSON
         [Test]
-        public void cannot_call_Get_json_endpoint_with_xml_extension()
+        public async Task cannot_call_Get_json_endpoint_with_xml_extension()
         {
             var url = "/info.xml";
-            var ex = Assert.Throws<ArgumentException>(() =>
-            {
-                Rest.GetEndpointJson(Host, 2, url, null);
-            });
-            Assert.IsTrue(ex.ParamName.Equals("endpoint",StringComparison.InvariantCultureIgnoreCase));
+            Assert.That(async () => await Rest.GetEndpointJson(Host,2,url,null),Throws.ArgumentException);
         }
 
-
-
-
-
-
         [Test]
-        public void cannot_call_post_overload_json_endpoint_with_xml_extension()
+        public async Task cannot_call_post_overload_json_endpoint_with_xml_extension()
         {
             var url = "/info.xml";
-            var ex = Assert.Throws<ArgumentException>(() =>
-            {
-                Rest.PostEndpointJson(Host, 2, url, null,false,null);
-            });
-            Assert.IsTrue(ex.ParamName.Equals("endpoint", StringComparison.InvariantCultureIgnoreCase));
+            Assert.That(async () => await   Rest.PostEndpointJson(Host, 2, url, null,false,null), Throws.ArgumentException);
         }
         [Test]
-        public void cannot_call_post_json_endpoint_with_xml_extension()
+        public async Task cannot_call_post_json_endpoint_with_xml_extension()
         {
             var url = "/info.xml";
-            var ex = Assert.Throws<ArgumentException>(() =>
-            {
-                Rest.PostEndpointJson(Host, 2, url, null, false);
-            });
-            Assert.IsTrue(ex.ParamName.Equals("endpoint", StringComparison.InvariantCultureIgnoreCase));
+            Assert.That(async () => await Rest.PostEndpointJson(Host, 2, url, null, false), Throws.ArgumentException);
+            
         }
         [Test]
-        public void cannot_call_put_json_endpoint_with_xml_extension()
+        public async Task cannot_call_put_json_endpoint_with_xml_extension()
         {
             var url = "/info.xml";
-            var ex = Assert.Throws<ArgumentException>(() =>
-            {
-                Rest.PutEndpointJson(Host, 2, url, null,true,null);
-            });
-            Assert.IsTrue(ex.ParamName.Equals("endpoint", StringComparison.InvariantCultureIgnoreCase));
+            Assert.That(async () => await  Rest.PutEndpointJson(Host, 2, url, null,true,null), Throws.ArgumentException);
         }
         [Test]
-        public void cannot_call_delete_json_endpoint_with_xml_extension()
+        public async Task cannot_call_delete_json_endpoint_with_xml_extension()
         {
             var url = "/info.xml";
-            var ex = Assert.Throws<ArgumentException>(() =>
-            {
-                Rest.DeleteEndpointJson(Host,2,url,true,null);
-            });
-            Assert.IsTrue(ex.ParamName.Equals("endpoint", StringComparison.InvariantCultureIgnoreCase));
+
+            Assert.That(async () => await Rest.DeleteEndpointJson(Host, 2, url, true, null), Throws.ArgumentException);
+
         }
         #endregion
 
         #region XML
         [Test]
-        public void cannot_call_Get_Xml_endpoint_with_json_extension()
+        public async Task cannot_call_Get_Xml_endpoint_with_json_extension()
         {
             var url = "/info.json";
-            var ex = Assert.Throws<ArgumentException>(() =>
-            {
-                Rest.GetEndpointXml(Host, 2, url, false);
-            });
-            Assert.IsTrue(ex.ParamName.Equals("endpoint", StringComparison.InvariantCultureIgnoreCase));
+            Assert.That(async () => await Rest.GetEndpointXml(Host, 2, url, false), Throws.ArgumentException);
         }
 
 
+     
         [Test]
-        public void cannot_call_post_overload_xml_endpoint_with_json_extension()
+        public async Task cannot_call_post_xml_endpoint_with_json_extension()
         {
             var url = "/info.json";
-            var ex = Assert.Throws<ArgumentException>(() =>
-            {
-                Rest.PostEndpointXml(Host,2,url,null,null,true,null);
-            });
-            Assert.IsTrue(ex.ParamName.Equals("endpoint", StringComparison.InvariantCultureIgnoreCase));
+
+            Assert.That(async () => await Rest.PostEndpointXml(Host, 2, url, null, null, true), Throws.ArgumentException);
         }
         [Test]
-        public void cannot_call_post_overload1_xml_endpoint_with_json_extension()
+        public async Task cannot_call_put_xml_endpoint_with_json_extension()
         {
             var url = "/info.json";
-            var ex = Assert.Throws<ArgumentException>(() =>
-            {
-                Rest.PostEndpointXml(Host, 2, url,null,null);
-            });
-            Assert.IsTrue(ex.ParamName.Equals("endpoint", StringComparison.InvariantCultureIgnoreCase));
+            Assert.That(async () => await Rest.PutEndpointXml(Host, 2, url, null, true, null), Throws.ArgumentException);
         }
         [Test]
-        public void cannot_call_post_xml_endpoint_with_json_extension()
+        public async Task cannot_call_delete_xml_endpoint_with_json_extension()
         {
             var url = "/info.json";
-            var ex = Assert.Throws<ArgumentException>(() =>
-            {
-                Rest.PostEndpointXml(Host, 2, url, null,null,true);
-            });
-            Assert.IsTrue(ex.ParamName.Equals("endpoint", StringComparison.InvariantCultureIgnoreCase));
-        }
-        [Test]
-        public void cannot_call_put_xml_endpoint_with_json_extension()
-        {
-            var url = "/info.json";
-            var ex = Assert.Throws<ArgumentException>(() =>
-            {
-                Rest.PutEndpointXml(Host, 2, url, null, true, null);
-            });
-            Assert.IsTrue(ex.ParamName.Equals("endpoint", StringComparison.InvariantCultureIgnoreCase));
-        }
-        [Test]
-        public void cannot_call_delete_xml_endpoint_with_json_extension()
-        {
-            var url = "/info.json";
-            var ex = Assert.Throws<ArgumentException>(() =>
-            {
-                Rest.DeleteEndpointXml(Host, 2, url, true, null);
-            });
-            Assert.IsTrue(ex.ParamName.Equals("endpoint", StringComparison.InvariantCultureIgnoreCase));
+            Assert.That(async () => await Rest.DeleteEndpointXml(Host, 2, url, true, null), Throws.ArgumentException);
+ 
         }
         #endregion
     }
