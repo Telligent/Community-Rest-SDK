@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Moq;
 using NUnit.Framework;
 using Telligent.Evolution.Extensibility.Rest.Version1;
 using Telligent.Evolution.RestSDK.Services;
+using Telligent.Rest.SDK.Model;
 
 namespace Telligent.RestSDK.IntegrationTests.UnitTests
 {
@@ -17,7 +19,7 @@ namespace Telligent.RestSDK.IntegrationTests.UnitTests
         [TestFixtureSetUp]
         public void Setup()
         {
-            Rest = new Evolution.RestSDK.Implementations.Rest();
+            Rest = new Evolution.RestSDK.Implementations.Rest(new Mock<IRestCommunicationProxy>().Object);
             Host = new TestRestHost(null,null);
         }
         #region JSON
@@ -43,7 +45,7 @@ namespace Telligent.RestSDK.IntegrationTests.UnitTests
             var url = "/info.xml";
             var ex = Assert.Throws<ArgumentException>(() =>
             {
-                Rest.PostEndpointJson(Host, 2, url, null,null,null);
+                Rest.PostEndpointJson(Host, 2, url, null,false,null);
             });
             Assert.IsTrue(ex.ParamName.Equals("endpoint", StringComparison.InvariantCultureIgnoreCase));
         }
@@ -53,7 +55,7 @@ namespace Telligent.RestSDK.IntegrationTests.UnitTests
             var url = "/info.xml";
             var ex = Assert.Throws<ArgumentException>(() =>
             {
-                Rest.PostEndpointJson(Host, 2, url, null, null);
+                Rest.PostEndpointJson(Host, 2, url, null, false);
             });
             Assert.IsTrue(ex.ParamName.Equals("endpoint", StringComparison.InvariantCultureIgnoreCase));
         }
@@ -86,7 +88,7 @@ namespace Telligent.RestSDK.IntegrationTests.UnitTests
             var url = "/info.json";
             var ex = Assert.Throws<ArgumentException>(() =>
             {
-                Rest.GetEndpointXml(Host, 2, url, null);
+                Rest.GetEndpointXml(Host, 2, url, false);
             });
             Assert.IsTrue(ex.ParamName.Equals("endpoint", StringComparison.InvariantCultureIgnoreCase));
         }
@@ -118,7 +120,7 @@ namespace Telligent.RestSDK.IntegrationTests.UnitTests
             var url = "/info.json";
             var ex = Assert.Throws<ArgumentException>(() =>
             {
-                Rest.PostEndpointXml(Host, 2, url, null,true);
+                Rest.PostEndpointXml(Host, 2, url, null,null,true);
             });
             Assert.IsTrue(ex.ParamName.Equals("endpoint", StringComparison.InvariantCultureIgnoreCase));
         }

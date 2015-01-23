@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Telligent.Evolution.RestSDK.Implementations;
+using Telligent.Rest.SDK.Implementation;
+using Telligent.Rest.SDK.Model;
 
 namespace Telligent.Evolution.RestSDK.Services
 {
@@ -22,12 +24,13 @@ namespace Telligent.Evolution.RestSDK.Services
 					if (_instances == null)
 					{
 						var localInstances = new Dictionary<Type, object>();
-
-                        var rest = new Telligent.Evolution.RestSDK.Implementations.Rest();
+					    var proxy = new RestCommunicationProxy();
+                        var rest = new Telligent.Evolution.RestSDK.Implementations.Rest(proxy);
                         var deserializerService = new Deserializer();
                         var hostRegistrationService = new RestHostRegistrationService();
 						localInstances[typeof(IRest)] = rest;
                         localInstances[typeof(IDeserializer)] = deserializerService;
+					    localInstances[typeof (IRestCommunicationProxy)] = proxy;
                         localInstances[typeof(IRestHostRegistrationService)] = hostRegistrationService;
 						_instances = localInstances;
 					}

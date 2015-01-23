@@ -9,10 +9,11 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 using Telligent.Evolution.Extensibility.Rest.Version1;
+using Telligent.Rest.SDK.Model;
 
 namespace Telligent.Rest.SDK.Implementation
 {
-    public class RestCommunicationProxy
+    public class RestCommunicationProxy : IRestCommunicationProxy
     {
         private readonly static Regex isXmlRegex = new Regex("<.+>.*</.+>\r\n",
                                                        RegexOptions.IgnoreCase |
@@ -22,6 +23,72 @@ namespace Telligent.Rest.SDK.Implementation
                                                        RegexOptions.IgnorePatternWhitespace |
                                                        RegexOptions.Compiled);
 
+        public async Task<Stream> PostEndpointStream(RestHost host, string url, Stream postStream, Action<HttpWebRequest> adjustRequest, Action<WebResponse> responseAction)
+        {
+            bool retry = true;
+            HttpWebRequest request = null;
+            ExceptionDispatchInfo capturedException = null;
+            while (retry)
+            {
+                retry = false;
+                try
+                {
+                    request = CreateRequest(host, url, adjustRequest, host.PostTimeout);
+                    request.Method = "POST";
+                    request.ContentType = "application/octet-stream";
+
+                    if (postStream == null)
+                    {
+                        request.ContentLength = 0;
+                    }
+                    else
+                    {
+                        request.ContentLength = postStream.Length;
+                        using (var requestStream = await request.GetRequestStreamAsync())
+                        {
+                            byte[] buffer = new byte[64 * 1024];
+                            int read;
+                            while ((read = await postStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                            {
+                                await requestStream.WriteAsync(buffer, 0, read);
+                            }
+                            requestStream.Close();
+                        }
+                    }
+
+                    var response = await request.GetResponseAsync();
+                    if (responseAction != null)
+                        responseAction(response);
+
+                    return response.GetResponseStream();
+                }
+                catch (WebException ex)
+                {
+                    capturedException = ExceptionDispatchInfo.Capture(ex);
+                }
+
+                if (capturedException != null)
+                {
+                    var webException = capturedException.SourceException as WebException;
+                    if (webException != null)
+                    {
+                        var errorResponse = webException.Response as HttpWebResponse;
+                        if (errorResponse != null && errorResponse.StatusCode == HttpStatusCode.Forbidden &&
+                            host.RetryFailedRemoteRequest(request))
+                            retry = true;
+                        else
+                            capturedException.Throw();
+                    }
+                    else
+                    {
+                        capturedException.Throw();
+                    }
+
+                }
+            }
+
+            return null;
+        }
         public async Task<string> Post(RestHost host, string url, string data, HttpPostedFileBase file, Action<HttpWebRequest> adjustRequest)
         {
             bool retry = true;
