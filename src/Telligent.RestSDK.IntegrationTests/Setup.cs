@@ -15,6 +15,9 @@ namespace Telligent.RestSDK.IntegrationTests
     {
         public static string Token = null;
 
+        /// <summary>
+        /// Modify the following values with values from your community in order to execute tests
+        /// </summary>
         private static readonly string _oauthClientId = "5e539135-4807-4d39-b525-e36c343ffc1d";
         private static readonly string _oauthSecret = "34c70aa225d842c7a713f4eaa40424a0d63551ee7f124b91b2a69b2694751eac";
         private static readonly string _communityUserName = "admin";
