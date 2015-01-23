@@ -16,7 +16,7 @@ src/Assemblies/*.dll
 *.user
 *.userosscache
 *.sln.docstates
-*.sln
+
 
 # Build results
 [Dd]ebug/
