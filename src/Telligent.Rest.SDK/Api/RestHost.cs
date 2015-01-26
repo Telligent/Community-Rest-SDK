@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -98,53 +99,62 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
 
         public async Task<XElement> GetToXmlAsync(int version,string endpoint, bool enableImpersonation,RestGetOptions options = null)
         {
-            return await Rest.GetEndpointXml(this, version,endpoint, enableImpersonation,options);
+            return await Rest.GetEndpointXml(this, version,endpoint, enableImpersonation,options).ConfigureAwait(false);
         }
 
         public async Task<XElement> PutToXmlAsync(int version, string endpoint, string postData,bool enableImpersonation = true,RestPutOptions options = null)
         {
-            return await Rest.PutEndpointXml(this, version, endpoint, postData,enableImpersonation,options);
+            return await Rest.PutEndpointXml(this, version, endpoint, postData, enableImpersonation, options).ConfigureAwait(false);
         }
 
 
 
         public async Task<XElement> PostToXmlAsync(int version, string endpoint, string postData, HttpPostedFileBase file, bool enableImpersonation,RestPostOptions options = null)
         {
-            return await Rest.PostEndpointXml(this, version, endpoint, postData, file, enableImpersonation,options);
+            return await Rest.PostEndpointXml(this, version, endpoint, postData, file, enableImpersonation, options).ConfigureAwait(false);
         }
 
         public async Task<XElement> DeleteToXmlAsync(int version, string endpoint,bool enableImpersonation = true, RestDeleteOptions options = null)
         {
-            return await Rest.DeleteEndpointXml(this, version, endpoint,enableImpersonation,options);
+            return await Rest.DeleteEndpointXml(this, version, endpoint, enableImpersonation, options).ConfigureAwait(false);
         }
 
        
 
         public async Task<dynamic> GetToDynamicAsync(int version, string endpoint,bool enableImpersonation =true,RestGetOptions options = null)
         {
-            var json = await Rest.GetEndpointJson(this, version, endpoint,options);
+            var json = await Rest.GetEndpointJson(this, version, endpoint, options).ConfigureAwait(false);
             return json != null ? JsonConvert.Deserialize(json) : null;
         }
 
         public async Task<dynamic> PutToDynamicAsync(int version, string endpoint, string postData,bool enableImpersonation = true,RestPutOptions options = null)
         {
-            var json = await Rest.PutEndpointJson(this, version, endpoint, postData,enableImpersonation,options);
+            var json = await Rest.PutEndpointJson(this, version, endpoint, postData, enableImpersonation, options).ConfigureAwait(false);
             return json != null ? JsonConvert.Deserialize(json) : null;
         }
 
         public async Task<dynamic> PostToDynamicAsync(int version, string endpoint, string postData, bool enableImpersonation = true, RestPostOptions options = null)
         {
-            var json = await Rest.PostEndpointJson(this, version, endpoint, postData,enableImpersonation,null,options);
+            var json = await Rest.PostEndpointJson(this, version, endpoint, postData, enableImpersonation, null, options).ConfigureAwait(false);
             return json != null ? JsonConvert.Deserialize(json) : null;
         }
 
         public async Task<dynamic> DeleteToDynamicAsync(int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null)
         {
-            var json = await Rest.DeleteEndpointJson(this,version,endpoint,enableImpersonation,options);
+            var json = await Rest.DeleteEndpointJson(this, version, endpoint, enableImpersonation, options).ConfigureAwait(false);
             return json != null ? JsonConvert.Deserialize(json) : null;
         }
 
+        private async Task<dynamic> Deserialize(string json)
+        {
+            var deserializer = ServiceLocator.Get<IDeserializer>();
 
+            dynamic result = new ExpandoObject();
+
+           await deserializer.Deserialize(result, new JsonReader(json));
+
+            return result;
+        }
 
 
 

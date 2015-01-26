@@ -200,10 +200,10 @@ namespace Telligent.Rest.SDK.Implementation
                     request = CreateRequest(host, url, adjustRequest, host.GetTimeout);
                     request.Method = "GET";
 
-                    var response = await request.GetResponseAsync();
+                    var response = await request.GetResponseAsync().ConfigureAwait(false); ;
                     using (response)
                     {
-                        return await ReadResponseStreamAsync((HttpWebResponse)response);
+                        return await ReadResponseStreamAsync((HttpWebResponse)response).ConfigureAwait(false); ;
                     }
                 }
                 catch (WebException ex)
@@ -222,7 +222,7 @@ namespace Telligent.Rest.SDK.Implementation
                     if (errorResponse != null && errorResponse.StatusCode == HttpStatusCode.Forbidden && host.RetryFailedRemoteRequest(request))
                         retry = true;
                     else if (errorResponse != null && errorResponse.StatusCode == HttpStatusCode.InternalServerError)
-                        return await ReadResponseStreamAsync(errorResponse);
+                        return await ReadResponseStreamAsync(errorResponse).ConfigureAwait(false);
                     else
                         capturedException.Throw(); 
                 }
@@ -258,7 +258,7 @@ namespace Telligent.Rest.SDK.Implementation
         {
             using (var reader = new StreamReader(response.GetResponseStream()))
             {
-                return await reader.ReadToEndAsync();
+                return await reader.ReadToEndAsync().ConfigureAwait(false); ;
             }
         }
         private string GetMultipartFormdata(string boundary, string name, string value)

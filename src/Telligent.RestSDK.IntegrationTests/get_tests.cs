@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using NUnit.Framework;
 
 namespace Telligent.RestSDK.IntegrationTests
@@ -14,6 +16,14 @@ namespace Telligent.RestSDK.IntegrationTests
         {
             var endpoint = "/info.json";
             dynamic info = await Host.GetToDynamicAsync(2,endpoint);
+
+            Assert.IsNotNull(info.InfoResult.SiteName);
+        }
+        [Test]
+        public void  can_do_get_single_synchronous_dynamic_request()
+        {
+            var endpoint = "/info.json";
+            dynamic info =  Host.GetToDynamic(2, endpoint);
 
             Assert.IsNotNull(info.InfoResult.SiteName);
         }
@@ -39,7 +49,39 @@ namespace Telligent.RestSDK.IntegrationTests
         //    var endpoint = "/users.json";
         //    dynamic users = Host.GetToDynamic(2, endpoint);
 
-        //    Assert.IsNotNull(info.InfoResult.SiteName);
+        //   
+        //Assert.IsNotNull(info.InfoResult.SiteName);
         //}
+        [Test]
+        public void can_do_get_paged_request_synchronously()
+        {
+
+            var options = new NameValueCollection();
+            options.Add("PageSize", "50");
+            options.Add("PageIndex", "0");
+            options.Add("SortBy", "LastPost");
+            options.Add("SortOrder", "Descending");
+
+            var endpoint = "forums.json?" +  String.Join("&",options.AllKeys.Select(a => a + "=" + HttpUtility.UrlEncode(options[a])));
+      
+
+            var response = Host.GetToDynamic(2, endpoint);
+            Assert.IsNotNull(response);
+        }
+        [Test]
+        public async Task can_do_get_paged_dynamic_request()
+        {
+            var options = new NameValueCollection();
+            options.Add("PageSize", "2");
+            options.Add("PageIndex", "0");
+           // options.Add("SortBy", "LastPost");
+          //  options.Add("SortOrder", "Descending");
+
+            var endpoint = "users.json?" + String.Join("&", options.AllKeys.Select(a => a + "=" + HttpUtility.UrlEncode(options[a])));
+
+
+            var response = await Host.GetToDynamicAsync(2, endpoint);
+            Assert.IsNotNull(response);
+        }
     }
 }
