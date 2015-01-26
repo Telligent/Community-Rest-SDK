@@ -121,18 +121,22 @@ namespace Telligent.Evolution.RestSDK.Json
 
                 isIn = isIn || inString;
 
-                if (!isIn && current == JsonChar.OpenBrace)
+                if (current == JsonChar.OpenBrace)
                 {
-                    start = pos;
+                    if (!isIn)
+                        start = pos;
+
                     inObject = true;
                     braces.Push(current);
                 }
 
                 isIn = isIn || inObject;
 
-                if (!isIn && current == JsonChar.OpenBracket)
+                if (current == JsonChar.OpenBracket)
                 {
-                    start = pos;
+                    if (!isIn)
+                        start = pos;
+
                     inArray = true;
                     brackets.Push(current);
                 }

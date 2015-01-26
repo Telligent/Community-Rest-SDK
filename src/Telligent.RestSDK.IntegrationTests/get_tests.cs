@@ -14,10 +14,10 @@ namespace Telligent.RestSDK.IntegrationTests
         [Test]
         public async Task can_do_get_single_dynamic_request()
         {
-            var endpoint = "/info.json";
+            var endpoint = "/users/pmason.json";
             dynamic info = await Host.GetToDynamicAsync(2,endpoint);
 
-            Assert.IsNotNull(info.InfoResult.SiteName);
+            Assert.IsNotNull(info);
         }
         [Test]
         public void  can_do_get_single_synchronous_dynamic_request()
@@ -72,12 +72,12 @@ namespace Telligent.RestSDK.IntegrationTests
         public async Task can_do_get_paged_dynamic_request()
         {
             var options = new NameValueCollection();
-            options.Add("PageSize", "2");
+            options.Add("PageSize", "1");
             options.Add("PageIndex", "0");
            // options.Add("SortBy", "LastPost");
           //  options.Add("SortOrder", "Descending");
 
-            var endpoint = "users.json?" + String.Join("&", options.AllKeys.Select(a => a + "=" + HttpUtility.UrlEncode(options[a])));
+            var endpoint = "forums.json?" + String.Join("&", options.AllKeys.Select(a => a + "=" + HttpUtility.UrlEncode(options[a])));
 
 
             var response = await Host.GetToDynamicAsync(2, endpoint);

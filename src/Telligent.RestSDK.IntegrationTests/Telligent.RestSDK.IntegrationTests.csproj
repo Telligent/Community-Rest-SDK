@@ -55,6 +55,7 @@
     <Compile Include="Setup.cs" />
     <Compile Include="TestRestHost.cs" />
     <Compile Include="UnitTests\rest_request_validation.cs" />
+    <Compile Include="UnitTests\Serialization\JSonToDynamic.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
