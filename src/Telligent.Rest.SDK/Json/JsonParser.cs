@@ -40,7 +40,7 @@ namespace Telligent.Evolution.RestSDK.Json
 
         public static double? ReadAsNumber(char[] json)
         {
-            return ReadAsPrimative(json, n => Convert.ToDouble(n)) as int?;
+            return ReadAsPrimative(json, n => Convert.ToDouble(n)) as double?;
         }
 
         public static bool? ReadAsBoolean(char[] json)
