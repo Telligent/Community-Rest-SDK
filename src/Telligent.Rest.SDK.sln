@@ -7,10 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Telligent.Rest.SDK", "Telli
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Telligent.RestSDK.IntegrationTests", "Telligent.RestSDK.IntegrationTests\Telligent.RestSDK.IntegrationTests.csproj", "{34EABED8-0D6C-436D-8AF4-92D039E177F9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OAuthAuthentication", "Telligent.Evolution.Extensions.OAuthAuthentication\OAuthAuthentication.csproj", "{74924044-6608-46D6-86E6-B776E3F6DEB1}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OAuthentication", "OAuthentication", "{47B9D410-5582-4DA3-9AA8-9EDDD6EEC127}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "REST SDK", "REST SDK", "{E7DB41C3-29F7-4F5D-AE14-84D581591286}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{FF577E7E-BE2F-4A62-8275-5D171D27E9E7}"
@@ -36,10 +32,6 @@ Global
 		{34EABED8-0D6C-436D-8AF4-92D039E177F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{34EABED8-0D6C-436D-8AF4-92D039E177F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{34EABED8-0D6C-436D-8AF4-92D039E177F9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{74924044-6608-46D6-86E6-B776E3F6DEB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{74924044-6608-46D6-86E6-B776E3F6DEB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{74924044-6608-46D6-86E6-B776E3F6DEB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{74924044-6608-46D6-86E6-B776E3F6DEB1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -47,6 +39,5 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{1D08DB1E-3C5C-48DE-BFF0-88FA52B1295A} = {E7DB41C3-29F7-4F5D-AE14-84D581591286}
 		{34EABED8-0D6C-436D-8AF4-92D039E177F9} = {FF577E7E-BE2F-4A62-8275-5D171D27E9E7}
-		{74924044-6608-46D6-86E6-B776E3F6DEB1} = {47B9D410-5582-4DA3-9AA8-9EDDD6EEC127}
 	EndGlobalSection
 EndGlobal
