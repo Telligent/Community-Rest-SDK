@@ -31,6 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Web" />
@@ -44,6 +45,7 @@
   <ItemGroup>
     <Compile Include="Api\DefaultHost.cs" />
     <Compile Include="Configuration\ServiceLocator.cs" />
+    <Compile Include="Configuration\TelligentConfigurationSection.cs" />
     <Compile Include="Implementation\Deserializer.cs" />
     <Compile Include="Exceptions\JsonBadFormat.cs" />
     <Compile Include="Exceptions\JsonParseError.cs" />
