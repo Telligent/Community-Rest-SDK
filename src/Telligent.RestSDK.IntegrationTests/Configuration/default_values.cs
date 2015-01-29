@@ -82,5 +82,10 @@ namespace Telligent.RestSDK.Configuration.Tests
         {
             Assert.AreEqual(config.AnonymousUsername, "anonuser");
         }
+        [Test]
+        public void authcookie_default()
+        {
+            Assert.AreEqual(config.CookieName, "authcookie");
+        }
     }
 }

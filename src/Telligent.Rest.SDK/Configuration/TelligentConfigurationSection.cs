@@ -83,6 +83,12 @@ namespace Telligent.Rest.SDK.Configuration
             get { return this["anonymousUsername"].ToString(); }
             set { this["anonymousUsername"] = value; }
         }
+        [ConfigurationProperty("cookieName", DefaultValue = "communityUser", IsRequired = false)]
+        public string CookieName
+        {
+            get { return this["cookieName"].ToString(); }
+            set { this["cookieName"] = value; }
+        }
         [ConfigurationProperty("oauthClientId", IsRequired = true)]
         public string OauthClientId
         {
@@ -118,7 +124,7 @@ namespace Telligent.Rest.SDK.Configuration
             get { return ConfigurationElementCollectionType.BasicMap; }
         }
 
-        public HostElement this[string name]
+        public new HostElement this[string name]
         {
             get { return BaseGet(name) as HostElement; }
         }
@@ -324,7 +330,20 @@ namespace Telligent.Rest.SDK.Configuration
             }
             set { this["oauthSecret"] = value; }
         }
+        [ConfigurationProperty("cookieName", DefaultValue =null, IsRequired = false)]
+        public string CookieName
+        {
 
+            get
+            {
+                var data = this["cookieName"];
+                if (string.IsNullOrWhiteSpace(data.ToString()))
+                    return Parent.Parent.OauthSecret;
+
+                return data.ToString();
+            }
+            set { this["cookieName"] = value; }
+        }
         
     }
 }
