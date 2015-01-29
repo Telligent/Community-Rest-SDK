@@ -5,14 +5,17 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Telligent.Evolution.Extensibility.OAuthClient.Version1;
 using Telligent.Evolution.Extensibility.Rest.Version1;
 using Telligent.Rest.SDK.Configuration;
 
 namespace Telligent.Evolution.Extensibility.Rest.Version1
 {
-     public class DefaultHost:RestHost
+     public class DefaultHost:RestHost,IOAuthClientConfiguration,IUserCreatableOAuthClientConfiguration,IUserSynchronizedOAuthClientConfiguration
      {
          private ConfigurationSettings _settings;
+
+      
          public DefaultHost(string name)
          {
              Name = name;
@@ -23,7 +26,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
          #region Rest Host Members
         public override Guid Id
         {
-            get { throw new NotImplementedException(); }
+            get { return Settings.Id.Value; }
         }
 
         public override void ApplyAuthenticationToHostRequest(System.Net.HttpWebRequest request, bool forAccessingUser)
@@ -33,12 +36,15 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
 
         public override string EvolutionRootUrl
         {
-            get { throw new NotImplementedException(); }
+            get {return Settings.CommunityRootUrl; }
         }
         #endregion
 
          #region Default Host Settings
-
+        protected ConfigurationSettings Settings
+        {
+            get { return _settings; }
+        }
          public virtual string Name { get; private set; }
 
          public virtual void LoadConfiguration(ConfigurationSettings settings)
@@ -54,12 +60,12 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
              _settings.AnonymousUsername = hostSection.AnonymousUsername;
              _settings.CommunityRootUrl = hostSection.CommunityRootUrl;
              _settings.DefaultLanguageKey = hostSection.DefaultLanguageKey;
-             _settings.EnableSSO = hostSection.EnableSSO;
+             _settings.EnableSSO = hostSection.EnableSSO.GetValueOrDefault(false);
              _settings.MembershipAdministrationUserName = hostSection.MembershipAdministrationUsername;
              _settings.OauthCallbackUrl = hostSection.OauthCallbackUrl;
              _settings.OauthClientId = hostSection.OauthClientId;
              _settings.OauthSecret = hostSection.OauthSecret;
-             _settings.UseLocalAuthentication = hostSection.UseLocalAuthentication;
+             _settings.UseLocalAuthentication = hostSection.UseLocalAuthentication.GetValueOrDefault(false);
              _settings.Id = hostSection.Id;
              _settings.SynchronizationCookieName = hostSection.SynchronizationCookieName;
 
@@ -101,19 +107,133 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
              if (hostSection == null)
                  throw new ConfigurationErrorsException("Cannot find configuration for host '" + name + "'");
 
-             var host = RestHost.Get(hostSection.Id);
-             if (host == null)
+             var host = Get(hostSection.Id);
+             if (host == null && autoRegister)
              {
                  host = new DefaultHost(name);
-                 RestHost.Register(host);
+                 RegisterHost((DefaultHost)host);
              }
 
-             return (DefaultHost) host;
+             return host as DefaultHost;
 
+         }
+
+         public static void RegisterHost(DefaultHost host)
+         {
+             Register(host);
+             if (host.EnableEvolutionUserCreation || host.EnableEvolutionUserSynchronization)
+                 OAuthAuthentication.RegisterConfiguration(host);
          }
         #endregion
 
-      
+
+         #region OAuth Members
+         public bool EnableEvolutionUserCreation
+         {
+             get { return Settings.UseLocalAuthentication; }
+         }
+
+         public string EvolutionUserCreationManagementUserName
+         {
+             get {return Settings.MembershipAdministrationUserName; }
+         }
+
+         public virtual string LocalUserName
+         {
+             get { return GetCurrentHttpContext().User.Identity.Name; }
+         }
+
+         public virtual string LocalUserEmailAddress
+         {
+             get { throw new ApplicationException("When UseLocalAuthentication is ture, you must override LocalUserEmailAddress in a derived class"); }
+         }
+
+         public virtual Dictionary<string, string> LocalUserDetails
+         {
+             get { return null; }
+         }
+
+         public virtual void UserCreationFailed(string username, string emailAddress, IDictionary<string, string> userData, string message, ErrorResponse errorResponse)
+         {
+             throw new NotImplementedException();
+         }
+
+
+         public Uri EvolutionBaseUrl
+         {
+             get { throw new NotImplementedException(); }
+         }
+
+         public Uri LocalOAuthClientHttpHandlerUrl
+         {
+             get { throw new NotImplementedException(); }
+         }
+
+         public string OAuthClientId
+         {
+             get { throw new NotImplementedException(); }
+         }
+
+         public string OAuthClientSecret
+         {
+             get { throw new NotImplementedException(); }
+         }
+
+         public NetworkCredential EvolutionCredentials
+         {
+             get { throw new NotImplementedException(); }
+         }
+
+         public string DefaultUserName
+         {
+             get { throw new NotImplementedException(); }
+         }
+
+         public string DefaultUserLanguageKey
+         {
+             get { throw new NotImplementedException(); }
+         }
+
+         public virtual void SetAuthorizationCookie(string value)
+         {
+             throw new NotImplementedException();
+         }
+
+         public virtual string GetAuthorizationCookieValue()
+         {
+             throw new NotImplementedException();
+         }
+
+         public virtual void UserLoggedIn(System.Collections.Specialized.NameValueCollection state)
+         {
+             throw new NotImplementedException();
+         }
+
+         public virtual void UserLoginFailed(System.Collections.Specialized.NameValueCollection state)
+         {
+             throw new NotImplementedException();
+         }
+
+         public virtual void UserLoggedOut(System.Collections.Specialized.NameValueCollection state)
+         {
+             throw new NotImplementedException();
+         }
+
+         public virtual void UserLogOutFailed(System.Collections.Specialized.NameValueCollection state)
+         {
+             throw new NotImplementedException();
+         }
+
+         public virtual bool EnableEvolutionUserSynchronization
+         {
+             get { throw new NotImplementedException(); }
+         }
+
+         public virtual string GetEvolutionUserSynchronizationCookieValue()
+         {
+             throw new NotImplementedException();
+         }
+#endregion
      }
      #region Configuration
 
@@ -142,4 +262,9 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
          public Guid? Id { get; set; }
      }
      #endregion
+
+#region Helpers
+#endregion
+
+
 }

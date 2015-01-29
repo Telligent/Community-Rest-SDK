@@ -19,11 +19,11 @@ namespace Telligent.RestSDK.IntegrationTests.Configuration
             Assert.IsNotNull(section);
         }
         [Test]
-        public void value_is_inherited_url()
+        public void config_has_3_hosts()
         {
-            var data = TelligentConfigurationSection.Current.Hosts["site2"];
+            var data = TelligentConfigurationSection.Current;
 
-            Assert.IsNotNull(data);
+            Assert.AreEqual(data.Hosts.Count,3);
         }
     }
 }

@@ -29,11 +29,11 @@ namespace Telligent.Rest.SDK.Configuration
             get { return this["communityRootUrl"].ToString(); }
             set { this["communityRootUrl"] = value; }
         }
-        [ConfigurationProperty("networkUserName", DefaultValue = "", IsRequired = false)]
+        [ConfigurationProperty("networkUsername", DefaultValue = "", IsRequired = false)]
         public string NetworkUserName
         {
-            get { return this["networkUserName"].ToString(); }
-            set { this["networkUserName"] = value; }
+            get { return this["networkUsername"].ToString(); }
+            set { this["networkUsername"] = value; }
         }
         [ConfigurationProperty("networkPassword", DefaultValue = "", IsRequired = false)]
         public string NetworkPassword
@@ -155,86 +155,86 @@ namespace Telligent.Rest.SDK.Configuration
             get { return (Guid)this["id"]; }
             set { this["id"] = value; }
         }
-        [ConfigurationProperty("oauthCallbackUrl", IsRequired = false)]
+        [ConfigurationProperty("oauthCallbackUrl", IsRequired = false,DefaultValue=null)]
         public string OauthCallbackUrl
         {
             get
             {
                 var data = this["oauthCallbackUrl"];
-                if (data == null)
+                if (string.IsNullOrWhiteSpace(data.ToString()))
                     return Parent.Parent.OauthCallbackUrl;
 
                 return data.ToString();
             }
             set { this["oauthCallbackUrl"] = value; }
         }
-        [ConfigurationProperty("communityRootUrl", IsRequired = false)]
+        [ConfigurationProperty("communityRootUrl", IsRequired = false, DefaultValue = null)]
         public string CommunityRootUrl
         {
             get
             {
                 var data = this["communityRootUrl"];
-                if (data == null)
+                if (string.IsNullOrWhiteSpace(data.ToString()))
                     return Parent.Parent.CommunityRootUrl;
 
                 return data.ToString();
             }
             set { this["communityRootUrl"] = value; }
         }
-        [ConfigurationProperty("networkUserName",  IsRequired = false)]
+        [ConfigurationProperty("networkUsername", IsRequired = false, DefaultValue = null)]
         public string NetworkUserName
         {
             get
             {
-                var data = this["networkUserName"];
-                if (data == null)
+                var data = this["networkUsername"];
+                if (string.IsNullOrWhiteSpace(data.ToString()))
                     return Parent.Parent.NetworkUserName;
 
                 return data.ToString();
             }
-            set { this["networkUserName"] = value; }
+            set { this["networkUsername"] = value; }
         }
-        [ConfigurationProperty("networkPassword", IsRequired = false)]
+        [ConfigurationProperty("networkPassword", IsRequired = false, DefaultValue = null)]
         public string NetworkPassword
         {
             get
             {
                 var data = this["networkPassword"];
-                if (data == null)
+                if (string.IsNullOrWhiteSpace(data.ToString()))
                     return Parent.Parent.NetworkPassword;
 
                 return data.ToString();
             }
             set { this["networkPassword"] = value; }
         }
-        [ConfigurationProperty("networkDomain",  IsRequired = false)]
+        [ConfigurationProperty("networkDomain", IsRequired = false, DefaultValue = null)]
         public string NetworkDomain
         {
             get
             {
                 var data = this["networkDomain"];
-                if (data == null)
+                if (string.IsNullOrWhiteSpace(data.ToString()))
                     return Parent.Parent.NetworkDomain;
 
                 return data.ToString();
             }
             set { this["networkDomain"] = value; }
         }
-        [ConfigurationProperty("synchronizationCookieName", IsRequired = false)]
+        [ConfigurationProperty("synchronizationCookieName", IsRequired = false, DefaultValue = null)]
         public string SynchronizationCookieName
         {
             get
             {
                 var data = this["synchronizationCookieName"];
-                if (data == null)
-                    return Parent.Parent.NetworkDomain;
+                if (string.IsNullOrWhiteSpace(data.ToString()))
+                    return Parent.Parent.SynchronizationCookieName;
 
                 return data.ToString();
             }
             set { this["synchronizationCookieName"] = value; }
         }
-        [ConfigurationProperty("enableSSO",  IsRequired = false)]
-        public bool EnableSSO
+        [ConfigurationProperty("enableSSO", IsRequired = false, DefaultValue = null)]
+        public bool? EnableSSO
         {
             get
             {
@@ -246,8 +246,8 @@ namespace Telligent.Rest.SDK.Configuration
             }
             set { this["enableSSO"] = value; }
         }
-        [ConfigurationProperty("useLocalAuthentication", IsRequired = false)]
-        public bool UseLocalAuthentication
+        [ConfigurationProperty("useLocalAuthentication", IsRequired = false, DefaultValue = null)]
+        public bool? UseLocalAuthentication
         {
             get
             {
@@ -259,65 +259,65 @@ namespace Telligent.Rest.SDK.Configuration
             }
             set { this["useLocalAuthentication"] = value; }
         }
-        [ConfigurationProperty("membershipAdministrationUsername",  IsRequired = false)]
+        [ConfigurationProperty("membershipAdministrationUsername", IsRequired = false, DefaultValue = null)]
         public string MembershipAdministrationUsername
         {
             get
             {
                 var data = this["membershipAdministrationUsername"];
-                if (data == null)
+                if (string.IsNullOrWhiteSpace(data.ToString()))
                     return Parent.Parent.MembershipAdministrationUsername;
 
                 return data.ToString();
             }
             set { this["membershipAdministrationUsername"] = value; }
         }
-        [ConfigurationProperty("defaultLanguage", IsRequired = false)]
+        [ConfigurationProperty("defaultLanguage", IsRequired = false, DefaultValue = null)]
         public string DefaultLanguageKey
         {
             get
             {
                 var data = this["defaultLanguage"];
-                if (data == null)
+                if (string.IsNullOrWhiteSpace(data.ToString()))
                     return Parent.Parent.DefaultLanguageKey;
 
                 return data.ToString();
             }
             set { this["defaultLanguage"] = value; }
         }
-        [ConfigurationProperty("anonymousUsername",  IsRequired = false)]
+        [ConfigurationProperty("anonymousUsername", IsRequired = false, DefaultValue = null)]
         public string AnonymousUsername
         {
             get
             {
                 var data = this["anonymousUsername"];
-                if (data == null)
+                if (string.IsNullOrWhiteSpace(data.ToString()))
                     return Parent.Parent.AnonymousUsername;
 
                 return data.ToString();
             }
             set { this["anonymousUsername"] = value; }
         }
-        [ConfigurationProperty("oauthClientId", IsRequired = false)]
+        [ConfigurationProperty("oauthClientId", IsRequired = false, DefaultValue = null)]
         public string OauthClientId
         {
             get
             {
                 var data = this["oauthClientId"];
-                if (data == null)
+                if (string.IsNullOrWhiteSpace(data.ToString()))
                     return Parent.Parent.OauthClientId;
 
                 return data.ToString();
             }
             set { this["oauthClientId"] = value; }
         }
-        [ConfigurationProperty("oauthSecret", IsRequired = false)]
+        [ConfigurationProperty("oauthSecret", IsRequired = false, DefaultValue = null)]
         public string OauthSecret
         {
             get
             {
                 var data = this["oauthSecret"];
-                if (data == null)
+                if (string.IsNullOrWhiteSpace(data.ToString()))
                     return Parent.Parent.OauthSecret;
 
                 return data.ToString();

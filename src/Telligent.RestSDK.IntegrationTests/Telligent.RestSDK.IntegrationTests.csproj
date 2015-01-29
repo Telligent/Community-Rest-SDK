@@ -50,7 +50,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="configuration_tests.cs" />
+    <Compile Include="Configuration\configuration_tests.cs" />
+    <Compile Include="Configuration\host_loading.cs" />
+    <Compile Include="Configuration\override_values.cs" />
+    <Compile Include="Configuration\default_values.cs" />
     <Compile Include="get_tests.cs" />
     <Compile Include="IntegrationTestBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
