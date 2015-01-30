@@ -97,51 +97,51 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
 		#region REST
 
 
-        public async Task<XElement> GetToXmlAsync(int version,string endpoint, bool enableImpersonation,RestGetOptions options = null)
+        public Task<XElement> GetToXmlAsync(int version,string endpoint, bool enableImpersonation,RestGetOptions options = null)
         {
-            return await Rest.GetEndpointXml(this, version,endpoint, enableImpersonation,options).ConfigureAwait(false);
+            return Rest.GetEndpointXml(this, version,endpoint, enableImpersonation,options);
         }
 
-        public async Task<XElement> PutToXmlAsync(int version, string endpoint, string postData,bool enableImpersonation = true,RestPutOptions options = null)
+        public Task<XElement> PutToXmlAsync(int version, string endpoint, string postData,bool enableImpersonation = true,RestPutOptions options = null)
         {
-            return await Rest.PutEndpointXml(this, version, endpoint, postData, enableImpersonation, options).ConfigureAwait(false);
+            return Rest.PutEndpointXml(this, version, endpoint, postData, enableImpersonation, options);
         }
 
 
 
-        public async Task<XElement> PostToXmlAsync(int version, string endpoint, string postData, HttpPostedFileBase file, bool enableImpersonation,RestPostOptions options = null)
+        public Task<XElement> PostToXmlAsync(int version, string endpoint, string postData, HttpPostedFileBase file, bool enableImpersonation,RestPostOptions options = null)
         {
-            return await Rest.PostEndpointXml(this, version, endpoint, postData, file, enableImpersonation, options).ConfigureAwait(false);
+            return Rest.PostEndpointXml(this, version, endpoint, postData, file, enableImpersonation, options);
         }
 
-        public async Task<XElement> DeleteToXmlAsync(int version, string endpoint,bool enableImpersonation = true, RestDeleteOptions options = null)
+        public Task<XElement> DeleteToXmlAsync(int version, string endpoint,bool enableImpersonation = true, RestDeleteOptions options = null)
         {
-            return await Rest.DeleteEndpointXml(this, version, endpoint, enableImpersonation, options).ConfigureAwait(false);
+            return Rest.DeleteEndpointXml(this, version, endpoint, enableImpersonation, options);
         }
 
        
 
         public async Task<dynamic> GetToDynamicAsync(int version, string endpoint,bool enableImpersonation =true,RestGetOptions options = null)
         {
-            var json = await Rest.GetEndpointJson(this, version, endpoint, options).ConfigureAwait(false);
+            var json = await Rest.GetEndpointJson(this, version, endpoint, options);
             return json != null ? JsonConvert.Deserialize(json) : null;
         }
 
         public async Task<dynamic> PutToDynamicAsync(int version, string endpoint, string postData,bool enableImpersonation = true,RestPutOptions options = null)
         {
-            var json = await Rest.PutEndpointJson(this, version, endpoint, postData, enableImpersonation, options).ConfigureAwait(false);
+            var json = await Rest.PutEndpointJson(this, version, endpoint, postData, enableImpersonation, options);
             return json != null ? JsonConvert.Deserialize(json) : null;
         }
 
         public async Task<dynamic> PostToDynamicAsync(int version, string endpoint, string postData, bool enableImpersonation = true, RestPostOptions options = null)
         {
-            var json = await Rest.PostEndpointJson(this, version, endpoint, postData, enableImpersonation, null, options).ConfigureAwait(false);
+            var json = await Rest.PostEndpointJson(this, version, endpoint, postData, enableImpersonation, null, options);
             return json != null ? JsonConvert.Deserialize(json) : null;
         }
 
         public async Task<dynamic> DeleteToDynamicAsync(int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null)
         {
-            var json = await Rest.DeleteEndpointJson(this, version, endpoint, enableImpersonation, options).ConfigureAwait(false);
+            var json = await Rest.DeleteEndpointJson(this, version, endpoint, enableImpersonation, options);
             return json != null ? JsonConvert.Deserialize(json) : null;
         }
 
@@ -225,7 +225,3 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
 		}
     }
 }
-
-   
-
-

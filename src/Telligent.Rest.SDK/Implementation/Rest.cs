@@ -12,6 +12,7 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.IO;
 using Telligent.Rest.SDK.Model;
+using System.Threading.Tasks;
 
 
 namespace Telligent.Evolution.RestSDK.Implementations
@@ -87,76 +88,76 @@ namespace Telligent.Evolution.RestSDK.Implementations
         }
         #endregion
 
-        public async System.Threading.Tasks.Task<XElement> GetEndpointXml(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestGetOptions options = null)
+        public async Task<XElement> GetEndpointXml(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestGetOptions options = null)
         {
             if (!ContainsXml(endpoint))
                 throw new ArgumentException("This call is not valid on non XML endpoints", "endpoint");
 
-            return XElement.Parse(await _proxy.Get(host, MakeEndpointUrl(host, version, endpoint), (request) => AdjustGetRequest(host, request, enableImpersonation)).ConfigureAwait(false));
+            return XElement.Parse(await _proxy.Get(host, MakeEndpointUrl(host, version, endpoint), (request) => AdjustGetRequest(host, request, enableImpersonation)));
         }
 
-        public async System.Threading.Tasks.Task<XElement> PutEndpointXml(RestHost host, int version, string endpoint, string postData, bool enableImpersonation = true, RestPutOptions options = null)
+        public async Task<XElement> PutEndpointXml(RestHost host, int version, string endpoint, string postData, bool enableImpersonation = true, RestPutOptions options = null)
         {
             if (!ContainsXml(endpoint))
                 throw new ArgumentException("This call is not valid on non XML endpoints", "endpoint");
 
-            return XElement.Parse(await _proxy.Post(host, MakeEndpointUrl(host, version, endpoint), postData, null, (request) => AdjustPutRequest(host, request, enableImpersonation)).ConfigureAwait(false));
+            return XElement.Parse(await _proxy.Post(host, MakeEndpointUrl(host, version, endpoint), postData, null, (request) => AdjustPutRequest(host, request, enableImpersonation)));
         }
 
-        public async System.Threading.Tasks.Task<XElement> PostEndpointXml(RestHost host, int version, string endpoint, string postData, HttpPostedFileBase file = null, bool enableImpersonation = true, RestPostOptions options = null)
+        public async Task<XElement> PostEndpointXml(RestHost host, int version, string endpoint, string postData, HttpPostedFileBase file = null, bool enableImpersonation = true, RestPostOptions options = null)
         {
             if (!ContainsXml(endpoint))
                 throw new ArgumentException("This call is not valid on non XML endpoints", "endpoint");
-            return XElement.Parse(await _proxy.Post(host, MakeEndpointUrl(host, version, endpoint), postData, file, (request) => AdjustPostRequest(host, request, true)).ConfigureAwait(false));
+            return XElement.Parse(await _proxy.Post(host, MakeEndpointUrl(host, version, endpoint), postData, file, (request) => AdjustPostRequest(host, request, true)));
         }
 
-        public async System.Threading.Tasks.Task<XElement>  DeleteEndpointXml(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null)
+        public async Task<XElement>  DeleteEndpointXml(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null)
         {
             if (!ContainsXml(endpoint))
                 throw new ArgumentException("This call is not valid on non XML endpoints", "endpoint");
-            return XElement.Parse(await _proxy.Post(host, MakeEndpointUrl(host, version, endpoint), null, null, (request) => AdjustDeleteRequest(host, request, enableImpersonation)).ConfigureAwait(false));
+            return XElement.Parse(await _proxy.Post(host, MakeEndpointUrl(host, version, endpoint), null, null, (request) => AdjustDeleteRequest(host, request, enableImpersonation)));
         }
 
        
-       public async System.Threading.Tasks.Task<Stream> PostEndpointStream(RestHost host, int version, string endpoint, Stream postStream, bool enableImpersonation, Action<WebResponse> responseAction, RestPostOptions options = null)
+       public async Task<Stream> PostEndpointStream(RestHost host, int version, string endpoint, Stream postStream, bool enableImpersonation, Action<WebResponse> responseAction, RestPostOptions options = null)
        {
            return
                await
                    _proxy.PostEndpointStream(host, MakeEndpointUrl(host, version, endpoint), postStream,
-                       (request) => AdjustPostRequest(host, request, enableImpersonation), responseAction).ConfigureAwait(false);
+                       (request) => AdjustPostRequest(host, request, enableImpersonation), responseAction);
 
        }
 
-       public async System.Threading.Tasks.Task<string> GetEndpointJson(RestHost host, int version, string endpoint, RestGetOptions options = null)
+       public Task<string> GetEndpointJson(RestHost host, int version, string endpoint, RestGetOptions options = null)
         {
             if (!ContainsJson(endpoint))
                 throw new ArgumentException("This call is not valid on non JSON endpoints", "endpoint");
 
-            return await _proxy.Get(host, MakeEndpointUrl(host, version, endpoint), (request) => AdjustGetRequest(host, request, true)).ConfigureAwait(false);
+            return _proxy.Get(host, MakeEndpointUrl(host, version, endpoint), (request) => AdjustGetRequest(host, request, true));
         }
 
-        public async System.Threading.Tasks.Task<string>  PutEndpointJson(RestHost host, int version, string endpoint, string postData, bool enableImpersonation = true, RestPutOptions options = null)
+        public Task<string>  PutEndpointJson(RestHost host, int version, string endpoint, string postData, bool enableImpersonation = true, RestPutOptions options = null)
         {
             if (!ContainsJson(endpoint))
                 throw new ArgumentException("This call is not valid on non JSON endpoints", "endpoint");
 
-            return await _proxy.Post(host, MakeEndpointUrl(host, version, endpoint), postData, null, (request) => AdjustPutRequest(host, request, enableImpersonation)).ConfigureAwait(false);
+            return _proxy.Post(host, MakeEndpointUrl(host, version, endpoint), postData, null, (request) => AdjustPutRequest(host, request, enableImpersonation));
         }
 
-        public async  System.Threading.Tasks.Task<string> PostEndpointJson(RestHost host, int version, string endpoint, string postData, bool enableImpersonation = true, HttpPostedFileBase file = null, RestPostOptions options = null)
+        public Task<string> PostEndpointJson(RestHost host, int version, string endpoint, string postData, bool enableImpersonation = true, HttpPostedFileBase file = null, RestPostOptions options = null)
         {
             if (!ContainsJson(endpoint))
                 throw new ArgumentException("This call is not valid on non JSON endpoints", "endpoint");
 
-            return await _proxy.Post(host, MakeEndpointUrl(host, version, endpoint), postData, file, (request) => AdjustPostRequest(host, request, true)).ConfigureAwait(false);
+            return  _proxy.Post(host, MakeEndpointUrl(host, version, endpoint), postData, file, (request) => AdjustPostRequest(host, request, true));
         }
 
-        public async System.Threading.Tasks.Task<string>  DeleteEndpointJson(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null)
+        public Task<string>  DeleteEndpointJson(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null)
         {
             if (!ContainsJson(endpoint))
                 throw new ArgumentException("This call is not valid on non JSON endpoints", "endpoint");
 
-            return await _proxy.Post(host, MakeEndpointUrl(host, version, endpoint), null, null, (request) => AdjustDeleteRequest(host, request, enableImpersonation)).ConfigureAwait(false);
+            return _proxy.Post(host, MakeEndpointUrl(host, version, endpoint), null, null, (request) => AdjustDeleteRequest(host, request, enableImpersonation));
         }
     }
 }

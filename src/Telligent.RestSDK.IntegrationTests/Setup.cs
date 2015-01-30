@@ -18,10 +18,10 @@ namespace Telligent.RestSDK.IntegrationTests
         /// <summary>
         /// Modify the following values with values from your community in order to execute tests
         /// </summary>
-        private static readonly string _oauthClientId = "5e539135-4807-4d39-b525-e36c343ffc1d";
-        private static readonly string _oauthSecret = "34c70aa225d842c7a713f4eaa40424a0d63551ee7f124b91b2a69b2694751eac";
+        private static readonly string _oauthClientId = "8c0a07b1-e1c8-4b02-a28b-1a62f4996768";
+        private static readonly string _oauthSecret = "5b503959345c45bba85ab2e1714fa5941f5f3689143c4ffab4ba9eaa003d851c";
         private static readonly string _communityUserName = "admin";
-        public static readonly string CommunityUrl = "http://trunk.local.com/";
+        public static readonly string CommunityUrl = "http://trunk/";
 
         [SetUp]
         public void SetupTests()
