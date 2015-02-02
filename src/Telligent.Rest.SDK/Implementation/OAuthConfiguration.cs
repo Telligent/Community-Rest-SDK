@@ -8,6 +8,7 @@ namespace Telligent.Evolution.RestSDK.Implementations
             AnonymousUsername = "Anonymous";
             CookieName = "CS-SDK-User";
             LocalUserCreation = new LocalUserConfiguration();
+            OauthCallbackUrl = "~/oauth.ashx";
         }
         public string DefaultLanguageKey { get; set; }
         public string AnonymousUsername { get; set; }
