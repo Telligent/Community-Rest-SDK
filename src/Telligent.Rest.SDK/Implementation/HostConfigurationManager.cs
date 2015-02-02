@@ -1,4 +1,5 @@
 using System.Configuration;
+using System.Xml.Linq;
 using Telligent.Rest.SDK.Model;
 
 namespace Telligent.Evolution.RestSDK.Implementations
@@ -40,6 +41,10 @@ namespace Telligent.Evolution.RestSDK.Implementations
                 throw new ConfigurationErrorsException("Invalid configuration data");
 
             HostConfiguration config = new HostConfiguration();
+
+
+          //  XDocument doc =
+
             return config;
         }
 

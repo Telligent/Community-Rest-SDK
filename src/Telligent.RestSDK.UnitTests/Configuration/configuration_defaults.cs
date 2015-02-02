@@ -96,5 +96,11 @@ namespace Telligent.RestSDK.IntegrationTests.Configuration
             HostConfiguration h = new HostConfiguration();
             Assert.IsNull(h.Id);
         }
+        [Test]
+        public void Credentials_null()
+        {
+            HostConfiguration h = new HostConfiguration();
+            Assert.IsNull(h.NetworkCredentials);
+        }
     }
 }
