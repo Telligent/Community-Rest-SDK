@@ -22,7 +22,7 @@ namespace Telligent.Rest.SDK.Implementation
                                                        RegexOptions.CultureInvariant |
                                                        RegexOptions.IgnorePatternWhitespace |
                                                        RegexOptions.Compiled);
-
+        
         public async Task<Stream> PostEndpointStream(RestHost host, string url, Stream postStream, Action<HttpWebRequest> adjustRequest, Action<WebResponse> responseAction)
         {
             bool retry = true;
@@ -203,12 +203,11 @@ namespace Telligent.Rest.SDK.Implementation
                     var response = await request.GetResponseAsync().ConfigureAwait(false); ;
                     using (response)
                     {
-                        return await ReadResponseStreamAsync((HttpWebResponse)response).ConfigureAwait(false); ;
+                        return await ReadResponseStreamAsync((HttpWebResponse)response).ConfigureAwait(false);
                     }
                 }
                 catch (WebException ex)
                 {
-
                     capturedException = ExceptionDispatchInfo.Capture(ex);
                 }
             }
