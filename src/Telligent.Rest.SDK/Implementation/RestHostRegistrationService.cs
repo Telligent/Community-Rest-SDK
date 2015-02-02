@@ -9,6 +9,7 @@ using Telligent.Evolution.Extensibility.Rest.Version1;
 
 
 using Telligent.Evolution.RestSDK.Services;
+using Telligent.Rest.SDK.Model;
 
 namespace Telligent.Evolution.RestSDK.Implementations
 {

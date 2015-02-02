@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Configuration;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -12,8 +11,10 @@ using System.Xml;
 using System.Xml.Linq;
 using Telligent.Evolution.Extensibility.OAuthClient.Version1;
 using Telligent.Evolution.Extensibility.Rest.Version1;
+using Telligent.Evolution.RestSDK.Implementations;
 using Telligent.Evolution.RestSDK.Services;
 using Telligent.Rest.SDK.Configuration;
+using Telligent.Rest.SDK.Model;
 
 namespace Telligent.Evolution.Extensibility.Rest.Version1
 {
@@ -30,7 +31,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
 
         public override Guid Id
         {
-            get { return _settings.Id; }
+            get { return _settings.Id.Value; }
         }
 
 
@@ -354,237 +355,5 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
     }
     #region Configuration
 
-    //public interface IConfigurationOptions
-    //{
-    //    string Name { get; set; }
-    //    string OauthCallbackUrl { get; set; }
-    //    string CommunityRootUrl { get; set; }
-    //    NetworkCredential NetworkCredentials { get; set; }
-    //    string SynchronizationCookieName { get; set; }
-    //    bool EnableSSO { get; set; }
-    //    bool UseLocalAuthentication { get; set; }
-    //    string MembershipAdministrationUserName { get; set; }
-    //    string DefaultLanguageKey { get; set; }
-    //    string AnonymousUsername { get; set; }
-    //    string OauthClientId { get; set; }
-    //    string OauthSecret { get; set; }
-    //    Guid? Id { get; set; }
-    //    string CookieName { get; set; }
-    //    Func<HttpContextBase, Host, LocalUser> LocalUserResolver { get; set; }
-    //}
-
-    //public class ConfigFileConfigurationSettings : IConfigurationOptions
-    //{
-    //    public ConfigFileConfigurationSettings()
-    //    {
-    //        DefaultLanguageKey = "en-US";
-    //        MembershipAdministrationUserName = "admin";
-    //        EnableSSO = false;
-    //        UseLocalAuthentication = false;
-    //        AnonymousUsername = "Anonymous";
-    //        SynchronizationCookieName = "EvolutionSync";
-    //        CookieName = "communityUser";
-    //    }
-    //    public string OauthCallbackUrl { get; set; }
-    //    public string CommunityRootUrl { get; set; }
-    //    public NetworkCredential NetworkCredentials { get; set; }
-    //    public string SynchronizationCookieName { get; set; }
-    //    public bool EnableSSO { get; set; }
-    //    public bool UseLocalAuthentication { get; set; }
-    //    public string MembershipAdministrationUserName { get; set; }
-    //    public string DefaultLanguageKey { get; set; }
-    //    public string AnonymousUsername { get; set; }
-    //    public string OauthClientId { get; set; }
-    //    public string OauthSecret { get; set; }
-    //    public Guid? Id { get; set; }
-    //    public string CookieName { get; set; }
-    //    public Func<HttpContextBase, Host, LocalUser> LocalUserResolver { get; set; }
-
-
-    //}
-
-    public interface IHostConfigurationManager
-    {
-        HostConfiguration GetOptions(string name);
-    }
-
-    public class HostConfigurationManager : IHostConfigurationManager
-    {
-        private IRestCache _cache;
-        private IConfigurationFile _file;
-        private static readonly string _fileDataKey = "communityServer::configData";
-        private static readonly string _hostCacheKey = "communityServer::SDK::host::";
-        public HostConfigurationManager(IRestCache cache,IConfigurationFile configFile)
-        {
-            _cache = cache;
-            _file = configFile;
-        }
-        public HostConfiguration GetOptions(string name)
-        {
-
-            var config = _cache.Get(GetCacheKey(name));
-            if (config != null)
-                return (HostConfiguration)config;
-
-            var fileConfig = Read(name);
-            if (fileConfig == null)
-                throw new ConfigurationErrorsException("No host entry defined in configuraton for '" + name + "'");
-
-            _cache.Put(GetCacheKey(name), fileConfig, 300);
-
-            return fileConfig;
-
-        }
-
-
-
-        private HostConfiguration Read(string name)
-        {
-            var configData = GetConfigData();
-            if (string.IsNullOrEmpty(configData))
-                throw new ConfigurationErrorsException("Invalid configuration data");
-
-            HostConfiguration config = new HostConfiguration();
-            return config;
-        }
-
-        private string GetConfigData()
-        {
-            var configData = _cache.Get(_fileDataKey);
-            if (configData != null)
-                return configData.ToString();
-
-            configData = _file.GetConfigurationData();
-            if (string.IsNullOrEmpty(configData.ToString()))
-                throw new ConfigurationErrorsException("Invalid configuration data");
-            
-            _cache.Put(_fileDataKey,configData,300);
-            return configData.ToString();
-        }
-        private string GetCacheKey(string name)
-        {
-            return string.Concat(_hostCacheKey, name);
-        }
-        
-    }
-
-    public interface IConfigurationFile
-    {
-        string GetConfigurationData();
-    }
-
-    public class WebConfigurationFile : IConfigurationFile
-    {
-        private HttpContextBase _context;
-        public WebConfigurationFile(HttpContextBase context)
-        {
-            _context = context;
-        }
-
-        public string GetConfigurationData()
-        {
-            var path = _context.Server.MapPath("~/");
-            var configFile = Path.Combine(path, "communityServer_SDK.config");
-            if(!File.Exists(configFile))
-                throw new ConfigurationErrorsException("Cannot find valid config file in web root");
-
-            using (FileStream stream = new FileStream(configFile, FileMode.Open, FileAccess.Read))
-            {
-                using (var reader = new StreamReader(stream))
-                {
-                    return reader.ReadToEnd();
-                }
-            }
-            
-        }
-    }
-
-    public class FileSystemConfigurationFile:IConfigurationFile
-    {
-
-        public string GetConfigurationData()
-        {
-            var configFile = System.Configuration.ConfigurationManager.AppSettings["communityServer:SDK:configPath"];
-            if (string.IsNullOrWhiteSpace(configFile))
-                throw new ConfigurationErrorsException("Cannot find a valid configuration path in the application configuration app settings.  Add the full disk path to key communityServer:SDK:configPath");
-
-            if (!File.Exists(configFile))
-                throw new ConfigurationErrorsException("Cannot find valid config file at'" + configFile + "'");
-
-            using (FileStream stream = new FileStream(configFile, FileMode.Open, FileAccess.Read))
-            {
-                using (var reader = new StreamReader(stream))
-                {
-                    return reader.ReadToEnd();
-                }
-            }
-        }
-    }
-    public class HostConfiguration
-    {
-        public HostConfiguration()
-        {
-                OAuth = new OAuthConfiguration();
-        }
-        public Guid Id { get; set; }
-        public string CommunityServerUrl { get; set; }
-        public string Name { get; set; }
-        public NetworkCredential NetworkCredentials { get; set; }
-        public OAuthConfiguration OAuth { get; set; }
-    }
-
-    public class OAuthConfiguration
-    {
-        public OAuthConfiguration()
-        {
-            DefaultLanguageKey = "en-us";
-            AnonymousUsername = "Anonymous";
-            CookieName = "CS-SDK-User";
-            LocalUserCreation = new LocalUserConfiguration();
-        }
-        public string DefaultLanguageKey { get; set; }
-        public string AnonymousUsername { get; set; }
-        public string OauthClientId { get; set; }
-        public string OauthSecret { get; set; }
-        public string OauthCallbackUrl { get; set; }
-        public string CookieName { get; set; }
-        public LocalUserConfiguration LocalUserCreation { get; set; }
-
-    }
-
-    public class SSOConfiguration
-    {
-        public SSOConfiguration()
-        {
-            Enabled = false;
-            SynchronizationCookieName = "EvolutionSync";
-        }    
-        public bool Enabled { get; set; }
-        public string SynchronizationCookieName { get; set; }
-    }
-
-    public class LocalUserConfiguration
-    {
-        public LocalUserConfiguration()
-        {
-            MembershipAdministrationUserName = "admin";
-            Enabled = false;
-            SSO = new SSOConfiguration();
-        }
-        public string MembershipAdministrationUserName { get; set; }
-        public Func<HttpContextBase, LocalUser> UserResolver { get; set; }
-        public bool Enabled { get; set; }
-        public SSOConfiguration SSO { get; set; }
-    }
     #endregion
-
-    public class LocalUser
-    {
-        public string Username { get; set; }
-        public string EmailAddress { get; set; }
-        public IDictionary<string, string> AdditionalData { get; set; }
-
-    }
-
-
 }

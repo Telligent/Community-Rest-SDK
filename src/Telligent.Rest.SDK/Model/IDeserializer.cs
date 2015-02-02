@@ -1,6 +1,6 @@
 ﻿using Telligent.Evolution.RestSDK.Json;
 
-namespace Telligent.Evolution.RestSDK.Services
+namespace Telligent.Rest.SDK.Model
 {
     public interface IDeserializer
     {

@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.Caching;
+using Telligent.Rest.SDK.Model;
 
 namespace Telligent.Evolution.RestSDK.Implementations
 {
-    public class SimpleCache : Telligent.Evolution.Extensibility.Rest.Version1.IRestCache
+    public class SimpleCache : IRestCache
     {
         MemoryCache _cache;
 

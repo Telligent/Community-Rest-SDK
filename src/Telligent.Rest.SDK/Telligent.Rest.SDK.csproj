@@ -43,7 +43,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Api\DefaultHost.cs" />
+    <Compile Include="Api\Host.cs" />
+    <Compile Include="Implementation\FileSystemConfigurationFile.cs" />
+    <Compile Include="Implementation\HostConfiguration.cs" />
+    <Compile Include="Implementation\HostConfigurationManager.cs" />
+    <Compile Include="Model\IConfigurationFile.cs" />
+    <Compile Include="Model\IHostConfigurationManager.cs" />
+    <Compile Include="Api\LocalUser.cs" />
+    <Compile Include="Implementation\LocalUserConfiguration.cs" />
+    <Compile Include="Implementation\OAuthConfiguration.cs" />
+    <Compile Include="Implementation\SSOConfiguration.cs" />
+    <Compile Include="Implementation\WebConfigurationFile.cs" />
     <Compile Include="Configuration\ServiceLocator.cs" />
     <Compile Include="Configuration\TelligentConfigurationSection.cs" />
     <Compile Include="Implementation\Deserializer.cs" />

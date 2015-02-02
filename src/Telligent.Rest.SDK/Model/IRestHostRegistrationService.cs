@@ -6,7 +6,7 @@ using Telligent.Evolution.Extensibility.Rest.Version1;
 using System.Xml;
 
 
-namespace Telligent.Evolution.RestSDK.Services
+namespace Telligent.Rest.SDK.Model
 {
     public interface IRestHostRegistrationService
     {

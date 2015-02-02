@@ -14,6 +14,7 @@ using System.Xml.Linq;
 using Telligent.Evolution.RestSDK.Json;
 // Telligent.Evolution.RestSDK.Services;
 using Telligent.Evolution.RestSDK.Services;
+using Telligent.Rest.SDK.Model;
 
 namespace Telligent.Evolution.Extensibility.Rest.Version1
 {

@@ -8,7 +8,7 @@ using System.Web;
 using Telligent.Evolution.Extensibility.Rest.Version1;
 
 
-namespace Telligent.Evolution.RestSDK.Services
+namespace Telligent.Rest.SDK.Model
 {
     public interface IRest
     {

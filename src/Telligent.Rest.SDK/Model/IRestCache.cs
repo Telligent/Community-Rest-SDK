@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Web.UI;
 
-namespace Telligent.Evolution.Extensibility.Rest.Version1
+namespace Telligent.Rest.SDK.Model
 {
     public interface IRestCache
     {

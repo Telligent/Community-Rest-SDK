@@ -1,5 +1,6 @@
 ﻿using System.Dynamic;
 using Telligent.Evolution.RestSDK.Services;
+using Telligent.Rest.SDK.Model;
 
 namespace Telligent.Evolution.RestSDK.Json
 {
