@@ -42,5 +42,10 @@ namespace Telligent.RestSDK.IntegrationTests
             Console.WriteLine(ex.Message);
             Console.WriteLine(ex.StackTrace);
         }
+
+        public override string Name
+        {
+            get { return "Test Host"; }
+        }
     }
 }

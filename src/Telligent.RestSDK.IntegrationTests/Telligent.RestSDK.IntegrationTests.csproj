@@ -50,10 +50,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\configuration_tests.cs" />
-    <Compile Include="Configuration\host_loading.cs" />
-    <Compile Include="Configuration\override_values.cs" />
-    <Compile Include="Configuration\default_values.cs" />
     <Compile Include="get_tests.cs" />
     <Compile Include="IntegrationTestBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -71,6 +67,9 @@
       <Project>{1d08db1e-3c5c-48de-bff0-88fa52b1295a}</Project>
       <Name>Telligent.Rest.SDK</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Configuration\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

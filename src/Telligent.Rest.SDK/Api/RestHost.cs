@@ -31,7 +31,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         }
 
 		public abstract Guid Id { get; }
-
+        public abstract string Name { get; }
         #region Remote Authentication
 
 		public abstract void ApplyAuthenticationToHostRequest(System.Net.HttpWebRequest request, bool forAccessingUser);

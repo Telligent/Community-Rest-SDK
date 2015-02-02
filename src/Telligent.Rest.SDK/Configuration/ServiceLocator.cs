@@ -17,23 +17,34 @@ namespace Telligent.Evolution.RestSDK.Services
 			return (T)_instances[typeof(T)];
         }
 
-        public static void EnsureInitialized()
+        public static void EnsureInitialized(Dictionary<Type, object> instances = null)
         {
-            if (_instances == null)
+            if (instances != null)
+            {
                 lock (_lockObject)
-					if (_instances == null)
-					{
-						var localInstances = new Dictionary<Type, object>();
-					    var proxy = new RestCommunicationProxy();
-                        var rest = new Telligent.Evolution.RestSDK.Implementations.Rest(proxy);
-                        var deserializerService = new Deserializer();
-                        var hostRegistrationService = new RestHostRegistrationService();
-						localInstances[typeof(IRest)] = rest;
-                        localInstances[typeof(IDeserializer)] = deserializerService;
-					    localInstances[typeof (IRestCommunicationProxy)] = proxy;
-                        localInstances[typeof(IRestHostRegistrationService)] = hostRegistrationService;
-						_instances = localInstances;
-					}
+                {
+                    _instances = instances;
+                }
+            }
+            else
+            {
+                if (_instances == null)
+                    lock (_lockObject)
+                        if (_instances == null)
+                        {
+                            var localInstances = new Dictionary<Type, object>();
+                            var proxy = new RestCommunicationProxy();
+                            var rest = new Telligent.Evolution.RestSDK.Implementations.Rest(proxy);
+                            var deserializerService = new Deserializer();
+                            var hostRegistrationService = new RestHostRegistrationService();
+                            localInstances[typeof(IRest)] = rest;
+                            localInstances[typeof(IDeserializer)] = deserializerService;
+                            localInstances[typeof(IRestCommunicationProxy)] = proxy;
+                            localInstances[typeof(IRestHostRegistrationService)] = hostRegistrationService;
+                            _instances = localInstances;
+                        }
+            }
+           
         }
     }
 }
