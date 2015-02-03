@@ -13,7 +13,7 @@ namespace Telligent.Evolution.RestSDK.Implementations
             SSO = new SSOConfiguration();
         }
         public string MembershipAdministrationUserName { get; set; }
-        public Func<HttpContextBase, LocalUser> UserResolver { get; set; }
+        public ILocalUserResolver  UserResolver { get; set; }
         public bool Enabled { get; set; }
         public SSOConfiguration SSO { get; set; }
     }

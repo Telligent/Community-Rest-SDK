@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Xml.Linq;
+using Telligent.Evolution.Extensibility.Rest.Version1;
 using Telligent.Rest.SDK.Model;
 
 namespace Telligent.Evolution.RestSDK.Implementations
@@ -99,6 +100,33 @@ namespace Telligent.Evolution.RestSDK.Implementations
                         config.OAuth.LocalUserCreation.Enabled = bool.Parse(localAuth.Attribute("enabled").Value);
                     if (localAuth.Attribute("membershipAdministrationUsername") != null)
                         config.OAuth.LocalUserCreation.MembershipAdministrationUserName = localAuth.Attribute("membershipAdministrationUsername").Value;
+
+                    if (localAuth.Attribute("userResolver") != null)
+                    {
+                        var resolver = localAuth.Attribute("userResolver").Value;
+                        try
+                        {
+                            var resolverType = Type.GetType(resolver);
+                            var userResolverObj = Activator.CreateInstance(resolverType);
+                            if (userResolverObj != null)
+                            {
+                                ILocalUserResolver userResolver = userResolverObj as ILocalUserResolver;
+                                if(userResolver == null)
+                                    throw new ApplicationException("Value in userResolver is not of type ILocalUserResolver");
+                                config.OAuth.LocalUserCreation.UserResolver = userResolver;
+                            }
+                        }
+
+                        catch (Exception ex)
+                        {
+                              throw new ApplicationException(
+                                "Failed to load userResolver value. Verify it is of the create type of ILocalUserResolver, has a parameterless constructor and the class is public.");
+
+                        }
+                    }
+                       
+
+
 
                     var sso = localAuth.Element("sso");
                     if (sso != null)

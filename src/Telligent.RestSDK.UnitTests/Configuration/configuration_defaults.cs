@@ -120,6 +120,11 @@ namespace Telligent.RestSDK.IntegrationTests.Configuration
             HostConfiguration h = new HostConfiguration();
             Assert.IsNull(h.NetworkCredentials);
         }
-     
+        [Test]
+        public void UserResolver_Null()
+        {
+            HostConfiguration h = new HostConfiguration();
+            Assert.IsNull(h.OAuth.LocalUserCreation.UserResolver);
+        }
     }
 }

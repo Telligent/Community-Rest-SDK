@@ -11,10 +11,19 @@ using Telligent.Rest.SDK.Model;
 
 namespace Telligent.RestSDK.IntegrationTests.Configuration
 {
+    public class TestUserResolver:ILocalUserResolver
+    {
+
+        public LocalUser GetLocalUserDetails(System.Web.HttpContextBase copntext, Host host)
+        {
+            return new LocalUser("testuser", "dummy@localhost.com");
+        }
+    }
+
     [TestFixture]
     public class configuration_load_tests
     {
-        private static readonly string _data =@"
+        private static readonly string _data = @"
 <communityServerHosts>
   <host id=""3D1118BB-0B61-2222-9332-541558F97887"" name=""site"" communityServerUrl=""http://mycommunity.com/"" networkUsername=""networkUser"" networkPassword=""password"" networkDomain=""domain"">
     <oauth clientId=""123456"" 
@@ -23,7 +32,7 @@ namespace Telligent.RestSDK.IntegrationTests.Configuration
            cookieName=""evoUser""
            defaultLanguage=""en-GB""
            anonymousUsername=""Anon"">
-        <localAuthentication enabled =""true"" membershipAdministrationUsername=""myadmin"" userResolver=""SomeNamespace.SomeClass, Assembly"">
+        <localAuthentication enabled =""true"" membershipAdministrationUsername=""myadmin"" userResolver=""Telligent.RestSDK.IntegrationTests.Configuration.TestUserResolver, Telligent.RestSDK.UnitTests"">
         <sso enabled=""true"" synchronizationCookieName=""SyncCookie"" />
       </localAuthentication>
     </oauth>
@@ -128,6 +137,17 @@ namespace Telligent.RestSDK.IntegrationTests.Configuration
         {
 
             Assert.IsTrue(_config.NetworkCredentials.Domain.Equals("domain", StringComparison.CurrentCultureIgnoreCase));
+        }
+
+        [Test]
+        public void UserResolver_not_null()
+        {
+          Assert.IsNotNull(_config.OAuth.LocalUserCreation.UserResolver);  
+        }
+        [Test]
+        public void UserResolver_is_of_type()
+        {
+            Assert.IsAssignableFrom<TestUserResolver>(_config.OAuth.LocalUserCreation.UserResolver);
         }
     }
 }

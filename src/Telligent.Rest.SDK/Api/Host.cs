@@ -13,7 +13,7 @@ using Telligent.Evolution.Extensibility.OAuthClient.Version1;
 using Telligent.Evolution.Extensibility.Rest.Version1;
 using Telligent.Evolution.RestSDK.Implementations;
 using Telligent.Evolution.RestSDK.Services;
-using Telligent.Rest.SDK.Configuration;
+
 using Telligent.Rest.SDK.Model;
 
 namespace Telligent.Evolution.Extensibility.Rest.Version1
@@ -80,7 +80,8 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
                 if (String.IsNullOrEmpty(settings.OAuth.LocalUserCreation.MembershipAdministrationUserName))
                     throw new ConfigurationErrorsException("MembershipAdministrationUserName must be specified when UseLocalAuthentication is true");
 
-              //  if(_settings.LocalUserResolver == n ul)
+                if(_settings.OAuth.LocalUserCreation.UserResolver == null)
+                    throw new ConfigurationErrorsException("UserResolver must be specified when UseLocalAuthentication is true");
             }
             if (settings.OAuth.LocalUserCreation.Enabled && settings.OAuth.LocalUserCreation.SSO.Enabled)
             {
@@ -117,21 +118,33 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         {
             get
             {
-                if (_settings.OAuth != null && _settings.OAuth.LocalUserCreation != null && _settings.OAuth != null)
-                    return _settings.OAuth.LocalUserCreation.MembershipAdministrationUserName;
-
+                var user = _settings.OAuth.LocalUserCreation.UserResolver.GetLocalUserDetails(GetCurrentHttpContext(),this);
+                if (user != null)
+                    return user.Username;
                 return null;
             }
         }
 
         public   string LocalUserEmailAddress
         {
-            get { throw new ApplicationException("When UseLocalAuthentication is true, you must override LocalUserEmailAddress in a derived class"); }
+            get
+            {
+                var user = _settings.OAuth.LocalUserCreation.UserResolver.GetLocalUserDetails(GetCurrentHttpContext(), this);
+                if (user != null)
+                    return user.EmailAddress;
+                return null;
+            }
         }
 
         public   Dictionary<string, string> LocalUserDetails
         {
-            get { return null; }
+            get
+            {
+                var user = _settings.OAuth.LocalUserCreation.UserResolver.GetLocalUserDetails(GetCurrentHttpContext(), this);
+                if (user != null )
+                    return user.AdditionalData;
+                return null;
+            }
         }
 
         public virtual void UserCreationFailed(string username, string emailAddress, IDictionary<string, string> userData, string message, ErrorResponse errorResponse)

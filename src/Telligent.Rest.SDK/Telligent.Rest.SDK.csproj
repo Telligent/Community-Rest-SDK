@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Api\Host.cs" />
+    <Compile Include="Api\ILocalUserResolver.cs" />
     <Compile Include="Implementation\FileSystemConfigurationFile.cs" />
     <Compile Include="Implementation\HostConfiguration.cs" />
     <Compile Include="Implementation\HostConfigurationManager.cs" />
@@ -54,7 +55,6 @@
     <Compile Include="Implementation\SSOConfiguration.cs" />
     <Compile Include="Implementation\WebConfigurationFile.cs" />
     <Compile Include="Configuration\ServiceLocator.cs" />
-    <Compile Include="Configuration\TelligentConfigurationSection.cs" />
     <Compile Include="Implementation\Deserializer.cs" />
     <Compile Include="Exceptions\JsonBadFormat.cs" />
     <Compile Include="Exceptions\JsonParseError.cs" />

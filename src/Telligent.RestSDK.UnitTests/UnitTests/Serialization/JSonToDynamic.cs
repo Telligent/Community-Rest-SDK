@@ -11,7 +11,7 @@ using Telligent.Evolution.RestSDK.Json;
 namespace Telligent.RestSDK.IntegrationTests.UnitTests.Serialization
 {
     [TestFixture]
-   public class JSonToDynamic
+   public class JsonToDynamic
    {
        #region JSON
        private static readonly string json_paged = @"{
