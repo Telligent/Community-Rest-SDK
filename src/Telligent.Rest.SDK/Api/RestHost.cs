@@ -123,25 +123,25 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
 
         public async Task<dynamic> GetToDynamicAsync(int version, string endpoint,bool enableImpersonation =true,RestGetOptions options = null)
         {
-            var json = await Rest.GetEndpointJson(this, version, endpoint, options);
+            var json = await Rest.GetEndpointJson(this, version, endpoint, options).ConfigureAwait(false);
             return json != null ? JsonConvert.Deserialize(json) : null;
         }
 
         public async Task<dynamic> PutToDynamicAsync(int version, string endpoint, string postData,bool enableImpersonation = true,RestPutOptions options = null)
         {
-            var json = await Rest.PutEndpointJson(this, version, endpoint, postData, enableImpersonation, options);
+            var json = await Rest.PutEndpointJson(this, version, endpoint, postData, enableImpersonation, options).ConfigureAwait(false); 
             return json != null ? JsonConvert.Deserialize(json) : null;
         }
 
         public async Task<dynamic> PostToDynamicAsync(int version, string endpoint, string postData, bool enableImpersonation = true, RestPostOptions options = null)
         {
-            var json = await Rest.PostEndpointJson(this, version, endpoint, postData, enableImpersonation, null, options);
+            var json = await Rest.PostEndpointJson(this, version, endpoint, postData, enableImpersonation, null, options).ConfigureAwait(false); 
             return json != null ? JsonConvert.Deserialize(json) : null;
         }
 
         public async Task<dynamic> DeleteToDynamicAsync(int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null)
         {
-            var json = await Rest.DeleteEndpointJson(this, version, endpoint, enableImpersonation, options);
+            var json = await Rest.DeleteEndpointJson(this, version, endpoint, enableImpersonation, options).ConfigureAwait(false); 
             return json != null ? JsonConvert.Deserialize(json) : null;
         }
 
