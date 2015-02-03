@@ -13,10 +13,8 @@ namespace Telligent.Evolution.Extensibility.OAuthClient.Version1
 
     public interface IOAuthClientConfiguration
     {
-        /// <summary>
-        /// The unique, web-node-consistent ID representing this configuration.
-        /// </summary>
-        Guid Id { get; }
+
+        string Name { get; }
 
         /// <summary>
         /// Provides a place where items can be stored for the duration of the instance of the implmenting object

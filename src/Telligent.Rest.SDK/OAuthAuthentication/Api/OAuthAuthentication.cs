@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Collections.Specialized;
 using Telligent.Evolution.Extensions.OAuthAuthentication.Services;
+using Telligent.Evolution.RestSDK.Services;
 
 namespace Telligent.Evolution.Extensibility.OAuthClient.Version1
 {
@@ -15,16 +16,20 @@ namespace Telligent.Evolution.Extensibility.OAuthClient.Version1
 		/// <param name="configuration">The configuration to register.</param>
 		public static void RegisterConfiguration(IOAuthClientConfiguration configuration)
 		{
-			ServiceManager.Get<IConfigurationManagerService>().Add(configuration);
+			ServiceLocator.Get<IConfigurationManagerService>().Add(configuration);
 		}
-
+        public static IOAuthClientConfiguration GetConfiguration(string hostName)
+        {
+            var config = ServiceLocator.Get<IConfigurationManagerService>().Get(hostName);
+            return config;
+        }
 		/// <summary>
 		/// Removes a client configuration.
 		/// </summary>
 		/// <param name="oAuthClientConfigurationId">The ID of the OAuth client configuration to remove.</param>
-		public static void UnregisterConfiguration(Guid oAuthClientConfigurationId)
+		public static void UnregisterConfiguration(string hostName)
 		{
-			ServiceManager.Get<IConfigurationManagerService>().Remove(oAuthClientConfigurationId);
+			ServiceLocator.Get<IConfigurationManagerService>().Remove(hostName);
 		}
 
 		/// <summary>
@@ -32,9 +37,9 @@ namespace Telligent.Evolution.Extensibility.OAuthClient.Version1
 		/// </summary>
 		/// <param name="oAuthClientConfigurationId">The ID of the OAuth client configuration to use for this request.</param>
 		/// <returns>Logged in user or null if the accessing user is not logged in.</returns>
-		public static User GetAuthenticatedUser(Guid oAuthClientConfigurationId)
+		public static User GetAuthenticatedUser(string hostName)
 		{
-			return GetAuthenticatedUser(oAuthClientConfigurationId, null, null);
+			return GetAuthenticatedUser(hostName, null, null);
 		}
 
 		/// <summary>
@@ -44,11 +49,11 @@ namespace Telligent.Evolution.Extensibility.OAuthClient.Version1
 		/// <param name="state">The state of the current request that will be passed through any redirects back to Evolution to enable user creation or synchronization</param>
 		/// <param name="redirect">The action that will be called to redirect, if a redirect is neccessary.  The local site should use this action to redirect to the provided Uri.</param>
 		/// <returns></returns>
-		public static User GetAuthenticatedUser(Guid oAuthClientConfigurationId, NameValueCollection state, Action<Uri> redirect)
+		public static User GetAuthenticatedUser(string hostName, NameValueCollection state, Action<Uri> redirect)
 		{
-			var config = ServiceManager.Get<IConfigurationManagerService>().Get(oAuthClientConfigurationId);
+			var config = ServiceLocator.Get<IConfigurationManagerService>().Get(hostName);
 			if (config != null)
-				return ServiceManager.Get<IOAuthCredentialService>().GetUser(config, state, redirect);
+				return ServiceLocator.Get<IOAuthCredentialService>().GetUser(config, state, redirect);
 
 			return null;
 		}
@@ -58,11 +63,11 @@ namespace Telligent.Evolution.Extensibility.OAuthClient.Version1
 		/// </summary>
 		/// <param name="oAuthClientConfigurationId">The ID of the OAuth client configuration to use for this request.</param>
 		/// <returns>The default user.</returns>
-		public static User GetDefaultUser(Guid oAuthClientConfigurationId)
+		public static User GetDefaultUser(string hostName)
 		{
-			var config = ServiceManager.Get<IConfigurationManagerService>().Get(oAuthClientConfigurationId);
+			var config = ServiceLocator.Get<IConfigurationManagerService>().Get(hostName);
 			if (config != null)
-				return ServiceManager.Get<IDefaultOAuthUserService>().GetDefaultUser(config);
+				return ServiceLocator.Get<IDefaultOAuthUserService>().GetDefaultUser(config);
 
 			return null;
 		}
@@ -73,11 +78,11 @@ namespace Telligent.Evolution.Extensibility.OAuthClient.Version1
 		/// <param name="oAuthClientConfigurationId">The ID of the OAuth client configuration to use for this request.</param>
 		/// <param name="state">Any additional data that should be passed through the login process.</param>
 		/// <returns>Redirection URL</returns>
-		public static Uri Login(Guid oAuthClientConfigurationId, NameValueCollection state)
+		public static Uri Login(string hostName, NameValueCollection state)
 		{
-			var config = ServiceManager.Get<IConfigurationManagerService>().Get(oAuthClientConfigurationId);
+			var config = ServiceLocator.Get<IConfigurationManagerService>().Get(hostName);
 			if (config != null)
-				return ServiceManager.Get<IOAuthCredentialService>().GetLoginUrl(config, state);
+				return ServiceLocator.Get<IOAuthCredentialService>().GetLoginUrl(config, state);
 
 			return null;
 		}
@@ -88,11 +93,11 @@ namespace Telligent.Evolution.Extensibility.OAuthClient.Version1
 		/// <param name="oAuthClientConfigurationId">The ID of the OAuth client configuration to use for this request.</param>
 		/// <param name="evolutionUrl">The URL within Evolution that should be accessed</param>
 		/// <returns></returns>
-		public static Uri AuthenticatedRedirect(Guid oAuthClientConfigurationId, string evolutionUrl)
+		public static Uri AuthenticatedRedirect(string hostName, string evolutionUrl)
 		{
-			var config = ServiceManager.Get<IConfigurationManagerService>().Get(oAuthClientConfigurationId);
+			var config = ServiceLocator.Get<IConfigurationManagerService>().Get(hostName);
 			if (config != null)
-				return ServiceManager.Get<IOAuthCredentialService>().GetAuthenticatedRedirectUrl(config, evolutionUrl);
+				return ServiceLocator.Get<IOAuthCredentialService>().GetAuthenticatedRedirectUrl(config, evolutionUrl);
 
 			return null;
 		}
@@ -103,11 +108,11 @@ namespace Telligent.Evolution.Extensibility.OAuthClient.Version1
 		/// <param name="oAuthClientConfigurationId">The ID of the OAuth client configuration to use for this request.</param>
 		/// <param name="state">Any additional data that should be passed through the logout process.</param>
 		/// <returns></returns>
-		public static Uri EvolutionLogOut(Guid oAuthClientConfigurationId, NameValueCollection state)
+		public static Uri EvolutionLogOut(string hostName , NameValueCollection state)
 		{
-			var config = ServiceManager.Get<IConfigurationManagerService>().Get(oAuthClientConfigurationId);
+			var config = ServiceLocator.Get<IConfigurationManagerService>().Get(hostName);
 			if (config != null)
-				return ServiceManager.Get<IOAuthCredentialService>().GetEvolutionLogOutUrl(config, state);
+				return ServiceLocator.Get<IOAuthCredentialService>().GetEvolutionLogOutUrl(config, state);
 
 			return null;
 		}
@@ -116,11 +121,11 @@ namespace Telligent.Evolution.Extensibility.OAuthClient.Version1
 		/// Logs the accessing user out.
 		/// </summary>
 		/// <param name="oAuthClientConfigurationId">The ID of the OAuth client configuration to use for this request.</param>
-		public static void LogOut(Guid oAuthClientConfigurationId)
+		public static void LogOut(string hostName)
 		{
-			var config = ServiceManager.Get<IConfigurationManagerService>().Get(oAuthClientConfigurationId);
+			var config = ServiceLocator.Get<IConfigurationManagerService>().Get(hostName);
 			if (config != null)
-				ServiceManager.Get<IOAuthCredentialService>().Logout(config);
+				ServiceLocator.Get<IOAuthCredentialService>().Logout(config);
 		}
 
 		/// <summary>
@@ -128,9 +133,9 @@ namespace Telligent.Evolution.Extensibility.OAuthClient.Version1
 		/// </summary>
 		/// <param name="user"></param>
 		/// <param name="request"></param>
-		public static void ApplyAuthenticationToRequest(Guid oAuthClientConfigurationId, User user, System.Net.HttpWebRequest request)
+		public static void ApplyAuthenticationToRequest(string hostName, User user, System.Net.HttpWebRequest request)
 		{
-			var config = ServiceManager.Get<IConfigurationManagerService>().Get(oAuthClientConfigurationId);
+			var config = ServiceLocator.Get<IConfigurationManagerService>().Get(hostName);
 			if (config != null)
 			{
 				if (config.EvolutionCredentials != null)

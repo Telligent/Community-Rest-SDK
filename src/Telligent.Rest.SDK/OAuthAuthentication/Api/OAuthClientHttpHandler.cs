@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using Telligent.Evolution.Extensions.OAuthAuthentication.Services;
+using Telligent.Evolution.RestSDK.Services;
 
 namespace Telligent.Evolution.Extensibility.OAuthClient.Version1
 {
@@ -21,9 +22,9 @@ namespace Telligent.Evolution.Extensibility.OAuthClient.Version1
 			var state = HttpUtility.ParseQueryString(context.Request.QueryString[Constants.StateQueryStringKey] ?? string.Empty);
 			IOAuthClientConfiguration configuration = null;
 			Guid configurationId;
-			if (!string.IsNullOrEmpty(state[Constants.ConfigurationIdQueryStringKey]) && Guid.TryParse(state[Constants.ConfigurationIdQueryStringKey], out configurationId))
+			if (!string.IsNullOrEmpty(state[Constants.ConfigurationIdQueryStringKey]))
 			{
-				configuration = ServiceManager.Get<IConfigurationManagerService>().Get(configurationId);
+                configuration = ServiceLocator.Get<IConfigurationManagerService>().Get(state[Constants.ConfigurationIdQueryStringKey]);
 				if (configuration == null) 
 				{
 					context.Response.StatusCode = 500;
@@ -41,7 +42,7 @@ namespace Telligent.Evolution.Extensibility.OAuthClient.Version1
 
 			if (context.Request.QueryString[Constants.AuthorizationCodeQueryStringKey] != null)
 			{
-				ServiceManager.Get<IOAuthCredentialService>().UserLoggedIn(configuration, context.Request.QueryString[Constants.AuthorizationCodeQueryStringKey], state);
+				ServiceLocator.Get<IOAuthCredentialService>().UserLoggedIn(configuration, context.Request.QueryString[Constants.AuthorizationCodeQueryStringKey], state);
 			}
 			else if (context.Request.QueryString[Constants.LoggedOutQueryStringKey] != null)
 			{

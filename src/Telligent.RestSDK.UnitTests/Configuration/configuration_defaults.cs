@@ -102,5 +102,24 @@ namespace Telligent.RestSDK.IntegrationTests.Configuration
             HostConfiguration h = new HostConfiguration();
             Assert.IsNull(h.NetworkCredentials);
         }
+        [Test]
+        public void OauthClient_null()
+        {
+            HostConfiguration h = new HostConfiguration();
+            Assert.IsNull(h.OAuth.OauthClientId);
+        }
+        [Test]
+        public void OauthClientSecret_null()
+        {
+            HostConfiguration h = new HostConfiguration();
+            Assert.IsNull(h.OAuth.OauthSecret);
+        }
+        [Test]
+        public void NetworkNull_null()  
+        {
+            HostConfiguration h = new HostConfiguration();
+            Assert.IsNull(h.NetworkCredentials);
+        }
+     
     }
 }

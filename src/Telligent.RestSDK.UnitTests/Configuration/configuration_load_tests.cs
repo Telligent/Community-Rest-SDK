@@ -16,7 +16,7 @@ namespace Telligent.RestSDK.IntegrationTests.Configuration
     {
         private static readonly string _data =@"
 <communityServerHosts>
-  <host id=""3D1118BB-0B61-2222-9332-541558F97887"" name=""site"" communityServerUrl=""http://mycommunity.com/"" networkUserName=""networkUser"" netwrokPassword=""password"" networkDomain=""domain"">
+  <host id=""3D1118BB-0B61-2222-9332-541558F97887"" name=""site"" communityServerUrl=""http://mycommunity.com/"" networkUsername=""networkUser"" networkPassword=""password"" networkDomain=""domain"">
     <oauth clientId=""123456"" 
            clientSecret=""98765432123456789"" 
            callbackUrl=""~/auth.ashx"" 

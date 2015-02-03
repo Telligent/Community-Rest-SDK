@@ -52,7 +52,7 @@ namespace Telligent.Evolution.Extensions.OAuthAuthentication.Implementations
 			if (state == null)
 				state = new NameValueCollection();
 
-			state[Constants.ConfigurationIdQueryStringKey] = configuration.Id.ToString();
+			state[Constants.ConfigurationIdQueryStringKey] = configuration.Name;
 
 			return new Uri(string.Concat(
 				configuration.EvolutionBaseUrl.OriginalString,
@@ -97,7 +97,7 @@ namespace Telligent.Evolution.Extensions.OAuthAuthentication.Implementations
 			if (state == null)
 				state = new NameValueCollection();
 
-			state[Constants.ConfigurationIdQueryStringKey] = configuration.Id.ToString();
+			state[Constants.ConfigurationIdQueryStringKey] = configuration.Name;
 
 			HMACSHA256 hmac = new HMACSHA256(Encoding.UTF8.GetBytes(configuration.OAuthClientSecret));
 			string timestamp = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss");

@@ -3,42 +3,45 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Telligent.Evolution.Extensibility.OAuthClient.Version1;
-
+using Telligent.Evolution.Extensibility.Rest.Version1;
 using Telligent.Evolution.Extensions.OAuthAuthentication.Services;
+using Telligent.Rest.SDK.Model;
 
 namespace Telligent.Evolution.Extensions.OAuthAuthentication.Implementations
 {
 	internal class ConfigurationManagerService : IConfigurationManagerService
 	{
-		Dictionary<Guid, IOAuthClientConfiguration> _configurations;
 
-		internal ConfigurationManagerService()
+	    private IRestCache _cache;
+	    private string HostCacheKey = "communityServer:Oauth::Host::";
+	    private IHostConfigurationManager _configuration;
+		internal ConfigurationManagerService(IRestCache cache,IHostConfigurationManager configManager)
 		{
-			_configurations = new Dictionary<Guid, IOAuthClientConfiguration>();
+		    _cache = cache;
+		    _configuration = configManager;
 		}
 
 		#region IConfigurationManagerService Members
 
 		public void Add(IOAuthClientConfiguration configuration)
 		{
-			if (configuration != null)
-				_configurations[configuration.Id] = configuration;
+			_cache.Put(GetCacheKey(configuration.Name),configuration,300);
 		}
+        public void Remove(string name)
+        {
+            _cache.Remove(GetCacheKey(name));
+        }
+	    public IOAuthClientConfiguration Get(string name)
+	    {
+	        var host = _cache.Get(GetCacheKey(name));
+	        return host as IOAuthClientConfiguration;
+	    }
 
-		public IOAuthClientConfiguration Get(Guid id)
-		{
-			IOAuthClientConfiguration configuration;
-			if (_configurations.TryGetValue(id, out configuration))
-				return configuration;
+	    private string GetCacheKey(string name)
+	    {
+	        return string.Concat(HostCacheKey, name);
+	    }
 
-			return null;
-		}
-
-		public void Remove(Guid id)
-		{
-			_configurations.Remove(id);
-		}
-
-		#endregion
+	    #endregion
 	}
 }

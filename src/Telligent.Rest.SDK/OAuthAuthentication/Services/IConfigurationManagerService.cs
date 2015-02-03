@@ -9,7 +9,7 @@ namespace Telligent.Evolution.Extensions.OAuthAuthentication.Services
 	internal interface IConfigurationManagerService
 	{
 		void Add(IOAuthClientConfiguration configuration);
-		IOAuthClientConfiguration Get(Guid id);
-		void Remove(Guid id);
+		IOAuthClientConfiguration Get(string name);
+	    void Remove(string name);
 	}
 }

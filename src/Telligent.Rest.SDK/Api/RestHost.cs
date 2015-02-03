@@ -31,8 +31,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             Rest = ServiceLocator.Get<IRest>();
         }
 
-		public abstract Guid Id { get; }
-        public abstract string Name { get; }
+
         #region Remote Authentication
 
 		public abstract void ApplyAuthenticationToHostRequest(System.Net.HttpWebRequest request, bool forAccessingUser);
@@ -209,20 +208,5 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         }
         
         #endregion
-
-		public static void Register(RestHost host)
-		{
-			ServiceLocator.Get<IRestHostRegistrationService>().Register(host);
-		}
-
-		public static void Unregister(Guid id)
-		{
-            ServiceLocator.Get<IRestHostRegistrationService>().Remove(id);
-		}
-
-		public static RestHost Get(Guid id)
-		{
-            return ServiceLocator.Get<IRestHostRegistrationService>().Get(id);
-		}
     }
 }

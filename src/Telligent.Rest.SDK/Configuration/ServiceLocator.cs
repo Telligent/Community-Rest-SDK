@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Web;
 using Telligent.Evolution.Extensibility.Rest.Version1;
+using Telligent.Evolution.Extensions.OAuthAuthentication.Implementations;
+using Telligent.Evolution.Extensions.OAuthAuthentication.Services;
 using Telligent.Evolution.RestSDK.Implementations;
 using Telligent.Rest.SDK.Implementation;
 using Telligent.Rest.SDK.Model;
@@ -56,14 +58,20 @@ namespace Telligent.Evolution.RestSDK.Services
 
                             var rest = new Telligent.Evolution.RestSDK.Implementations.Rest(proxy);
                             var deserializerService = new Deserializer();
-                            var hostRegistrationService = new RestHostRegistrationService();
+
                             localInstances[typeof(IRest)] = rest;
                             localInstances[typeof (IRestCache)] = cache;
                             localInstances[typeof(IDeserializer)] = deserializerService;
                             localInstances[typeof(IRestCommunicationProxy)] = proxy;
-                            localInstances[typeof(IRestHostRegistrationService)] = hostRegistrationService;
+
                             localInstances[typeof(IConfigurationFile)] = file;
                             localInstances[typeof(IHostConfigurationManager)] = configManager;
+
+                            var userSyncService = new UserSyncService();
+                            localInstances[typeof(IUserSyncService)] = userSyncService;
+                            localInstances[typeof(IOAuthCredentialService)] = new OAuthCredentialService(userSyncService);
+                            localInstances[typeof(IDefaultOAuthUserService)] = new DefaultOAuthUserService();
+                            localInstances[typeof(IConfigurationManagerService)] = new ConfigurationManagerService(cache,configManager);
                             _instances = localInstances;
                         }
             }

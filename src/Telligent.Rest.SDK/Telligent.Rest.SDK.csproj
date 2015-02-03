@@ -48,7 +48,6 @@
     <Compile Include="Implementation\HostConfiguration.cs" />
     <Compile Include="Implementation\HostConfigurationManager.cs" />
     <Compile Include="Model\IConfigurationFile.cs" />
-    <Compile Include="Model\IHostConfigurationManager.cs" />
     <Compile Include="Api\LocalUser.cs" />
     <Compile Include="Implementation\LocalUserConfiguration.cs" />
     <Compile Include="Implementation\OAuthConfiguration.cs" />
@@ -59,7 +58,7 @@
     <Compile Include="Implementation\Deserializer.cs" />
     <Compile Include="Exceptions\JsonBadFormat.cs" />
     <Compile Include="Exceptions\JsonParseError.cs" />
-    <Compile Include="Implementation\RestHostRegistrationService.cs" />
+    <Compile Include="Model\IHostConfigurationManager.cs" />
     <Compile Include="Model\IRestCommunicationProxy.cs" />
     <Compile Include="Implementation\RestCommunicationProxy.cs" />
     <Compile Include="Model\IDeserializer.cs" />
@@ -71,7 +70,6 @@
     <Compile Include="Json\JsonObject.cs" />
     <Compile Include="Json\JsonParser.cs" />
     <Compile Include="Json\JsonReader.cs" />
-    <Compile Include="Model\IRestHostRegistrationService.cs" />
     <Compile Include="OAuthAuthentication\Api\IOAuthClientConfiguration.cs" />
     <Compile Include="OAuthAuthentication\Api\OAuthAuthentication.cs" />
     <Compile Include="OAuthAuthentication\Api\OAuthClientHttpHandler.cs" />
@@ -86,7 +84,6 @@
     <Compile Include="OAuthAuthentication\Services\IDefaultOAuthUserService.cs" />
     <Compile Include="OAuthAuthentication\Services\IOAuthCredentialService.cs" />
     <Compile Include="OAuthAuthentication\Services\IUserSyncService.cs" />
-    <Compile Include="OAuthAuthentication\Services\ServiceManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Implementation\Rest.cs" />
     <Compile Include="Api\RestHost.cs" />

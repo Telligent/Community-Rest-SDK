@@ -20,10 +20,6 @@ namespace Telligent.RestSDK.IntegrationTests
             _url = url;
         }
 
-        public override Guid Id
-        {
-            get { return _id; }
-        }
 
         public override void ApplyAuthenticationToHostRequest(System.Net.HttpWebRequest request, bool forAccessingUser)
         {
@@ -43,9 +39,6 @@ namespace Telligent.RestSDK.IntegrationTests
             Console.WriteLine(ex.StackTrace);
         }
 
-        public override string Name
-        {
-            get { return "Test Host"; }
-        }
+      
     }
 }

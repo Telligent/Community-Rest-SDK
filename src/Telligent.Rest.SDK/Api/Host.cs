@@ -22,28 +22,24 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
     {
         private HostConfiguration  _settings;
         private IHostConfigurationManager _configurationManager = ServiceLocator.Get<IHostConfigurationManager>();
-        public Host(string name)
+        internal Host(string name)
         {
             _settings = _configurationManager.GetOptions(name);
             ValidateSettings(_settings);
         }
         #region Rest Host Members
 
-        public override Guid Id
-        {
-            get { return _settings.Id.Value; }
-        }
+       
 
-
-        public override void ApplyAuthenticationToHostRequest(System.Net.HttpWebRequest request, bool forAccessingUser)
+        public override void ApplyAuthenticationToHostRequest(HttpWebRequest request, bool forAccessingUser)
         {
-            Telligent.Evolution.Extensibility.OAuthClient.Version1.User user = null;
+            User user = null;
 
             if (forAccessingUser)
                 user = GetAccessingUser();
 
             if (user == null)
-                user = Telligent.Evolution.Extensibility.OAuthClient.Version1.OAuthAuthentication.GetDefaultUser(this.Id);
+                user = OAuthAuthentication.GetDefaultUser(this.Name);
 
             if (user != null)
                 request.Headers["Authorization"] = "OAuth " + user.OAuthToken;
@@ -59,7 +55,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
 
         #region Default Host Settings
 
-        public override string Name
+        public virtual string Name
         {
             get { return _settings.Name; }
         }
@@ -67,28 +63,28 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
     
         private void ValidateSettings(HostConfiguration settings)
         {
-            if (string.IsNullOrEmpty(settings.OAuth.OauthCallbackUrl))
+            if (String.IsNullOrEmpty(settings.OAuth.OauthCallbackUrl))
                 throw new ConfigurationErrorsException("OauthCallbackUrl must be specified");
-            if (string.IsNullOrEmpty(settings.CommunityServerUrl))
+            if (String.IsNullOrEmpty(settings.CommunityServerUrl))
                 throw new ConfigurationErrorsException("CommunityRootUrl must be specified");
-            if (string.IsNullOrEmpty(settings.OAuth.OauthClientId))
+            if (String.IsNullOrEmpty(settings.OAuth.OauthClientId))
                 throw new ConfigurationErrorsException("OauthClientId must be specified");
-            if (string.IsNullOrEmpty(settings.OAuth.OauthSecret))
+            if (String.IsNullOrEmpty(settings.OAuth.OauthSecret))
                 throw new ConfigurationErrorsException("OauthSecret must be specified");
-            if (string.IsNullOrEmpty(settings.OAuth.CookieName))
+            if (String.IsNullOrEmpty(settings.OAuth.CookieName))
                 throw new ConfigurationErrorsException("CookieName must be specified");
          
 
             if (settings.OAuth.LocalUserCreation.Enabled)
             {
-                if (string.IsNullOrEmpty(settings.OAuth.LocalUserCreation.MembershipAdministrationUserName))
+                if (String.IsNullOrEmpty(settings.OAuth.LocalUserCreation.MembershipAdministrationUserName))
                     throw new ConfigurationErrorsException("MembershipAdministrationUserName must be specified when UseLocalAuthentication is true");
 
               //  if(_settings.LocalUserResolver == n ul)
             }
             if (settings.OAuth.LocalUserCreation.Enabled && settings.OAuth.LocalUserCreation.SSO.Enabled)
             {
-                if (string.IsNullOrEmpty(settings.OAuth.LocalUserCreation.SSO.SynchronizationCookieName))
+                if (String.IsNullOrEmpty(settings.OAuth.LocalUserCreation.SSO.SynchronizationCookieName))
                     throw new ConfigurationErrorsException("SynchronizationCookieName must be specified when EnableSSO is true");
             }
 
@@ -117,7 +113,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             }
         }
 
-        public virtual string LocalUserName
+        public   string LocalUserName
         {
             get
             {
@@ -128,12 +124,12 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             }
         }
 
-        public virtual string LocalUserEmailAddress
+        public   string LocalUserEmailAddress
         {
             get { throw new ApplicationException("When UseLocalAuthentication is true, you must override LocalUserEmailAddress in a derived class"); }
         }
 
-        public virtual Dictionary<string, string> LocalUserDetails
+        public   Dictionary<string, string> LocalUserDetails
         {
             get { return null; }
         }
@@ -141,7 +137,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         public virtual void UserCreationFailed(string username, string emailAddress, IDictionary<string, string> userData, string message, ErrorResponse errorResponse)
         {
             LogError(errorResponse.ToString() + ":" + message,
-              new ApplicationException(string.Format("Failed to create account for {0},{1}:{2}", username,
+              new ApplicationException(String.Format("Failed to create account for {0},{1}:{2}", username,
                   emailAddress, errorResponse)));
         }
 
@@ -212,14 +208,14 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
                     cookie = new HttpCookie(_settings.OAuth.CookieName);
 
                 cookie.HttpOnly = true;
-                if (!string.IsNullOrEmpty(value))
+                if (!String.IsNullOrEmpty(value))
                 {
                     cookie.Value = value;
                     cookie.Expires = DateTime.Now.AddDays(30);
                 }
                 else
                 {
-                    cookie.Value = string.Empty;
+                    cookie.Value = String.Empty;
                     cookie.Expires = DateTime.Now.AddDays(-30);
                 }
 
@@ -251,27 +247,27 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             return null;
         }
 
-        public virtual void UserLoggedIn(System.Collections.Specialized.NameValueCollection state)
+        public virtual void UserLoggedIn(NameValueCollection state)
         {
-            var usr = Telligent.Evolution.Extensibility.OAuthClient.Version1.OAuthAuthentication.GetAuthenticatedUser(this.Id);
+            var usr = OAuthAuthentication.GetAuthenticatedUser(this.Name);
             string rtnUrl = null;
             if (state != null)
             {
                 rtnUrl = state["rtn"];
             }
 
-            if (string.IsNullOrEmpty(rtnUrl))
+            if (String.IsNullOrEmpty(rtnUrl))
                 rtnUrl = "~/";
 
             GetCurrentHttpContext().Response.Redirect(rtnUrl);
         }
 
-        public virtual void UserLoginFailed(System.Collections.Specialized.NameValueCollection state)
+        public virtual void UserLoginFailed(NameValueCollection state)
         {
             LogError("Login Failed", null);
         }
 
-        public virtual void UserLoggedOut(System.Collections.Specialized.NameValueCollection state)
+        public virtual void UserLoggedOut(NameValueCollection state)
         {
             string rtnUrl = null;
             if (state != null)
@@ -279,13 +275,13 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
                 rtnUrl = state["rtn"];
             }
 
-            if (string.IsNullOrEmpty(rtnUrl))
+            if (String.IsNullOrEmpty(rtnUrl))
                 rtnUrl = "~/";
 
             GetCurrentHttpContext().Response.Redirect(rtnUrl);
         }
 
-        public virtual void UserLogOutFailed(System.Collections.Specialized.NameValueCollection state)
+        public virtual void UserLogOutFailed(NameValueCollection state)
         {
             LogError("Logout Failed", null);
         }
@@ -324,7 +320,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
                 isGet = false;
             }
 
-            var user = context.Items["SDK-User"] as Telligent.Evolution.Extensibility.OAuthClient.Version1.User;
+            var user = context.Items["SDK-User"] as User;
             if (user == null)
             {
 
@@ -333,18 +329,18 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
                     NameValueCollection col = new NameValueCollection();
                     col.Add("rtn", url);
                     user =
-                        Telligent.Evolution.Extensibility.OAuthClient.Version1.OAuthAuthentication.GetAuthenticatedUser(
-                            this.Id, col, redirectUrl => context.Response.Redirect(redirectUrl.OriginalString, true));
+                        OAuthAuthentication.GetAuthenticatedUser(
+                            this.Name, col, redirectUrl => context.Response.Redirect(redirectUrl.OriginalString, true));
                 }
                 else
                     user =
-                        Telligent.Evolution.Extensibility.OAuthClient.Version1.OAuthAuthentication.GetAuthenticatedUser(
-                            this.Id);
+                        OAuthAuthentication.GetAuthenticatedUser(
+                            this.Name);
 
                 if (user == null)
                     user =
-                        Telligent.Evolution.Extensibility.OAuthClient.Version1.OAuthAuthentication.GetDefaultUser(
-                            this.Id);
+                        OAuthAuthentication.GetDefaultUser(
+                            this.Name);
 
                 context.Items["SDK-User"] = user;
             }
@@ -352,8 +348,22 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             return user;
         }
         #endregion
-    }
-    #region Configuration
 
-    #endregion
+      
+        public static Host Get(string name)
+        {
+            var cachedHost = OAuthAuthentication.GetConfiguration(name);
+            if (cachedHost != null)
+                return cachedHost as Host;
+
+            var newHost = new Host(name);
+            OAuthAuthentication.RegisterConfiguration(newHost);
+
+            return newHost;
+
+        }
+
+       
+    }
+   
 }
