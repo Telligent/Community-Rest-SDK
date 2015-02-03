@@ -14,7 +14,7 @@ namespace Telligent.RestSDK.IntegrationTests
         [Test]
         public async Task can_do_get_single_dynamic_request()
         {
-            var endpoint = "/users/pmason.json";
+            var endpoint = "/users/2100.json";
             dynamic info = await Host.GetToDynamicAsync(2,endpoint);
 
             Assert.IsNotNull(info);
