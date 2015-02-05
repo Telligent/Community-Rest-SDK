@@ -119,7 +119,10 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             return Rest.DeleteEndpointXml(this, version, endpoint, enableImpersonation, options);
         }
 
-       
+        public Task<XElement> BatchRequestToXmlAsync(int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null)
+        {
+            return Rest.BatchEndpointXml(this, version, requests, enableImpersonation, options);
+        }
 
         public async Task<dynamic> GetToDynamicAsync(int version, string endpoint,bool enableImpersonation =true,RestGetOptions options = null)
         {
@@ -145,19 +148,11 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             return json != null ? JsonConvert.Deserialize(json) : null;
         }
 
-        private async Task<dynamic> Deserialize(string json)
+        public async Task<dynamic> BatchRequestToDynamicAsync(int version,IList<BatchRequest> requests , bool enableImpersonation = true, BatchRequestOptions options = null)
         {
-            var deserializer = ServiceLocator.Get<IDeserializer>();
-
-            dynamic result = new ExpandoObject();
-
-           await deserializer.Deserialize(result, new JsonReader(json));
-
-            return result;
+            var json = await Rest.BatchEndpointJson(this, version,  requests, enableImpersonation, options).ConfigureAwait(false);
+            return json != null ? JsonConvert.Deserialize(json) : null;
         }
-
-
-
 
         public XElement GetToXml(int version, string endpoint, bool enableImpersonation, RestGetOptions options = null)
         {
@@ -168,7 +163,10 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         {
             return PutToXmlAsync( version, endpoint, postData, enableImpersonation, options).Result;
         }
-
+        public XElement BatchRequestToXml(int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null)
+        {
+            return BatchRequestToXmlAsync( version, requests, enableImpersonation, options).Result;
+        }
 
 
         public XElement PostToXml(int version, string endpoint, string postData, HttpPostedFileBase file, bool enableImpersonation, RestPostOptions options = null)
@@ -201,7 +199,10 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         {
             return PostToDynamicAsync( version, endpoint, postData,enableImpersonation, options).Result;
         }
-
+        public dynamic BatchRequestToDynamic(int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null)
+        {
+            return BatchRequestToDynamicAsync(version, requests,  enableImpersonation, options).Result;
+        }
         public dynamic DeleteToDynamic(int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null)
         {
             return DeleteToDynamicAsync(version, endpoint,enableImpersonation,options).Result;

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using NUnit.Framework;
+using Telligent.Evolution.Extensibility.Rest.Version1;
 
 namespace Telligent.RestSDK.IntegrationTests
 {
@@ -82,6 +83,28 @@ namespace Telligent.RestSDK.IntegrationTests
 
             var response = await Host.GetToDynamicAsync(2, endpoint);
             Assert.IsNotNull(response);
+        }
+
+        [Test]
+        public async Task  can_do_batch_request_non_sequential_to_dynamic()
+        {
+            var req1 = new BatchRequest("info.json", 0) {ApiVersion = 2};
+            req1.RequestParameters.Add("ShowSiteSettings","true");
+            var req2 = new BatchRequest("users.json", 1);
+            req2.RequestParameters.Add("PageSize","5");
+            req1.RequestParameters.Add("IncludeHidden","true");
+
+            var requests = new List<BatchRequest>() {req1, req2};
+            var resp = await Host.BatchRequestToDynamicAsync(2, requests);
+
+            Assert.IsNotNull(resp.BatchResponses);
+            Assert.IsNotNull(resp.BatchResponses[0]);
+            Assert.IsNotNull(resp.BatchResponses[1]);
+            Assert.AreEqual(200,resp.BatchResponses[0].StatusCode);
+            Assert.AreEqual(200, resp.BatchResponses[1].StatusCode);
+            Assert.IsNotNull(resp.BatchResponses[0].BatchResponse.InfoResult);
+            Assert.IsNotNull(resp.BatchResponses[1].BatchResponse.Users);
+           
         }
     }
 }

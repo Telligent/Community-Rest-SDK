@@ -14,9 +14,8 @@ namespace Telligent.RestSDK.IntegrationTests
         private string _token;
         private string _url;
 
-        public TestRestHost(string url,string token)
+        public TestRestHost(string url)
         {
-            _token = token;
             _url = url;
         }
 
@@ -24,7 +23,7 @@ namespace Telligent.RestSDK.IntegrationTests
 
         public override void ApplyAuthenticationToHostRequest(System.Net.HttpWebRequest request, bool forAccessingUser)
         {
-            request.Headers["Authorization"] = "OAuth " + _token;
+           
         }
 
 

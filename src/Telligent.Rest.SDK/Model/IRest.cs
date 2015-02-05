@@ -27,5 +27,7 @@ namespace Telligent.Rest.SDK.Model
         Task<string> PostEndpointJson(RestHost host, int version, string endpoint, string postData,bool enableImpersonation = true, HttpPostedFileBase file = null,RestPostOptions options = null);
         Task<string> DeleteEndpointJson(RestHost host, int version, string endpoint,bool enableImpersonation = true,RestDeleteOptions options = null);
 
+        Task<string> BatchEndpointJson(RestHost host, int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null);
+        Task<XElement> BatchEndpointXml(RestHost host, int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null);
     }
 }

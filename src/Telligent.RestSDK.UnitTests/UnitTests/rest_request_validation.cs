@@ -20,7 +20,7 @@ namespace Telligent.RestSDK.IntegrationTests.UnitTests
         public void Setup()
         {
             Rest = new Evolution.RestSDK.Implementations.Rest(new Mock<IRestCommunicationProxy>().Object);
-            Host = new TestRestHost(null,null);
+            Host = new TestRestHost(null);
         }
         #region JSON
         [Test]

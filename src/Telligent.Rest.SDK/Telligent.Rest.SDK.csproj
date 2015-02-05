@@ -48,6 +48,7 @@
     <Compile Include="Implementation\FileSystemConfigurationFile.cs" />
     <Compile Include="Implementation\HostConfiguration.cs" />
     <Compile Include="Implementation\HostConfigurationManager.cs" />
+    <Compile Include="Implementation\NamevalueCollectionExtensions.cs" />
     <Compile Include="Model\IConfigurationFile.cs" />
     <Compile Include="Api\LocalUser.cs" />
     <Compile Include="Implementation\LocalUserConfiguration.cs" />
