@@ -34,20 +34,20 @@ namespace Telligent.RestSDK.IntegrationTests.UnitTests
         public async Task cannot_call_post_overload_json_endpoint_with_xml_extension()
         {
             var url = "/info.xml";
-            Assert.That(async () => await   Rest.PostEndpointJson(Host, 2, url, null,false,null), Throws.ArgumentException);
+            Assert.That(async () => await   Rest.PostEndpointJson(Host, 2, url,false,null), Throws.ArgumentException);
         }
         [Test]
         public async Task cannot_call_post_json_endpoint_with_xml_extension()
         {
             var url = "/info.xml";
-            Assert.That(async () => await Rest.PostEndpointJson(Host, 2, url, null, false), Throws.ArgumentException);
+            Assert.That(async () => await Rest.PostEndpointJson(Host, 2, url, false), Throws.ArgumentException);
             
         }
         [Test]
         public async Task cannot_call_put_json_endpoint_with_xml_extension()
         {
             var url = "/info.xml";
-            Assert.That(async () => await  Rest.PutEndpointJson(Host, 2, url, null,true,null), Throws.ArgumentException);
+            Assert.That(async () => await  Rest.PutEndpointJson(Host, 2, url,true,null), Throws.ArgumentException);
         }
         [Test]
         public async Task cannot_call_delete_json_endpoint_with_xml_extension()
@@ -74,13 +74,13 @@ namespace Telligent.RestSDK.IntegrationTests.UnitTests
         {
             var url = "/info.json";
 
-            Assert.That(async () => await Rest.PostEndpointXml(Host, 2, url, null, null, true), Throws.ArgumentException);
+            Assert.That(async () => await Rest.PostEndpointXml(Host, 2, url, null, true), Throws.ArgumentException);
         }
         [Test]
         public async Task cannot_call_put_xml_endpoint_with_json_extension()
         {
             var url = "/info.json";
-            Assert.That(async () => await Rest.PutEndpointXml(Host, 2, url, null, true, null), Throws.ArgumentException);
+            Assert.That(async () => await Rest.PutEndpointXml(Host, 2, url, true, null), Throws.ArgumentException);
         }
         [Test]
         public async Task cannot_call_delete_xml_endpoint_with_json_extension()

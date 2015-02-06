@@ -11,25 +11,57 @@ namespace Telligent.Rest.SDK
 {
     public abstract class RestOptions
     {
-      public  NameValueCollection AdditionalHeaders { get; set; }
-        public NameValueCollection RequestParameters { get; set; }
+        public RestOptions()
+        {
+            AdditionalHeaders = new NameValueCollection();
+            QueryStringParameters = new NameValueCollection();
+        }
+        public NameValueCollection AdditionalHeaders { get; set; }
+        public NameValueCollection QueryStringParameters { get; set; }
+
     }
 }
 namespace Telligent.Evolution.Extensibility.Rest.Version1
 {
-    public enum RestResponseFormat { Xml,Json}
-    public enum RestMethod { GET,PUT,POST, DELETE }
-    public class RestGetOptions :RestOptions
+    public enum RestResponseFormat { Xml, Json }
+    public enum RestMethod { GET, PUT, POST, DELETE }
+    public class RestGetOptions : RestOptions
     {
+        public RestGetOptions()
+        {
+            PathParameters = new NameValueCollection();
+        }
+        public NameValueCollection PathParameters { get; set; }
     }
     public class RestPostOptions : RestOptions
     {
+        public RestPostOptions()
+        {
+            PathParameters = new NameValueCollection();
+            PostParameters = new NameValueCollection();
+        }
+        public NameValueCollection PathParameters { get; set; }
+        public NameValueCollection PostParameters { get; set; }
     }
     public class RestPutOptions : RestOptions
     {
+        public RestPutOptions()
+        {
+            PathParameters = new NameValueCollection();
+            PostParameters = new NameValueCollection();
+        }
+        public NameValueCollection PathParameters { get; set; }
+        public NameValueCollection PostParameters { get; set; }
     }
     public class RestDeleteOptions : RestOptions
     {
+        public RestDeleteOptions()
+        {
+            PathParameters = new NameValueCollection();
+
+        }
+        public NameValueCollection PathParameters { get; set; }
+
     }
 
     public class BatchRequestOptions
@@ -38,8 +70,8 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         {
             RunSequentially = false;
         }
-       public NameValueCollection AdditionalHeaders { get; set; }
-       public bool RunSequentially { get; set; }
+        public NameValueCollection AdditionalHeaders { get; set; }
+        public bool RunSequentially { get; set; }
     }
 
     public class BatchRequest
@@ -58,10 +90,10 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
 
         public string EndpointUrl
         {
-            get { return string.Concat("~/api.ashx/v",this.ApiVersion, "/",_endpointUrl); }
+            get { return string.Concat("~/api.ashx/v", this.ApiVersion, "/", _endpointUrl); }
             set
             {
-              _endpointUrl = value.TrimStart(new[] {'~', '/'});
+                _endpointUrl = value.TrimStart(new[] { '~', '/' });
             }
         }
         public RestMethod RestMethod { get; set; }
@@ -77,6 +109,6 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             return string.Concat(string.Format("_REQUEST_{0}_URL={1}&_REQUEST_{0}_METHOD={2}", Sequence, EndpointUrl,
                 RestMethod.ToString()), data);
         }
-       
+
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
@@ -11,6 +12,7 @@ using System.Collections.Specialized;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.IO;
+using Telligent.Rest.SDK;
 using Telligent.Rest.SDK.Model;
 using System.Threading.Tasks;
 
@@ -19,6 +21,7 @@ namespace Telligent.Evolution.RestSDK.Implementations
 {
     public class Rest : IRest
     {
+        private static readonly Regex _tokenPattern = new Regex(@"(?<token>{(?<tokenValue>[a-zA-Z0-9]*)})", RegexOptions.Singleline | RegexOptions.Compiled);
         private const string Json = ".json";
         private const string Xml = ".xml";
        
@@ -34,12 +37,40 @@ namespace Telligent.Evolution.RestSDK.Implementations
             return date.ToString("yyyy-MM-ddTHH:mm:ss.fff");
         }
 
-     
+        public string BuildQueryString(string url, NameValueCollection nvc)
+        {
+          
+            var qs = nvc.MakeQuerystring();
+            var delimiter = "?";
 
+            if (url.IndexOf("?") >= 0)
+                delimiter = "&";
+
+             return string.Concat(url, delimiter, qs);
+        
+        }
+        public string ReplaceTokens(string url,NameValueCollection parameters)
+        {
+            
+            var newUrl =_tokenPattern.Replace(url, (m) =>
+            {
+                var tokenValue = m.Groups["tokenValue"].Value;
+                if (parameters[tokenValue] != null)
+                {
+                    var val = parameters[tokenValue];
+                    return val;
+                }
+                
+                return m.Value;
+            });
+
+            return newUrl;
+
+        }
     
         #region Helpers
 
-        private string MakeEndpointUrl(RestHost host, int version, string endpoint)
+        public string MakeEndpointUrl(RestHost host, int version, string endpoint)
         {
             string restUrl = host.EvolutionRootUrl;
             if (!restUrl.EndsWith("/"))
@@ -114,37 +145,72 @@ namespace Telligent.Evolution.RestSDK.Implementations
 
         public async Task<XElement> GetEndpointXml(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestGetOptions options = null)
         {
-            if (!ContainsXml(endpoint))
-                throw new ArgumentException("This call is not valid on non XML endpoints", "endpoint");
+            var processedEndpoint = endpoint;
+            if (options == null)
+                options = new RestGetOptions();
 
-            return XElement.Parse(await _proxy.Get(host, MakeEndpointUrl(host, version, endpoint), (request) => AdjustGetRequest(host, request, enableImpersonation,options)));
+            if (options.PathParameters.HasKeys())
+                processedEndpoint = ReplaceTokens(endpoint, options.PathParameters);
+            if (options.QueryStringParameters.HasKeys())
+                processedEndpoint = BuildQueryString(processedEndpoint, options.QueryStringParameters);
+
+            return XElement.Parse(await _proxy.Get(host, MakeEndpointUrl(host, version, processedEndpoint), (request) => AdjustGetRequest(host, request, enableImpersonation,options)));
         }
 
-        public async Task<XElement> PutEndpointXml(RestHost host, int version, string endpoint, string postData, bool enableImpersonation = true, RestPutOptions options = null)
+        public async Task<XElement> PutEndpointXml(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestPutOptions options = null)
         {
-            if (!ContainsXml(endpoint))
-                throw new ArgumentException("This call is not valid on non XML endpoints", "endpoint");
+            var processedEndpoint = endpoint;
+            if (options == null)
+                options = new RestPutOptions();
 
-            return XElement.Parse(await _proxy.Post(host, MakeEndpointUrl(host, version, endpoint), postData, null, (request) => AdjustPutRequest(host, request, enableImpersonation,options)));
+
+            if (options.PathParameters.HasKeys())
+                processedEndpoint = ReplaceTokens(endpoint, options.PathParameters);
+            if (options.QueryStringParameters.HasKeys())
+                processedEndpoint = BuildQueryString(processedEndpoint, options.QueryStringParameters);
+
+            string postData = options.PostParameters.MakeQuerystring(true);
+
+            return XElement.Parse(await _proxy.Post(host, MakeEndpointUrl(host, version, processedEndpoint), postData, null, (request) => AdjustPutRequest(host, request, enableImpersonation,options)));
         }
 
-        public async Task<XElement> PostEndpointXml(RestHost host, int version, string endpoint, string postData, HttpPostedFileBase file = null, bool enableImpersonation = true, RestPostOptions options = null)
+        public async Task<XElement> PostEndpointXml(RestHost host, int version, string endpoint,  HttpPostedFileBase file = null, bool enableImpersonation = true, RestPostOptions options = null)
         {
-            if (!ContainsXml(endpoint))
-                throw new ArgumentException("This call is not valid on non XML endpoints", "endpoint");
-            return XElement.Parse(await _proxy.Post(host, MakeEndpointUrl(host, version, endpoint), postData, file, (request) => AdjustPostRequest(host, request, true,options)));
+
+            var processedEndpoint = endpoint;
+            if (options == null)
+                options = new RestPostOptions();
+
+
+            if (options.PathParameters.HasKeys())
+                processedEndpoint = ReplaceTokens(endpoint, options.PathParameters);
+            if (options.QueryStringParameters.HasKeys())
+                processedEndpoint = BuildQueryString(processedEndpoint, options.QueryStringParameters);
+
+            string postData = options.PostParameters.MakeQuerystring(true);
+            return XElement.Parse(await _proxy.Post(host, MakeEndpointUrl(host, version, processedEndpoint), postData, file, (request) => AdjustPostRequest(host, request, true,options)));
         }
 
         public async Task<XElement>  DeleteEndpointXml(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null)
         {
-            if (!ContainsXml(endpoint))
-                throw new ArgumentException("This call is not valid on non XML endpoints", "endpoint");
-            return XElement.Parse(await _proxy.Post(host, MakeEndpointUrl(host, version, endpoint), null, null, (request) => AdjustDeleteRequest(host, request, enableImpersonation,options)));
+
+            var processedEndpoint = endpoint;
+            if (options == null)
+                options = new RestDeleteOptions();
+
+
+            if (options.PathParameters.HasKeys())
+                processedEndpoint = ReplaceTokens(endpoint, options.PathParameters);
+            if (options.QueryStringParameters.HasKeys())
+                processedEndpoint = BuildQueryString(processedEndpoint, options.QueryStringParameters);
+
+            return XElement.Parse(await _proxy.Post(host, MakeEndpointUrl(host, version, processedEndpoint), null, null, (request) => AdjustDeleteRequest(host, request, enableImpersonation,options)));
         }
 
        
        public async Task<Stream> PostEndpointStream(RestHost host, int version, string endpoint, Stream postStream, bool enableImpersonation, Action<WebResponse> responseAction, RestPostOptions options = null)
        {
+           //TODO: Review this for refactor, is it necessary or can it be collpased
            return
                await
                    _proxy.PostEndpointStream(host, MakeEndpointUrl(host, version, endpoint), postStream,
@@ -154,34 +220,67 @@ namespace Telligent.Evolution.RestSDK.Implementations
 
        public Task<string> GetEndpointJson(RestHost host, int version, string endpoint, RestGetOptions options = null)
         {
-            if (!ContainsJson(endpoint))
-                throw new ArgumentException("This call is not valid on non JSON endpoints", "endpoint");
 
-            return _proxy.Get(host, MakeEndpointUrl(host, version, endpoint), (request) => AdjustGetRequest(host, request, true,options));
+            var processedEndpoint = endpoint;
+            if (options == null)
+                options = new RestGetOptions();
+
+
+            if (options.PathParameters.HasKeys())
+                processedEndpoint = ReplaceTokens(endpoint, options.PathParameters);
+            if (options.QueryStringParameters.HasKeys())
+                processedEndpoint = BuildQueryString(processedEndpoint, options.QueryStringParameters);
+
+            return _proxy.Get(host, MakeEndpointUrl(host, version, processedEndpoint), (request) => AdjustGetRequest(host, request, true,options));
         }
 
-        public Task<string>  PutEndpointJson(RestHost host, int version, string endpoint, string postData, bool enableImpersonation = true, RestPutOptions options = null)
+        public Task<string>  PutEndpointJson(RestHost host, int version, string endpoint,  bool enableImpersonation = true, RestPutOptions options = null)
         {
-            if (!ContainsJson(endpoint))
-                throw new ArgumentException("This call is not valid on non JSON endpoints", "endpoint");
+            var processedEndpoint = endpoint;
+            if (options == null)
+                options = new RestPutOptions();
 
-            return _proxy.Post(host, MakeEndpointUrl(host, version, endpoint), postData, null, (request) => AdjustPutRequest(host, request, enableImpersonation,options));
+
+            if (options.PathParameters.HasKeys())
+                processedEndpoint = ReplaceTokens(endpoint, options.PathParameters);
+            if (options.QueryStringParameters.HasKeys())
+                processedEndpoint = BuildQueryString(processedEndpoint, options.QueryStringParameters);
+
+            string postData = options.PostParameters.MakeQuerystring(true);
+
+            return _proxy.Post(host, MakeEndpointUrl(host, version, processedEndpoint), postData, null, (request) => AdjustPutRequest(host, request, enableImpersonation,options));
         }
 
-        public Task<string> PostEndpointJson(RestHost host, int version, string endpoint, string postData, bool enableImpersonation = true, HttpPostedFileBase file = null, RestPostOptions options = null)
+        public Task<string> PostEndpointJson(RestHost host, int version, string endpoint,  bool enableImpersonation = true, HttpPostedFileBase file = null, RestPostOptions options = null)
         {
-            if (!ContainsJson(endpoint))
-                throw new ArgumentException("This call is not valid on non JSON endpoints", "endpoint");
+            var processedEndpoint = endpoint;
+            if (options == null)
+                options = new RestPostOptions();
 
-            return  _proxy.Post(host, MakeEndpointUrl(host, version, endpoint), postData, file, (request) => AdjustPostRequest(host, request, true,options));
+
+            if (options.PathParameters.HasKeys())
+                processedEndpoint = ReplaceTokens(endpoint, options.PathParameters);
+            if (options.QueryStringParameters.HasKeys())
+                processedEndpoint = BuildQueryString(processedEndpoint, options.QueryStringParameters);
+
+            string postData = options.PostParameters.MakeQuerystring(true);
+
+            return  _proxy.Post(host, MakeEndpointUrl(host, version, processedEndpoint), postData, file, (request) => AdjustPostRequest(host, request, true,options));
         }
 
         public Task<string>  DeleteEndpointJson(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null)
         {
-            if (!ContainsJson(endpoint))
-                throw new ArgumentException("This call is not valid on non JSON endpoints", "endpoint");
+            var processedEndpoint = endpoint;
+            if (options == null)
+                options = new RestDeleteOptions();
 
-            return _proxy.Post(host, MakeEndpointUrl(host, version, endpoint), null, null, (request) => AdjustDeleteRequest(host, request, enableImpersonation,options));
+
+            if (options.PathParameters.HasKeys())
+                processedEndpoint = ReplaceTokens(endpoint, options.PathParameters);
+            if (options.QueryStringParameters.HasKeys())
+                processedEndpoint = BuildQueryString(processedEndpoint, options.QueryStringParameters);
+
+            return _proxy.Post(host, MakeEndpointUrl(host, version, processedEndpoint), null, null, (request) => AdjustDeleteRequest(host, request, enableImpersonation,options));
         }
 
 
@@ -206,5 +305,6 @@ namespace Telligent.Evolution.RestSDK.Implementations
             var postData = string.Join("&", postDataArr);
             return postData + "&Sequential=" + options.RunSequentially.ToString().ToLowerInvariant();
         }
+        
     }
 }

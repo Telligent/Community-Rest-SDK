@@ -18,12 +18,22 @@ namespace Telligent.RestSDK.IntegrationTests
             var endpoint = "/users/2100.json";
             dynamic info = await Host.GetToDynamicAsync(2,endpoint);
 
-            Assert.IsNotNull(info);
+            Assert.IsNotNull(info.User.Username);
+        }
+        [Test]
+        public async Task can_do_get_single_dynamic_request_tokenized()
+        {
+            var endpoint = "users/{userid}.json";
+            RestGetOptions o = new RestGetOptions();
+            o.PathParameters.Add("userid","2100");
+            dynamic info = await Host.GetToDynamicAsync(2, endpoint,true,o);
+
+            Assert.IsNotNull(info.User.Username);
         }
         [Test]
         public void  can_do_get_single_synchronous_dynamic_request()
         {
-            var endpoint = "/info.json";
+            var endpoint = "info.json";
             dynamic info =  Host.GetToDynamic(2, endpoint);
 
             Assert.IsNotNull(info.InfoResult.SiteName);
@@ -31,7 +41,7 @@ namespace Telligent.RestSDK.IntegrationTests
         [Test]
         public async Task can_do_get_multiple_dynamic_request()
         {
-            var endpoint = "/info.json";
+            var endpoint = "info.json";
             var o1 =  Host.GetToDynamicAsync(2, endpoint);
             var o2 = Host.GetToDynamicAsync(2, endpoint);
             var o3 = Host.GetToDynamicAsync(2, endpoint);
@@ -44,15 +54,7 @@ namespace Telligent.RestSDK.IntegrationTests
             Assert.IsNotNull(o4);
             Assert.IsNotNull(o5);
         }
-        //[Test]
-        //public void can_do_get_paged_dynamic_request()
-        //{
-        //    var endpoint = "/users.json";
-        //    dynamic users = Host.GetToDynamic(2, endpoint);
-
-        //   
-        //Assert.IsNotNull(info.InfoResult.SiteName);
-        //}
+     
         [Test]
         public void can_do_get_paged_request_synchronously()
         {
@@ -62,27 +64,31 @@ namespace Telligent.RestSDK.IntegrationTests
             options.Add("PageIndex", "0");
             options.Add("SortBy", "LastPost");
             options.Add("SortOrder", "Descending");
-
-            var endpoint = "forums.json?" +  String.Join("&",options.AllKeys.Select(a => a + "=" + HttpUtility.UrlEncode(options[a])));
+            RestGetOptions o = new RestGetOptions();
+            o.QueryStringParameters = options;
+            var endpoint = "forums.json";
       
 
-            var response = Host.GetToDynamic(2, endpoint);
-            Assert.IsNotNull(response);
+            var response = Host.GetToDynamic(2, endpoint,true,o);
+            Assert.IsNotNull(response.Forums);
+            Assert.AreEqual(50,response.PageSize);
         }
         [Test]
         public async Task can_do_get_paged_dynamic_request()
         {
             var options = new NameValueCollection();
-            options.Add("PageSize", "1");
+            options.Add("PageSize", "50");
             options.Add("PageIndex", "0");
-           // options.Add("SortBy", "LastPost");
-          //  options.Add("SortOrder", "Descending");
+            options.Add("SortBy", "LastPost");
+            options.Add("SortOrder", "Descending");
+            RestGetOptions o = new RestGetOptions();
+            o.QueryStringParameters = options;
+            var endpoint = "forums.json";
 
-            var endpoint = "forums.json?" + String.Join("&", options.AllKeys.Select(a => a + "=" + HttpUtility.UrlEncode(options[a])));
 
-
-            var response = await Host.GetToDynamicAsync(2, endpoint);
-            Assert.IsNotNull(response);
+            var response = await Host.GetToDynamicAsync(2, endpoint,true,o);
+            Assert.IsNotNull(response.Forums);
+            Assert.AreEqual(50, response.PageSize);
         }
 
         [Test]
@@ -91,6 +97,7 @@ namespace Telligent.RestSDK.IntegrationTests
             var req1 = new BatchRequest("info.json", 0) {ApiVersion = 2};
             req1.RequestParameters.Add("ShowSiteSettings","true");
             var req2 = new BatchRequest("users.json", 1);
+
             req2.RequestParameters.Add("PageSize","5");
             req1.RequestParameters.Add("IncludeHidden","true");
 
