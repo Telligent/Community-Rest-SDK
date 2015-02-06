@@ -131,16 +131,6 @@ namespace Telligent.Evolution.RestSDK.Implementations
 			host.ApplyAuthenticationToHostRequest(request, enableImpersonation);
 		}
 
-		
-
-        private bool ContainsJson(string endpoint)
-        {
-            return (endpoint.IndexOf(Json, StringComparison.Ordinal) > -1);
-        }
-        private bool ContainsXml(string endpoint)
-        {
-            return (endpoint.IndexOf(Rest.Xml, StringComparison.Ordinal) > -1);
-        }
         #endregion
 
         public async Task<XElement> GetEndpointXml(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestGetOptions options = null)
@@ -218,7 +208,7 @@ namespace Telligent.Evolution.RestSDK.Implementations
 
        }
 
-       public Task<string> GetEndpointJson(RestHost host, int version, string endpoint, RestGetOptions options = null)
+       public Task<string> GetEndpointString(RestHost host, int version, string endpoint, RestGetOptions options = null)
         {
 
             var processedEndpoint = endpoint;
@@ -234,7 +224,7 @@ namespace Telligent.Evolution.RestSDK.Implementations
             return _proxy.Get(host, MakeEndpointUrl(host, version, processedEndpoint), (request) => AdjustGetRequest(host, request, true,options));
         }
 
-        public Task<string>  PutEndpointJson(RestHost host, int version, string endpoint,  bool enableImpersonation = true, RestPutOptions options = null)
+        public Task<string>  PutEndpointString(RestHost host, int version, string endpoint,  bool enableImpersonation = true, RestPutOptions options = null)
         {
             var processedEndpoint = endpoint;
             if (options == null)
@@ -251,7 +241,7 @@ namespace Telligent.Evolution.RestSDK.Implementations
             return _proxy.Post(host, MakeEndpointUrl(host, version, processedEndpoint), postData, null, (request) => AdjustPutRequest(host, request, enableImpersonation,options));
         }
 
-        public Task<string> PostEndpointJson(RestHost host, int version, string endpoint,  bool enableImpersonation = true, HttpPostedFileBase file = null, RestPostOptions options = null)
+        public Task<string> PostEndpointString(RestHost host, int version, string endpoint,  bool enableImpersonation = true, HttpPostedFileBase file = null, RestPostOptions options = null)
         {
             var processedEndpoint = endpoint;
             if (options == null)
@@ -268,7 +258,7 @@ namespace Telligent.Evolution.RestSDK.Implementations
             return  _proxy.Post(host, MakeEndpointUrl(host, version, processedEndpoint), postData, file, (request) => AdjustPostRequest(host, request, true,options));
         }
 
-        public Task<string>  DeleteEndpointJson(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null)
+        public Task<string>  DeleteEndpointString(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null)
         {
             var processedEndpoint = endpoint;
             if (options == null)
@@ -284,7 +274,7 @@ namespace Telligent.Evolution.RestSDK.Implementations
         }
 
 
-        public Task<string> BatchEndpointJson(RestHost host, int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null)
+        public Task<string> BatchEndpointString(RestHost host, int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null)
         {
             var postData = CreatePostBatchData(requests,options);
             return _proxy.Post(host, MakeEndpointUrl(host,version,"batch.json"), postData,null, (request) => AdjustBatchRequest(host, request, enableImpersonation, options));

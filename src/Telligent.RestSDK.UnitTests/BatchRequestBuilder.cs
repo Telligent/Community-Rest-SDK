@@ -52,7 +52,7 @@ namespace Telligent.RestSDK.UnitTests
             nvc2.Add("parm", "p1");
             nvc2.Add("parm2", "p2");
             requests.Add(new BatchRequest("users.json", 0) { ApiVersion = 2, RequestParameters = nvc2 });
-            var resp = await rest.BatchEndpointJson(new TestRestHost("http://community/"), 2, requests);
+            var resp = await rest.BatchEndpointString(new TestRestHost("http://community/"), 2, requests);
 
             Assert.AreEqual("http://community/api.ashx/v2/batch.json", url);
 
@@ -84,7 +84,7 @@ namespace Telligent.RestSDK.UnitTests
             nvc2.Add("parm", "p1");
             nvc2.Add("parm2", "p2");
             requests.Add(new BatchRequest("users.json", 1) { ApiVersion = 2, RequestParameters = nvc2 });
-            var resp = await rest.BatchEndpointJson(new TestRestHost("http://community/"), 2, requests);
+            var resp = await rest.BatchEndpointString(new TestRestHost("http://community/"), 2, requests);
 
             var reqParms = HttpUtility.ParseQueryString(postData);
             Assert.AreEqual(7, reqParms.Keys.Count);
@@ -118,7 +118,7 @@ namespace Telligent.RestSDK.UnitTests
             nvc2.Add("parm", "p1");
             nvc2.Add("parm2", "p2");
             requests.Add(new BatchRequest("users.json", 1) { ApiVersion = 2, RequestParameters = nvc2 });
-            var resp = await rest.BatchEndpointJson(new TestRestHost("http://community/"), 2, requests,true, new BatchRequestOptions(){RunSequentially =true});
+            var resp = await rest.BatchEndpointString(new TestRestHost("http://community/"), 2, requests, true, new BatchRequestOptions() { RunSequentially = true });
 
             var reqParms = HttpUtility.ParseQueryString(postData);
             Assert.AreEqual(7, reqParms.Keys.Count);

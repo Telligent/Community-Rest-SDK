@@ -126,31 +126,31 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
 
         public async Task<dynamic> GetToDynamicAsync(int version, string endpoint,bool enableImpersonation =true,RestGetOptions options = null)
         {
-            var json = await Rest.GetEndpointJson(this, version, endpoint, options).ConfigureAwait(false);
+            var json = await Rest.GetEndpointString(this, version, endpoint, options).ConfigureAwait(false);
             return json != null ? JsonConvert.Deserialize(json) : null;
         }
 
         public async Task<dynamic> PutToDynamicAsync(int version, string endpoint,bool enableImpersonation = true,RestPutOptions options = null)
         {
-            var json = await Rest.PutEndpointJson(this, version, endpoint, enableImpersonation, options).ConfigureAwait(false); 
+            var json = await Rest.PutEndpointString(this, version, endpoint, enableImpersonation, options).ConfigureAwait(false); 
             return json != null ? JsonConvert.Deserialize(json) : null;
         }
 
         public async Task<dynamic> PostToDynamicAsync(int version, string endpoint, bool enableImpersonation = true, RestPostOptions options = null)
         {
-            var json = await Rest.PostEndpointJson(this, version, endpoint, enableImpersonation, null, options).ConfigureAwait(false); 
+            var json = await Rest.PostEndpointString(this, version, endpoint, enableImpersonation, null, options).ConfigureAwait(false); 
             return json != null ? JsonConvert.Deserialize(json) : null;
         }
 
         public async Task<dynamic> DeleteToDynamicAsync(int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null)
         {
-            var json = await Rest.DeleteEndpointJson(this, version, endpoint, enableImpersonation, options).ConfigureAwait(false); 
+            var json = await Rest.DeleteEndpointString(this, version, endpoint, enableImpersonation, options).ConfigureAwait(false); 
             return json != null ? JsonConvert.Deserialize(json) : null;
         }
 
         public async Task<dynamic> BatchRequestToDynamicAsync(int version,IList<BatchRequest> requests , bool enableImpersonation = true, BatchRequestOptions options = null)
         {
-            var json = await Rest.BatchEndpointJson(this, version,  requests, enableImpersonation, options).ConfigureAwait(false);
+            var json = await Rest.BatchEndpointString(this, version,  requests, enableImpersonation, options).ConfigureAwait(false);
             return json != null ? JsonConvert.Deserialize(json) : null;
         }
 

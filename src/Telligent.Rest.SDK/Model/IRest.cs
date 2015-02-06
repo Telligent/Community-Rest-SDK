@@ -23,12 +23,12 @@ namespace Telligent.Rest.SDK.Model
 
         string FormatDateTime(DateTime date);
 
-        Task<string> GetEndpointJson(RestHost host, int version, string endpoint,RestGetOptions options = null);
-        Task<string> PutEndpointJson(RestHost host, int version, string endpoint, bool enableImpersonation = true,RestPutOptions options = null);
-        Task<string> PostEndpointJson(RestHost host, int version, string endpoint, bool enableImpersonation = true, HttpPostedFileBase file = null,RestPostOptions options = null);
-        Task<string> DeleteEndpointJson(RestHost host, int version, string endpoint,bool enableImpersonation = true,RestDeleteOptions options = null);
+        Task<string> GetEndpointString(RestHost host, int version, string endpoint,RestGetOptions options = null);
+        Task<string> PutEndpointString(RestHost host, int version, string endpoint, bool enableImpersonation = true,RestPutOptions options = null);
+        Task<string> PostEndpointString(RestHost host, int version, string endpoint, bool enableImpersonation = true, HttpPostedFileBase file = null,RestPostOptions options = null);
+        Task<string> DeleteEndpointString(RestHost host, int version, string endpoint,bool enableImpersonation = true,RestDeleteOptions options = null);
 
-        Task<string> BatchEndpointJson(RestHost host, int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null);
+        Task<string> BatchEndpointString(RestHost host, int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null);
         Task<XElement> BatchEndpointXml(RestHost host, int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null);
         string ReplaceTokens(string url,NameValueCollection parameters);
         string BuildQueryString(string url, NameValueCollection nvc);

@@ -93,6 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="communityServer_SDK.config" />
+    <None Include="Web\oauth.ashx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

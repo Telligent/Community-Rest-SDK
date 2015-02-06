@@ -56,7 +56,6 @@
     <Compile Include="TestRestHost.cs" />
     <Compile Include="UnitTests\BatchRequestConstruction.cs" />
     <Compile Include="UnitTests\RequestParameterTests.cs" />
-    <Compile Include="UnitTests\rest_request_validation.cs" />
     <Compile Include="UnitTests\Serialization\JsonToDynamic.cs" />
   </ItemGroup>
   <ItemGroup>
