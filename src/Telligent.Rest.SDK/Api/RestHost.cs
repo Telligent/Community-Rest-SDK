@@ -207,7 +207,61 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         {
             return DeleteToDynamicAsync(version, endpoint,enableImpersonation,options).Result;
         }
-        
+
+
+        public string GetToString(int version, string endpoint, bool enableImpersonation = true, RestGetOptions options = null)
+        {
+            return GetToStringAsync(version, endpoint, enableImpersonation, options).Result;
+        }
+
+        public string PutToString(int version, string endpoint, bool enableImpersonation = true, RestPutOptions options = null)
+        {
+            return PutToStringAsync(version, endpoint, enableImpersonation, options).Result;
+
+        }
+
+        public string PostToString(int version, string endpoint, bool enableImpersonation = true, RestPostOptions options = null)
+        {
+            return PostToStringAsync(version, endpoint, enableImpersonation, options).Result;
+        }
+        public string BatchRequestToString(int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null)
+        {
+            return BatchRequestToStringAsync(version, requests, enableImpersonation, options).Result;
+        }
+        public string DeleteToString(int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null)
+        {
+            return DeleteToStringAsync(version, endpoint, enableImpersonation, options).Result;
+        }
+
+
+        public async Task<string> GetToStringAsync(int version, string endpoint, bool enableImpersonation = true, RestGetOptions options = null)
+        {
+            return await Rest.GetEndpointString(this, version, endpoint, options).ConfigureAwait(false);
+
+        }
+
+        public async Task<string> PutToStringAsync(int version, string endpoint, bool enableImpersonation = true, RestPutOptions options = null)
+        {
+            return await Rest.PutEndpointString(this, version, endpoint, enableImpersonation, options).ConfigureAwait(false);
+        }
+
+        public async Task<string> PostToStringAsync(int version, string endpoint, bool enableImpersonation = true, RestPostOptions options = null)
+        {
+            return await Rest.PostEndpointString(this, version, endpoint, enableImpersonation, null, options).ConfigureAwait(false);
+
+        }
+
+        public async Task<string> DeleteToStringAsync(int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null)
+        {
+            return await Rest.DeleteEndpointString(this, version, endpoint, enableImpersonation, options).ConfigureAwait(false);
+          
+        }
+
+        public async Task<string> BatchRequestToStringAsync(int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null)
+        {
+           return await Rest.BatchEndpointString(this, version, requests, enableImpersonation, options).ConfigureAwait(false);
+            
+        }
         #endregion
     }
 }

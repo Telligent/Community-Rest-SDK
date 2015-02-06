@@ -113,5 +113,15 @@ namespace Telligent.RestSDK.IntegrationTests
             Assert.IsNotNull(resp.BatchResponses[1].BatchResponse.Users);
            
         }
+
+        [Test]
+        public async Task can_do_get_single_string_request()
+        {
+            var endpoint = "/users/2100.json";
+            var info = await Host.GetToStringAsync(2, endpoint);
+
+           Assert.IsFalse(string.IsNullOrWhiteSpace(info));
+            Assert.IsTrue(info.Contains("admin"));
+        }
     }
 }

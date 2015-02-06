@@ -26,6 +26,20 @@ namespace Telligent.RestSDK.IntegrationTests
             Assert.IsNotNull(status.StatusMessage);
             Assert.AreEqual(msg,status.StatusMessage.Body);
         }
+        [Test]
+        public async Task can_do_post_async_single_string_request()
+        {
+            var msg = "Hello World at " + DateTime.UtcNow.ToString();
+
+            var endpoint = "/users/{username}/statuses.json";
+            var options = new RestPostOptions();
+            options.PathParameters.Add("username", "admin");
+            options.PostParameters.Add("MessageBody", msg);
+            var status = await Host.PostToStringAsync(2, endpoint, true, options);
+
+            Assert.IsFalse(string.IsNullOrWhiteSpace(status));
+            Assert.IsTrue(status.Contains(msg));
+        }
        
     }
 }
