@@ -20,6 +20,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{EDE452
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Telligent.RestSDK.UnitTests", "Telligent.RestSDK.UnitTests\Telligent.RestSDK.UnitTests.csproj", "{B96D75E4-98F5-4F7E-B997-11465932DDFA}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuspec", "nuspec", "{A56C0363-77E6-4FAF-BB63-799FD39903E1}"
+	ProjectSection(SolutionItems) = preProject
+		CommunityServerSDK.nuspec = CommunityServerSDK.nuspec
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
