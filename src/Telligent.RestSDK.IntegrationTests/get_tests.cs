@@ -96,10 +96,11 @@ namespace Telligent.RestSDK.IntegrationTests
         {
             var req1 = new BatchRequest("info.json", 0) {ApiVersion = 2};
             req1.RequestParameters.Add("ShowSiteSettings","true");
-            var req2 = new BatchRequest("users.json", 1);
+           req1.RequestParameters.Add("IncludeHidden","true");
 
+            var req2 = new BatchRequest("users.json", 1);
             req2.RequestParameters.Add("PageSize","5");
-            req1.RequestParameters.Add("IncludeHidden","true");
+            
 
             var requests = new List<BatchRequest>() {req1, req2};
             var resp = await Host.BatchRequestToDynamicAsync(2, requests);
