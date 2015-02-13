@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -52,7 +53,11 @@ namespace Telligent.RestSDK.IntegrationTests
             using (var status = await Host.PostToStreamAsync(2, endpoint, true, options))
             {
                 Assert.IsNotNull(status);
-                Assert.Greater(status.Length, 0);
+                using (var reader = new StreamReader(status))
+                {
+                    var data = reader.ReadToEnd();
+                    Assert.IsTrue(data.Contains(msg));
+                }
             }
 
         }
@@ -68,7 +73,11 @@ namespace Telligent.RestSDK.IntegrationTests
             using (var status =  Host.PostToStream(2, endpoint, true, options))
             {
                 Assert.IsNotNull(status);
-                Assert.Greater(status.Length, 0);
+                using (var reader = new StreamReader(status))
+                {
+                    var data = reader.ReadToEnd();
+                    Assert.IsTrue(data.Contains(msg));
+                }
             }
 
         }
