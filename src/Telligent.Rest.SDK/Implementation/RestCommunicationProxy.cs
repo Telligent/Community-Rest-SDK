@@ -22,7 +22,120 @@ namespace Telligent.Rest.SDK.Implementation
                                                        RegexOptions.CultureInvariant |
                                                        RegexOptions.IgnorePatternWhitespace |
                                                        RegexOptions.Compiled);
-        
+
+        private HttpWebRequest BuildStandardPostRequest(RestHost host, string url, string data,Stream stream, Action<HttpWebRequest> adjustRequest,out byte[] bytes)
+        {
+            HttpWebRequest request = null;
+            request = CreateRequest(host, url, adjustRequest, host.PostTimeout);
+            request.Method = "POST";
+            bytes = null;
+            if (data == null)
+                request.ContentLength = 0;
+            else
+            {
+                bytes = Encoding.UTF8.GetBytes(data);
+                request.ContentType = isXmlRegex.IsMatch(data) ? "text/xml; charset=utf-8" : "application/x-www-form-urlencoded; charset=utf-8";
+                request.ContentLength = bytes.Length;
+            }
+
+            return request;
+
+        }
+
+        private HttpWebRequest BuildGetRequest(RestHost host, string url, Action<HttpWebRequest> adjustRequest)
+        {
+            HttpWebRequest request = CreateRequest(host, url, adjustRequest, host.GetTimeout);
+            request.Method = "GET";
+            return request;
+        }
+        public async Task<Stream> PostAsync(RestHost host, string url, string data, Action<HttpWebRequest> adjustRequest)
+        {
+            bool retry = true;
+            HttpWebRequest request = null;
+            ExceptionDispatchInfo capturedException = null;
+            while (retry)
+            {
+                retry = false;
+
+                try
+                {
+                    byte[] bytes = null;
+
+                    request = BuildStandardPostRequest(host, url, data,null, adjustRequest, out bytes);
+                    using (var requestStream = await request.GetRequestStreamAsync())
+                    {
+                        await requestStream.WriteAsync(bytes, 0, bytes.Length);
+                        requestStream.Close();
+                    }
+
+                    var response = (HttpWebResponse)request.GetResponse();
+                    return response.GetResponseStream();
+                }
+                catch (WebException ex)
+                {
+                    capturedException = ExceptionDispatchInfo.Capture(ex);
+                }
+
+                if (capturedException != null)
+                {
+                    var webException = capturedException.SourceException as WebException;
+                    if (webException != null)
+                    {
+                        var errorResponse = webException.Response as HttpWebResponse;
+                        if (errorResponse != null && errorResponse.StatusCode == HttpStatusCode.Forbidden && host.RetryFailedRemoteRequest(request))
+                            retry = true;
+                        else if (errorResponse != null && errorResponse.StatusCode == HttpStatusCode.InternalServerError)
+                            return errorResponse.GetResponseStream();
+                        else
+                            capturedException.Throw();
+                    }
+                    else
+                    {
+                        capturedException.Throw();
+                    }
+
+                }
+            }
+
+            return null;
+        }
+        public Stream Post(RestHost host, string url, string data, Action<HttpWebRequest> adjustRequest)
+        {
+            bool retry = true;
+            HttpWebRequest request = null;
+            while (retry)
+            {
+                retry = false;
+
+                try
+                {
+                    byte[] bytes = null;
+
+                     request = BuildStandardPostRequest(host, url, data,null, adjustRequest, out bytes);
+                    using (var requestStream = request.GetRequestStream())
+                    {
+                        requestStream.Write(bytes, 0, bytes.Length);
+                        requestStream.Close();
+                    }
+                    var response = (HttpWebResponse) request.GetResponse();
+                        return response.GetResponseStream();
+                    
+                }
+                catch (WebException   ex)
+                {
+                    var errorResponse = ex.Response as HttpWebResponse;
+                    if (errorResponse != null && errorResponse.StatusCode == HttpStatusCode.Forbidden && host.RetryFailedRemoteRequest(request))
+                        retry = true;
+                    else if (errorResponse != null && errorResponse.StatusCode == HttpStatusCode.InternalServerError)
+                        return errorResponse.GetResponseStream();
+                    else
+                        throw ex;
+                }
+
+            }
+
+            return null;
+        }
         public async Task<Stream> PostEndpointStream(RestHost host, string url, Stream postStream, Action<HttpWebRequest> adjustRequest, Action<WebResponse> responseAction)
         {
             bool retry = true;
@@ -89,7 +202,8 @@ namespace Telligent.Rest.SDK.Implementation
 
             return null;
         }
-        public async Task<string> Post(RestHost host, string url, string data, HttpPostedFileBase file, Action<HttpWebRequest> adjustRequest)
+       
+        public async Task<Stream> GetAsync(RestHost host, string url, Action<HttpWebRequest> adjustRequest)
         {
             bool retry = true;
             HttpWebRequest request = null;
@@ -100,111 +214,10 @@ namespace Telligent.Rest.SDK.Implementation
 
                 try
                 {
-                    request = CreateRequest(host, url, adjustRequest, host.PostTimeout);
-                    request.Method = "POST";
+                    request = BuildGetRequest(host, url, adjustRequest);
 
-                    if (data == null)
-                        request.ContentLength = 0;
-                    else
-                    {
-                        byte[] bytes;
-                        if (file != null)
-                        {
-                            string boundary = Guid.NewGuid().ToString("N");
-                            string newData = "";
-
-                            string[] pairs = data.Split(new char[] { '&' });
-                            foreach (string pair in pairs)
-                            {
-                                string[] param = pair.Split(new char[] { '=' });
-                                newData += GetMultipartFormdata(boundary, param[0], param.Length > 1 ? HttpUtility.UrlDecode(param[1]) : String.Empty);
-                            }
-
-                            string fileName = !String.IsNullOrEmpty(file.FileName) ? file.FileName.Remove(0, file.FileName.LastIndexOf("\\") + 1) : "noname";
-                            string contentType = !String.IsNullOrEmpty(file.ContentType) ? file.ContentType : "text/plain";
-
-                            newData += GetFileMultipartFormdata(boundary, fileName, contentType);
-
-                            byte[] fileData = new byte[file.ContentLength];
-                            byte[] newDataBytes = Encoding.UTF8.GetBytes(newData);
-                            byte[] endDataBytes = Encoding.UTF8.GetBytes("\r\n--" + boundary + "--\r\n");
-
-                            await file.InputStream.ReadAsync(fileData, 0, file.ContentLength);
-
-                            bytes = new byte[newDataBytes.Length + fileData.Length + endDataBytes.Length];
-
-                            newDataBytes.CopyTo(bytes, 0);
-                            fileData.CopyTo(bytes, newDataBytes.Length);
-                            endDataBytes.CopyTo(bytes, newDataBytes.Length + fileData.Length);
-
-                            request.ContentType = "multipart/form-data; boundary=" + boundary;
-                        }
-                        else
-                        {
-                            bytes = Encoding.UTF8.GetBytes(data);
-                            request.ContentType = isXmlRegex.IsMatch(data) ? "text/xml; charset=utf-8" : "application/x-www-form-urlencoded; charset=utf-8";
-                        }
-
-                        request.ContentLength = bytes.Length;
-                        using (var requestStream = await request.GetRequestStreamAsync())
-                        {
-                            await requestStream.WriteAsync(bytes, 0, bytes.Length);
-                            requestStream.Close();
-                        }
-                    }
-
-                    using (HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync())
-                    {
-                        return await ReadResponseStreamAsync(response);
-                    }
-                }
-                catch (WebException ex)
-                {
-                    capturedException = ExceptionDispatchInfo.Capture(ex);
-                }
-
-                if (capturedException != null)
-                {
-                    var webException = capturedException.SourceException as WebException;
-                    if (webException != null)
-                    {
-                        var errorResponse = webException.Response as HttpWebResponse;
-                        if (errorResponse != null && errorResponse.StatusCode == HttpStatusCode.Forbidden && host.RetryFailedRemoteRequest(request))
-                            retry = true;
-                        else if (errorResponse != null && errorResponse.StatusCode == HttpStatusCode.InternalServerError)
-                            return await ReadResponseStreamAsync(errorResponse);
-                        else
-                            capturedException.Throw();
-                    }
-                    else
-                    {
-                        capturedException.Throw();
-                    }
-
-                }
-            }
-
-            return string.Empty;
-        }
-        public async Task<string> Get(RestHost host, string url, Action<HttpWebRequest> adjustRequest)
-        {
-            bool retry = true;
-            HttpWebRequest request = null;
-            ExceptionDispatchInfo capturedException = null;
-            while (retry)
-            {
-                retry = false;
-
-                try
-                {
-                    request = CreateRequest(host, url, adjustRequest, host.GetTimeout);
-                    request.Method = "GET";
-
-                    var response = await request.GetResponseAsync().ConfigureAwait(false); ;
-                    using (response)
-                    {
-                        return await ReadResponseStreamAsync((HttpWebResponse)response).ConfigureAwait(false);
-                    }
+                    var response = await request.GetResponseAsync() ;
+                         return ((HttpWebResponse) response).GetResponseStream();
                 }
                 catch (WebException ex)
                 {
@@ -221,17 +234,49 @@ namespace Telligent.Rest.SDK.Implementation
                     if (errorResponse != null && errorResponse.StatusCode == HttpStatusCode.Forbidden && host.RetryFailedRemoteRequest(request))
                         retry = true;
                     else if (errorResponse != null && errorResponse.StatusCode == HttpStatusCode.InternalServerError)
-                        return await ReadResponseStreamAsync(errorResponse).ConfigureAwait(false);
+                        return  errorResponse.GetResponseStream();
                     else
-                        capturedException.Throw(); 
+                        capturedException.Throw();
                 }
                 else
                 {
                     capturedException.Throw();
                 }
-                
+
             }
-            return string.Empty;
+            return null;
+        }
+        public Stream Get(RestHost host, string url, Action<HttpWebRequest> adjustRequest)
+        {
+            bool retry = true;
+            HttpWebRequest request = null;
+            ExceptionDispatchInfo capturedException = null;
+            while (retry)
+            {
+                retry = false;
+
+                try
+                {
+                    request = BuildGetRequest(host, url, adjustRequest);
+                    var response =  (HttpWebResponse)request.GetResponse();
+                    Stream stream = null;
+
+                       var str = response.GetResponseStream();
+                      return str;
+                }
+                catch (WebException ex)
+                {
+                    var errorResponse = ex.Response as HttpWebResponse;
+                    if (errorResponse != null && errorResponse.StatusCode == HttpStatusCode.Forbidden && host.RetryFailedRemoteRequest(request))
+                        retry = true;
+                    else if (errorResponse != null && errorResponse.StatusCode == HttpStatusCode.InternalServerError)
+                        return errorResponse.GetResponseStream();
+                    else
+                        throw ex;
+                }
+            }
+
+            return null;
         }
         private HttpWebRequest CreateRequest(RestHost host, string url, Action<HttpWebRequest> adjustRequest, int timeout)
         {
@@ -253,13 +298,7 @@ namespace Telligent.Rest.SDK.Implementation
             return request;
         }
 
-        private async Task<string> ReadResponseStreamAsync(HttpWebResponse response)
-        {
-            using (var reader = new StreamReader(response.GetResponseStream()))
-            {
-                return await reader.ReadToEndAsync().ConfigureAwait(false); ;
-            }
-        }
+      
         private string GetMultipartFormdata(string boundary, string name, string value)
         {
             return String.Format("--" + boundary + "\r\n" + "Content-Disposition: form-data; name=\"{0}\"\r\n\r\n{1}\r\n", name, value);

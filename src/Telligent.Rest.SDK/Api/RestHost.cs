@@ -99,84 +99,84 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
 
         public Task<XElement> GetToXmlAsync(int version,string endpoint, bool enableImpersonation,RestGetOptions options = null)
         {
-            return Rest.GetEndpointXml(this, version,endpoint, enableImpersonation,options);
+            return Rest.GetEndpointXmlAsync(this, version,endpoint, enableImpersonation,options);
         }
 
         public Task<XElement> PutToXmlAsync(int version, string endpoint, bool enableImpersonation = true,RestPutOptions options = null)
         {
-            return Rest.PutEndpointXml(this, version, endpoint, enableImpersonation, options);
+            return Rest.PutEndpointXmlAsync(this, version, endpoint, enableImpersonation, options);
         }
 
 
 
         public Task<XElement> PostToXmlAsync(int version, string endpoint, HttpPostedFileBase file, bool enableImpersonation,RestPostOptions options = null)
         {
-            return Rest.PostEndpointXml(this, version, endpoint, file, enableImpersonation, options);
+            return Rest.PostEndpointXmlAsync(this, version, endpoint, file, enableImpersonation, options);
         }
 
         public Task<XElement> DeleteToXmlAsync(int version, string endpoint,bool enableImpersonation = true, RestDeleteOptions options = null)
         {
-            return Rest.DeleteEndpointXml(this, version, endpoint, enableImpersonation, options);
+            return Rest.DeleteEndpointXmlAsync(this, version, endpoint, enableImpersonation, options);
         }
 
         public Task<XElement> BatchRequestToXmlAsync(int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null)
         {
-            return Rest.BatchEndpointXml(this, version, requests, enableImpersonation, options);
+            return Rest.BatchEndpointXmlAsync(this, version, requests, enableImpersonation, options);
         }
 
         public async Task<dynamic> GetToDynamicAsync(int version, string endpoint,bool enableImpersonation =true,RestGetOptions options = null)
         {
-            var json = await Rest.GetEndpointString(this, version, endpoint, options).ConfigureAwait(false);
+            var json = await Rest.GetEndpointStringAsync(this, version, endpoint,enableImpersonation, options);
             return json != null ? JsonConvert.Deserialize(json) : null;
         }
 
         public async Task<dynamic> PutToDynamicAsync(int version, string endpoint,bool enableImpersonation = true,RestPutOptions options = null)
         {
-            var json = await Rest.PutEndpointString(this, version, endpoint, enableImpersonation, options).ConfigureAwait(false); 
+            var json = await Rest.PutEndpointStringAsync(this, version, endpoint, enableImpersonation, options);
             return json != null ? JsonConvert.Deserialize(json) : null;
         }
 
         public async Task<dynamic> PostToDynamicAsync(int version, string endpoint, bool enableImpersonation = true, RestPostOptions options = null)
         {
-            var json = await Rest.PostEndpointString(this, version, endpoint, enableImpersonation, null, options).ConfigureAwait(false); 
+            var json = await Rest.PostEndpointStringAsync(this, version, endpoint, enableImpersonation, options);
             return json != null ? JsonConvert.Deserialize(json) : null;
         }
 
         public async Task<dynamic> DeleteToDynamicAsync(int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null)
         {
-            var json = await Rest.DeleteEndpointString(this, version, endpoint, enableImpersonation, options).ConfigureAwait(false); 
+            var json = await Rest.DeleteEndpointStringAsync(this, version, endpoint, enableImpersonation, options);
             return json != null ? JsonConvert.Deserialize(json) : null;
         }
 
         public async Task<dynamic> BatchRequestToDynamicAsync(int version,IList<BatchRequest> requests , bool enableImpersonation = true, BatchRequestOptions options = null)
         {
-            var json = await Rest.BatchEndpointString(this, version,  requests, enableImpersonation, options).ConfigureAwait(false);
+            var json = await Rest.BatchEndpointStringAsync(this, version,  requests, enableImpersonation, options);
             return json != null ? JsonConvert.Deserialize(json) : null;
         }
 
         public XElement GetToXml(int version, string endpoint, bool enableImpersonation, RestGetOptions options = null)
         {
-            return GetToXmlAsync( version, endpoint, enableImpersonation, options).Result;
+            return Rest.GetEndpointXml( this, version, endpoint, enableImpersonation, options);
         }
 
         public XElement PutToXml(int version, string endpoint, bool enableImpersonation = true, RestPutOptions options = null)
         {
-            return PutToXmlAsync( version, endpoint, enableImpersonation, options).Result;
+            return Rest.PutEndpointXml(this, version, endpoint, enableImpersonation, options);
         }
         public XElement BatchRequestToXml(int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null)
         {
-            return BatchRequestToXmlAsync( version, requests, enableImpersonation, options).Result;
+            return Rest.BatchEndpointXml(this, version, requests, enableImpersonation, options);
         }
 
 
         public XElement PostToXml(int version, string endpoint, HttpPostedFileBase file, bool enableImpersonation, RestPostOptions options = null)
         {
-            return PostToXmlAsync( version, endpoint, file, enableImpersonation, options).Result;
+            return Rest.PostEndpointXml( this, version, endpoint, file, enableImpersonation, options);
         }
 
         public XElement DeleteToXml(int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null)
         {
-            return DeleteToXmlAsync( version, endpoint, enableImpersonation, options).Result;
+            return Rest.DeleteEndpointXml(this, version, endpoint, enableImpersonation, options);
         }
 
         public string FormatRestDateTime(DateTime date)
@@ -186,80 +186,84 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
 
         public dynamic GetToDynamic(int version, string endpoint, bool enableImpersonation = true, RestGetOptions options = null)
         {
-            return GetToDynamicAsync(version, endpoint, enableImpersonation, options).Result;
+            var json =  Rest.GetEndpointString(this, version, endpoint,enableImpersonation, options);
+            return json != null ? JsonConvert.Deserialize(json) : null;
         }
 
         public dynamic PutToDynamic(int version, string endpoint, bool enableImpersonation = true, RestPutOptions options = null)
         {
-            return PutToDynamicAsync( version, endpoint, enableImpersonation, options).Result;
-            
+            var json =  Rest.PutEndpointString(this, version, endpoint, enableImpersonation, options);
+            return json != null ? JsonConvert.Deserialize(json) : null;
         }
 
         public dynamic PostToDynamic(int version, string endpoint, bool enableImpersonation = true, RestPostOptions options = null)
         {
-            return PostToDynamicAsync( version, endpoint,enableImpersonation, options).Result;
+            var json =  Rest.PostEndpointString(this, version, endpoint, enableImpersonation, options);
+            return json != null ? JsonConvert.Deserialize(json) : null;
         }
         public dynamic BatchRequestToDynamic(int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null)
         {
-            return BatchRequestToDynamicAsync(version, requests,  enableImpersonation, options).Result;
+            var json =  Rest.BatchEndpointString(this, version, requests, enableImpersonation, options);
+            return json != null ? JsonConvert.Deserialize(json) : null;
         }
         public dynamic DeleteToDynamic(int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null)
         {
-            return DeleteToDynamicAsync(version, endpoint,enableImpersonation,options).Result;
+            var json = Rest.DeleteEndpointString(this, version, endpoint, enableImpersonation, options);
+            return json != null ? JsonConvert.Deserialize(json) : null;
         }
 
 
         public string GetToString(int version, string endpoint, bool enableImpersonation = true, RestGetOptions options = null)
         {
-            return GetToStringAsync(version, endpoint, enableImpersonation, options).Result;
+            return Rest.GetEndpointString(this,version, endpoint, enableImpersonation, options);
         }
 
         public string PutToString(int version, string endpoint, bool enableImpersonation = true, RestPutOptions options = null)
         {
-            return PutToStringAsync(version, endpoint, enableImpersonation, options).Result;
+            return Rest.PutEndpointString( this,version, endpoint, enableImpersonation, options);
 
         }
 
         public string PostToString(int version, string endpoint, bool enableImpersonation = true, RestPostOptions options = null)
         {
-            return PostToStringAsync(version, endpoint, enableImpersonation, options).Result;
+            return Rest.PostEndpointString( this,version, endpoint, enableImpersonation, options);
         }
         public string BatchRequestToString(int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null)
         {
-            return BatchRequestToStringAsync(version, requests, enableImpersonation, options).Result;
+            return Rest.BatchEndpointString( this,version, requests, enableImpersonation, options);
         }
         public string DeleteToString(int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null)
         {
-            return DeleteToStringAsync(version, endpoint, enableImpersonation, options).Result;
+            return Rest.DeleteEndpointString(this,version, endpoint, enableImpersonation, options);
         }
 
 
         public async Task<string> GetToStringAsync(int version, string endpoint, bool enableImpersonation = true, RestGetOptions options = null)
         {
-            return await Rest.GetEndpointString(this, version, endpoint, options).ConfigureAwait(false);
+            return await Rest.GetEndpointStringAsync(this, version, endpoint, enableImpersonation,options);
 
         }
 
         public async Task<string> PutToStringAsync(int version, string endpoint, bool enableImpersonation = true, RestPutOptions options = null)
         {
-            return await Rest.PutEndpointString(this, version, endpoint, enableImpersonation, options).ConfigureAwait(false);
+            return await Rest.PutEndpointStringAsync(this, version, endpoint, enableImpersonation, options);
         }
 
         public async Task<string> PostToStringAsync(int version, string endpoint, bool enableImpersonation = true, RestPostOptions options = null)
         {
-            return await Rest.PostEndpointString(this, version, endpoint, enableImpersonation, null, options).ConfigureAwait(false);
+            return await Rest.PostEndpointStringAsync(this, version, endpoint, enableImpersonation, options);
 
         }
 
         public async Task<string> DeleteToStringAsync(int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null)
         {
-            return await Rest.DeleteEndpointString(this, version, endpoint, enableImpersonation, options).ConfigureAwait(false);
-          
+            return await Rest.DeleteEndpointStringAsync(this, version, endpoint, enableImpersonation, options);
+
         }
 
         public async Task<string> BatchRequestToStringAsync(int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null)
         {
-           return await Rest.BatchEndpointString(this, version, requests, enableImpersonation, options).ConfigureAwait(false);
+           return await Rest.BatchEndpointStringAsync(this, version, requests, enableImpersonation, options);
             
         }
         #endregion

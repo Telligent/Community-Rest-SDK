@@ -67,7 +67,51 @@ namespace Telligent.Evolution.RestSDK.Implementations
             return newUrl;
 
         }
-    
+
+        private string ProcessGetEndpoint(string endpoint, RestGetOptions options)
+        {
+            var processedEndpoint = endpoint;
+          
+            if (options.PathParameters.HasKeys())
+                processedEndpoint = ReplaceTokens(endpoint, options.PathParameters);
+            if (options.QueryStringParameters.HasKeys())
+                processedEndpoint = BuildQueryString(processedEndpoint, options.QueryStringParameters);
+            return processedEndpoint;
+        }
+        private string ProcessPostEndpoint(string endpoint, RestPostOptions options)
+        {
+            var processedEndpoint = endpoint;
+         
+            if (options.PathParameters.HasKeys())
+                processedEndpoint = ReplaceTokens(endpoint, options.PathParameters);
+            if (options.QueryStringParameters.HasKeys())
+                processedEndpoint = BuildQueryString(processedEndpoint, options.QueryStringParameters);
+
+            return processedEndpoint;
+        }
+        private string ProcessPutEndpoint(string endpoint, RestPutOptions  options)
+        {
+            var processedEndpoint = endpoint;
+          
+            if (options.PathParameters.HasKeys())
+                processedEndpoint = ReplaceTokens(endpoint, options.PathParameters);
+            if (options.QueryStringParameters.HasKeys())
+                processedEndpoint = BuildQueryString(processedEndpoint, options.QueryStringParameters);
+
+            return processedEndpoint;
+        }
+        private string ProcessDeleteEndpoint(string endpoint, RestDeleteOptions  options)
+        {
+            var processedEndpoint = endpoint;
+           
+            if (options.PathParameters.HasKeys())
+                processedEndpoint = ReplaceTokens(endpoint, options.PathParameters);
+            if (options.QueryStringParameters.HasKeys())
+                processedEndpoint = BuildQueryString(processedEndpoint, options.QueryStringParameters);
+
+            return processedEndpoint;
+        }
+       
         #region Helpers
 
         public string MakeEndpointUrl(RestHost host, int version, string endpoint)
@@ -133,68 +177,94 @@ namespace Telligent.Evolution.RestSDK.Implementations
 
         #endregion
 
-        public async Task<XElement> GetEndpointXml(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestGetOptions options = null)
+        public XElement GetEndpointXml(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestGetOptions options = null)
         {
-            var processedEndpoint = endpoint;
             if (options == null)
                 options = new RestGetOptions();
-
-            if (options.PathParameters.HasKeys())
-                processedEndpoint = ReplaceTokens(endpoint, options.PathParameters);
-            if (options.QueryStringParameters.HasKeys())
-                processedEndpoint = BuildQueryString(processedEndpoint, options.QueryStringParameters);
-
-            return XElement.Parse(await _proxy.Get(host, MakeEndpointUrl(host, version, processedEndpoint), (request) => AdjustGetRequest(host, request, enableImpersonation,options)));
+            var processedEndpoint = ProcessGetEndpoint(endpoint, options);
+          
+            return XElement.Parse(ReadResponseStream(_proxy.Get(host, MakeEndpointUrl(host, version, processedEndpoint), (request) => AdjustGetRequest(host, request, enableImpersonation,options))));
         }
 
-        public async Task<XElement> PutEndpointXml(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestPutOptions options = null)
+        public XElement PutEndpointXml(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestPutOptions options = null)
         {
-            var processedEndpoint = endpoint;
             if (options == null)
                 options = new RestPutOptions();
-
-
-            if (options.PathParameters.HasKeys())
-                processedEndpoint = ReplaceTokens(endpoint, options.PathParameters);
-            if (options.QueryStringParameters.HasKeys())
-                processedEndpoint = BuildQueryString(processedEndpoint, options.QueryStringParameters);
+            var processedEndpoint = ProcessPutEndpoint(endpoint, options);
+           
 
             string postData = options.PostParameters.MakeQuerystring(true);
 
-            return XElement.Parse(await _proxy.Post(host, MakeEndpointUrl(host, version, processedEndpoint), postData, null, (request) => AdjustPutRequest(host, request, enableImpersonation,options)));
+            return XElement.Parse(ReadResponseStream(  _proxy.Post(host, MakeEndpointUrl(host, version, processedEndpoint), postData,  (request) => AdjustPutRequest(host, request, enableImpersonation,options))));
         }
 
-        public async Task<XElement> PostEndpointXml(RestHost host, int version, string endpoint,  HttpPostedFileBase file = null, bool enableImpersonation = true, RestPostOptions options = null)
+        public XElement PostEndpointXml(RestHost host, int version, string endpoint,  HttpPostedFileBase file = null, bool enableImpersonation = true, RestPostOptions options = null)
         {
 
-            var processedEndpoint = endpoint;
             if (options == null)
                 options = new RestPostOptions();
 
-
-            if (options.PathParameters.HasKeys())
-                processedEndpoint = ReplaceTokens(endpoint, options.PathParameters);
-            if (options.QueryStringParameters.HasKeys())
-                processedEndpoint = BuildQueryString(processedEndpoint, options.QueryStringParameters);
+            var processedEndpoint = ProcessPostEndpoint(endpoint, options);
+           
 
             string postData = options.PostParameters.MakeQuerystring(true);
-            return XElement.Parse(await _proxy.Post(host, MakeEndpointUrl(host, version, processedEndpoint), postData, file, (request) => AdjustPostRequest(host, request, true,options)));
+            return XElement.Parse(ReadResponseStream( _proxy.Post(host, MakeEndpointUrl(host, version, processedEndpoint), postData, (request) => AdjustPostRequest(host, request, true,options))));
         }
 
-        public async Task<XElement>  DeleteEndpointXml(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null)
+        public XElement  DeleteEndpointXml(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null)
         {
 
-            var processedEndpoint = endpoint;
             if (options == null)
                 options = new RestDeleteOptions();
+            var processedEndpoint = ProcessDeleteEndpoint(endpoint, options);
+           
+
+            return XElement.Parse( ReadResponseStream( _proxy.Post(host, MakeEndpointUrl(host, version, processedEndpoint), null,  (request) => AdjustDeleteRequest(host, request, enableImpersonation,options))));
+        }
+
+        public async Task<XElement> GetEndpointXmlAsync(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestGetOptions options = null)
+        {
+            if (options == null)
+                options = new RestGetOptions();
+            var processedEndpoint = ProcessGetEndpoint(endpoint, options);
+
+            return XElement.Parse(await ReadResponseStreamAsync(await _proxy.GetAsync(host, MakeEndpointUrl(host, version, processedEndpoint), (request) => AdjustGetRequest(host, request, enableImpersonation, options))));
+        }
+
+        public async Task<XElement> PutEndpointXmlAsync(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestPutOptions options = null)
+        {
+            if (options == null)
+                options = new RestPutOptions();
+            var processedEndpoint = ProcessPutEndpoint(endpoint, options);
 
 
-            if (options.PathParameters.HasKeys())
-                processedEndpoint = ReplaceTokens(endpoint, options.PathParameters);
-            if (options.QueryStringParameters.HasKeys())
-                processedEndpoint = BuildQueryString(processedEndpoint, options.QueryStringParameters);
+            string postData = options.PostParameters.MakeQuerystring(true);
 
-            return XElement.Parse(await _proxy.Post(host, MakeEndpointUrl(host, version, processedEndpoint), null, null, (request) => AdjustDeleteRequest(host, request, enableImpersonation,options)));
+            return XElement.Parse(await ReadResponseStreamAsync(await _proxy.PostAsync(host, MakeEndpointUrl(host, version, processedEndpoint), postData, (request) => AdjustPutRequest(host, request, enableImpersonation, options))));
+        }
+
+        public async Task<XElement> PostEndpointXmlAsync(RestHost host, int version, string endpoint, HttpPostedFileBase file = null, bool enableImpersonation = true, RestPostOptions options = null)
+        {
+
+            if (options == null)
+                options = new RestPostOptions();
+
+            var processedEndpoint = ProcessPostEndpoint(endpoint, options);
+
+
+            string postData = options.PostParameters.MakeQuerystring(true);
+            return XElement.Parse(await ReadResponseStreamAsync(await _proxy.PostAsync(host, MakeEndpointUrl(host, version, processedEndpoint), postData, (request) => AdjustPostRequest(host, request, true, options))));
+        }
+
+        public async Task<XElement> DeleteEndpointXmlAsync(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null)
+        {
+
+            if (options == null)
+                options = new RestDeleteOptions();
+            var processedEndpoint = ProcessDeleteEndpoint(endpoint, options);
+
+
+            return XElement.Parse(await ReadResponseStreamAsync(await _proxy.PostAsync(host, MakeEndpointUrl(host, version, processedEndpoint), null, (request) => AdjustDeleteRequest(host, request, enableImpersonation, options))));
         }
 
        
@@ -208,81 +278,116 @@ namespace Telligent.Evolution.RestSDK.Implementations
 
        }
 
-       public Task<string> GetEndpointString(RestHost host, int version, string endpoint, RestGetOptions options = null)
+       public string GetEndpointString(RestHost host, int version, string endpoint,bool enableImpersonation =true, RestGetOptions options = null)
         {
-
-            var processedEndpoint = endpoint;
             if (options == null)
                 options = new RestGetOptions();
-
-
-            if (options.PathParameters.HasKeys())
-                processedEndpoint = ReplaceTokens(endpoint, options.PathParameters);
-            if (options.QueryStringParameters.HasKeys())
-                processedEndpoint = BuildQueryString(processedEndpoint, options.QueryStringParameters);
-
-            return _proxy.Get(host, MakeEndpointUrl(host, version, processedEndpoint), (request) => AdjustGetRequest(host, request, true,options));
+            var processedEndpoint = ProcessGetEndpoint(endpoint, options);
+            Stream stream = _proxy.Get(host, MakeEndpointUrl(host, version, processedEndpoint), (request) => AdjustGetRequest(host, request, enableImpersonation,options));
+           return ReadResponseStream(stream);
         }
 
-        public Task<string>  PutEndpointString(RestHost host, int version, string endpoint,  bool enableImpersonation = true, RestPutOptions options = null)
+        public string  PutEndpointString(RestHost host, int version, string endpoint,  bool enableImpersonation = true, RestPutOptions options = null)
         {
-            var processedEndpoint = endpoint;
             if (options == null)
                 options = new RestPutOptions();
-
-
-            if (options.PathParameters.HasKeys())
-                processedEndpoint = ReplaceTokens(endpoint, options.PathParameters);
-            if (options.QueryStringParameters.HasKeys())
-                processedEndpoint = BuildQueryString(processedEndpoint, options.QueryStringParameters);
-
+            var processedEndpoint = ProcessPutEndpoint(endpoint, options);
+           
             string postData = options.PostParameters.MakeQuerystring(true);
 
-            return _proxy.Post(host, MakeEndpointUrl(host, version, processedEndpoint), postData, null, (request) => AdjustPutRequest(host, request, enableImpersonation,options));
+            var stream = _proxy.Post(host, MakeEndpointUrl(host, version, processedEndpoint), postData,  (request) => AdjustPutRequest(host, request, enableImpersonation,options));
+            return ReadResponseStream(stream);
         }
 
-        public Task<string> PostEndpointString(RestHost host, int version, string endpoint,  bool enableImpersonation = true, HttpPostedFileBase file = null, RestPostOptions options = null)
+        public string PostEndpointString(RestHost host, int version, string endpoint,  bool enableImpersonation = true,  RestPostOptions options = null)
         {
-            var processedEndpoint = endpoint;
             if (options == null)
                 options = new RestPostOptions();
+            var processedEndpoint = ProcessPostEndpoint(endpoint,options);
+           
+            string postData = options.PostParameters.MakeQuerystring(true);
 
+            var stream =  _proxy.Post(host, MakeEndpointUrl(host, version, processedEndpoint), postData,  (request) => AdjustPostRequest(host, request, true,options));
+            return ReadResponseStream(stream);
+        }
 
-            if (options.PathParameters.HasKeys())
-                processedEndpoint = ReplaceTokens(endpoint, options.PathParameters);
-            if (options.QueryStringParameters.HasKeys())
-                processedEndpoint = BuildQueryString(processedEndpoint, options.QueryStringParameters);
+        public string  DeleteEndpointString(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null)
+        {
+            if (options == null)
+                options = new RestDeleteOptions();
+            var processedEndpoint = ProcessDeleteEndpoint(endpoint, options);
+           
+
+            var stream = _proxy.Post(host, MakeEndpointUrl(host, version, processedEndpoint), null,  (request) => AdjustDeleteRequest(host, request, enableImpersonation,options));
+            return ReadResponseStream(stream);
+        }
+
+        public async Task<string> GetEndpointStringAsync(RestHost host, int version, string endpoint,bool enableImpersonation=true, RestGetOptions options = null)
+        {
+            if (options == null)
+                options = new RestGetOptions();
+            var processedEndpoint = ProcessGetEndpoint(endpoint, options);
+            var stream = await _proxy.GetAsync(host, MakeEndpointUrl(host, version, processedEndpoint), (request) => AdjustGetRequest(host, request, enableImpersonation, options));
+            return await ReadResponseStreamAsync(stream);
+        }
+
+        public async Task<string> PutEndpointStringAsync(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestPutOptions options = null)
+        {
+            if (options == null)
+                options = new RestPutOptions();
+            var processedEndpoint = ProcessPutEndpoint(endpoint, options);
 
             string postData = options.PostParameters.MakeQuerystring(true);
 
-            return  _proxy.Post(host, MakeEndpointUrl(host, version, processedEndpoint), postData, file, (request) => AdjustPostRequest(host, request, true,options));
+            var stream = await _proxy.PostAsync(host, MakeEndpointUrl(host, version, processedEndpoint), postData, (request) => AdjustPutRequest(host, request, enableImpersonation, options));
+            return await ReadResponseStreamAsync(stream);
         }
 
-        public Task<string>  DeleteEndpointString(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null)
+        public async Task<string> PostEndpointStringAsync(RestHost host, int version, string endpoint, bool enableImpersonation = true,  RestPostOptions options = null)
         {
-            var processedEndpoint = endpoint;
+            if (options == null)
+                options = new RestPostOptions();
+            var processedEndpoint = ProcessPostEndpoint(endpoint, options);
+
+            string postData = options.PostParameters.MakeQuerystring(true);
+
+            var stream = await _proxy.PostAsync(host, MakeEndpointUrl(host, version, processedEndpoint), postData, (request) => AdjustPostRequest(host, request, true, options));
+            return await ReadResponseStreamAsync(stream);
+        }
+
+        public async Task<string> DeleteEndpointStringAsync(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null)
+        {
             if (options == null)
                 options = new RestDeleteOptions();
+            var processedEndpoint = ProcessDeleteEndpoint(endpoint, options);
 
 
-            if (options.PathParameters.HasKeys())
-                processedEndpoint = ReplaceTokens(endpoint, options.PathParameters);
-            if (options.QueryStringParameters.HasKeys())
-                processedEndpoint = BuildQueryString(processedEndpoint, options.QueryStringParameters);
-
-            return _proxy.Post(host, MakeEndpointUrl(host, version, processedEndpoint), null, null, (request) => AdjustDeleteRequest(host, request, enableImpersonation,options));
+            var stream = await  _proxy.PostAsync(host, MakeEndpointUrl(host, version, processedEndpoint), null, (request) => AdjustDeleteRequest(host, request, enableImpersonation, options));
+            return await ReadResponseStreamAsync(stream);
         }
 
 
-        public Task<string> BatchEndpointString(RestHost host, int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null)
+
+        public async Task<string> BatchEndpointStringAsync(RestHost host, int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null)
         {
             var postData = CreatePostBatchData(requests,options);
-            return _proxy.Post(host, MakeEndpointUrl(host,version,"batch.json"), postData,null, (request) => AdjustBatchRequest(host, request, enableImpersonation, options));
+           var str = await _proxy.PostAsync(host, MakeEndpointUrl(host,version,"batch.json"), postData, (request) => AdjustBatchRequest(host, request, enableImpersonation, options));
+            return await ReadResponseStreamAsync(str);
         }
-        public async Task<XElement> BatchEndpointXml(RestHost host, int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null)
+        public async Task<XElement> BatchEndpointXmlAsync(RestHost host, int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null)
         {
             var postData = CreatePostBatchData(requests,options);
-            return XElement.Parse(await _proxy.Post(host, MakeEndpointUrl(host, version, "batch.json"), postData, null, (request) => AdjustBatchRequest(host, request, enableImpersonation, options)));
+            return XElement.Parse(await ReadResponseStreamAsync(await _proxy.PostAsync(host, MakeEndpointUrl(host, version, "batch.json"), postData,  (request) => AdjustBatchRequest(host, request, enableImpersonation, options))));
+        }
+        public string BatchEndpointString(RestHost host, int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null)
+        {
+            var postData = CreatePostBatchData(requests, options);
+            return ReadResponseStream( _proxy.Post(host, MakeEndpointUrl(host, version, "batch.json"), postData, (request) => AdjustBatchRequest(host, request, enableImpersonation, options)));
+        }
+        public XElement BatchEndpointXml(RestHost host, int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null)
+        {
+            var postData = CreatePostBatchData(requests, options);
+            return XElement.Parse(ReadResponseStream(_proxy.Post(host, MakeEndpointUrl(host, version, "batch.json"), postData, (request) => AdjustBatchRequest(host, request, enableImpersonation, options))));
         }
         private string CreatePostBatchData(IList<BatchRequest> requests,BatchRequestOptions options)
         {
@@ -295,6 +400,25 @@ namespace Telligent.Evolution.RestSDK.Implementations
             var postData = string.Join("&", postDataArr);
             return postData + "&Sequential=" + options.RunSequentially.ToString().ToLowerInvariant();
         }
-        
+        private async Task<string> ReadResponseStreamAsync(Stream str)
+        {
+            if (str == null)
+                return null;
+           // str.Position = 0;
+            using (var reader = new StreamReader(str))
+            {
+                return await reader.ReadToEndAsync();
+            }
+        }
+        private string ReadResponseStream(Stream str)
+        {
+            if (str == null)
+                return null;
+            //str.Position = 0;
+            using (var reader = new StreamReader(str))
+            {
+                return  reader.ReadToEnd();
+            }
+        }
     }
 }

@@ -39,20 +39,27 @@ namespace Telligent.RestSDK.IntegrationTests
             Assert.IsNotNull(info.InfoResult.SiteName);
         }
         [Test]
-        public async Task can_do_get_multiple_dynamic_request()
+        public void  can_do_get_multiple_dynamic_request()
         {
             var endpoint = "info.json";
-            var o1 =  Host.GetToDynamicAsync(2, endpoint);
-            var o2 = Host.GetToDynamicAsync(2, endpoint);
-            var o3 = Host.GetToDynamicAsync(2, endpoint);
-            var o4 = Host.GetToDynamicAsync(2, endpoint);
-            var o5 = Host.GetToDynamicAsync(2, endpoint);
-            Task.WaitAll();
-            Assert.IsNotNull(o1);
-            Assert.IsNotNull(o2);
-            Assert.IsNotNull(o3);
-            Assert.IsNotNull(o4);
-            Assert.IsNotNull(o5);
+            var list = new List<Task<dynamic>>();
+            list.Add(Host.GetToDynamicAsync(2, endpoint));
+            list.Add(Host.GetToDynamicAsync(2, endpoint));
+            list.Add(Host.GetToDynamicAsync(2, endpoint));
+            list.Add(Host.GetToDynamicAsync(2, endpoint));
+            list.Add(Host.GetToDynamicAsync(2, endpoint));
+
+            dynamic o1 =  Host.GetToDynamicAsync(2, endpoint);
+            dynamic o2 = Host.GetToDynamicAsync(2, endpoint);
+            dynamic o3 = Host.GetToDynamicAsync(2, endpoint);
+            dynamic o4 = Host.GetToDynamicAsync(2, endpoint);
+            dynamic o5 = Host.GetToDynamicAsync(2, endpoint);
+            Task.WaitAll(list.ToArray());
+
+            foreach (var o in list)
+            {
+                Assert.IsNotNull(o.Result.InfoResult.SiteName);
+            }
         }
      
         [Test]

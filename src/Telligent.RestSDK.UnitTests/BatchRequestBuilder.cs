@@ -33,13 +33,16 @@ namespace Telligent.RestSDK.UnitTests
                 new Mock<IRestCommunicationProxy>();
             proxy.Setup(
                     m =>
-                        m.Post(It.IsAny<RestHost>(), It.IsAny<string>(), It.IsAny<string>(), null, It.IsAny<Action<HttpWebRequest>>())
+                        m.PostAsync(It.IsAny<RestHost>(), It.IsAny<string>(), It.IsAny<string>(),  It.IsAny<Action<HttpWebRequest>>())
                             )
-                    .Returns<RestHost, string, string,HttpPostedFile,Action<HttpWebRequest>>(
-                        (h, u, data, req, res) =>
+                    .Returns<RestHost, string, string,Action<HttpWebRequest>>(
+                        (h, u, data, res) =>
                         {
                             url = u;
-                            return Task.FromResult("{\"Response\":\"Ok\"}");
+                            Stream str = new MemoryStream();
+                            var w = new StreamWriter(str);
+                            w.Write("{\"Response\":\"Ok\"}");
+                            return Task.FromResult(str);
 
                         });
 
@@ -52,7 +55,7 @@ namespace Telligent.RestSDK.UnitTests
             nvc2.Add("parm", "p1");
             nvc2.Add("parm2", "p2");
             requests.Add(new BatchRequest("users.json", 0) { ApiVersion = 2, RequestParameters = nvc2 });
-            var resp = await rest.BatchEndpointString(new TestRestHost("http://community/"), 2, requests);
+            var resp = await rest.BatchEndpointStringAsync(new TestRestHost("http://community/"), 2, requests);
 
             Assert.AreEqual("http://community/api.ashx/v2/batch.json", url);
 
@@ -65,13 +68,17 @@ namespace Telligent.RestSDK.UnitTests
                 new Mock<IRestCommunicationProxy>();
             proxy.Setup(
                     m =>
-                        m.Post(It.IsAny<RestHost>(), It.IsAny<string>(), It.IsAny<string>(), null, It.IsAny<Action<HttpWebRequest>>())
+                        m.PostAsync(It.IsAny<RestHost>(), It.IsAny<string>(), It.IsAny<string>(),  It.IsAny<Action<HttpWebRequest>>())
                             )
-                    .Returns<RestHost, string, string, HttpPostedFile, Action<HttpWebRequest>>(
-                        (h, u, data, req, res) =>
+                    .Returns<RestHost, string, string, Action<HttpWebRequest>>(
+                        (h, u, data, res) =>
                         {
                             postData  = data;
-                            return Task.FromResult("{\"Response\":\"Ok\"}");
+                          
+                            Stream str = new MemoryStream();
+                            var w = new StreamWriter(str);
+                            w.Write("{\"Response\":\"Ok\"}");
+                            return Task.FromResult(str);
 
                         });
 
@@ -84,7 +91,7 @@ namespace Telligent.RestSDK.UnitTests
             nvc2.Add("parm", "p1");
             nvc2.Add("parm2", "p2");
             requests.Add(new BatchRequest("users.json", 1) { ApiVersion = 2, RequestParameters = nvc2 });
-            var resp = await rest.BatchEndpointString(new TestRestHost("http://community/"), 2, requests);
+            var resp = await rest.BatchEndpointStringAsync(new TestRestHost("http://community/"), 2, requests);
 
             var reqParms = HttpUtility.ParseQueryString(postData);
             Assert.AreEqual(7, reqParms.Keys.Count);
@@ -99,13 +106,17 @@ namespace Telligent.RestSDK.UnitTests
                 new Mock<IRestCommunicationProxy>();
             proxy.Setup(
                     m =>
-                        m.Post(It.IsAny<RestHost>(), It.IsAny<string>(), It.IsAny<string>(), null, It.IsAny<Action<HttpWebRequest>>())
+                        m.PostAsync(It.IsAny<RestHost>(), It.IsAny<string>(), It.IsAny<string>(),  It.IsAny<Action<HttpWebRequest>>())
                             )
-                    .Returns<RestHost, string, string, HttpPostedFile, Action<HttpWebRequest>>(
-                        (h, u, data, req, res) =>
+                    .Returns<RestHost, string, string, Action<HttpWebRequest>>(
+                        (h, u, data, res) =>
                         {
                             postData = data;
-                            return Task.FromResult("{\"Response\":\"Ok\"}");
+
+                            Stream str = new MemoryStream();
+                            var w = new StreamWriter(str);
+                            w.Write("{\"Response\":\"Ok\"}");
+                            return Task.FromResult(str);
 
                         });
 
@@ -118,7 +129,7 @@ namespace Telligent.RestSDK.UnitTests
             nvc2.Add("parm", "p1");
             nvc2.Add("parm2", "p2");
             requests.Add(new BatchRequest("users.json", 1) { ApiVersion = 2, RequestParameters = nvc2 });
-            var resp = await rest.BatchEndpointString(new TestRestHost("http://community/"), 2, requests, true, new BatchRequestOptions() { RunSequentially = true });
+            var resp = await rest.BatchEndpointStringAsync(new TestRestHost("http://community/"), 2, requests, true, new BatchRequestOptions() { RunSequentially = true });
 
             var reqParms = HttpUtility.ParseQueryString(postData);
             Assert.AreEqual(7, reqParms.Keys.Count);
