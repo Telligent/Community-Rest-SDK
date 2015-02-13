@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -40,9 +41,21 @@ namespace Telligent.Rest.SDK.Model
 
         Task<string> BatchEndpointStringAsync(RestHost host, int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null);
         Task<XElement> BatchEndpointXmlAsync(RestHost host, int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null);
+        Task<Stream> BatchEndpointStreamAsync(RestHost host, int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null);
+        Stream BatchEndpointStream(RestHost host, int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null);
 
         string BatchEndpointString(RestHost host, int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null);
         XElement BatchEndpointXml(RestHost host, int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null);
+
+        Task<Stream> GetEndpointStreamAsync(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestGetOptions options = null);
+        Task<Stream> PutEndpointStreamAsync(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestPutOptions options = null);
+        Task<Stream> PostEndpointStreamAsync(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestPostOptions options = null);
+        Task<Stream> DeleteEndpointStreamAsync(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null);
+
+        Stream GetEndpointStream(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestGetOptions options = null);
+        Stream PutEndpointStream(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestPutOptions options = null);
+        Stream PostEndpointStream(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestPostOptions options = null);
+        Stream DeleteEndpointStream(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null);
 
         string ReplaceTokens(string url,NameValueCollection parameters);
         string BuildQueryString(string url, NameValueCollection nvc);

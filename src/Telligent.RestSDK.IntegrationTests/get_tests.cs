@@ -10,13 +10,13 @@ using Telligent.Evolution.Extensibility.Rest.Version1;
 
 namespace Telligent.RestSDK.IntegrationTests
 {
-    public class get_tests:IntegrationTestBase
+    public class get_tests : IntegrationTestBase
     {
         [Test]
         public async Task can_do_get_single_dynamic_request()
         {
             var endpoint = "/users/2100.json";
-            dynamic info = await Host.GetToDynamicAsync(2,endpoint);
+            dynamic info = await Host.GetToDynamicAsync(2, endpoint);
 
             Assert.IsNotNull(info.User.Username);
         }
@@ -25,21 +25,21 @@ namespace Telligent.RestSDK.IntegrationTests
         {
             var endpoint = "users/{userid}.json";
             RestGetOptions o = new RestGetOptions();
-            o.PathParameters.Add("userid","2100");
-            dynamic info = await Host.GetToDynamicAsync(2, endpoint,true,o);
+            o.PathParameters.Add("userid", "2100");
+            dynamic info = await Host.GetToDynamicAsync(2, endpoint, true, o);
 
             Assert.IsNotNull(info.User.Username);
         }
         [Test]
-        public void  can_do_get_single_synchronous_dynamic_request()
+        public void can_do_get_single_synchronous_dynamic_request()
         {
             var endpoint = "info.json";
-            dynamic info =  Host.GetToDynamic(2, endpoint);
+            dynamic info = Host.GetToDynamic(2, endpoint);
 
             Assert.IsNotNull(info.InfoResult.SiteName);
         }
         [Test]
-        public void  can_do_get_multiple_dynamic_request()
+        public void can_do_get_multiple_dynamic_request()
         {
             var endpoint = "info.json";
             var list = new List<Task<dynamic>>();
@@ -49,7 +49,7 @@ namespace Telligent.RestSDK.IntegrationTests
             list.Add(Host.GetToDynamicAsync(2, endpoint));
             list.Add(Host.GetToDynamicAsync(2, endpoint));
 
-            dynamic o1 =  Host.GetToDynamicAsync(2, endpoint);
+            dynamic o1 = Host.GetToDynamicAsync(2, endpoint);
             dynamic o2 = Host.GetToDynamicAsync(2, endpoint);
             dynamic o3 = Host.GetToDynamicAsync(2, endpoint);
             dynamic o4 = Host.GetToDynamicAsync(2, endpoint);
@@ -61,7 +61,7 @@ namespace Telligent.RestSDK.IntegrationTests
                 Assert.IsNotNull(o.Result.InfoResult.SiteName);
             }
         }
-     
+
         [Test]
         public void can_do_get_paged_request_synchronously()
         {
@@ -74,11 +74,11 @@ namespace Telligent.RestSDK.IntegrationTests
             RestGetOptions o = new RestGetOptions();
             o.QueryStringParameters = options;
             var endpoint = "forums.json";
-      
 
-            var response = Host.GetToDynamic(2, endpoint,true,o);
+
+            var response = Host.GetToDynamic(2, endpoint, true, o);
             Assert.IsNotNull(response.Forums);
-            Assert.AreEqual(50,response.PageSize);
+            Assert.AreEqual(50, response.PageSize);
         }
         [Test]
         public async Task can_do_get_paged_dynamic_request()
@@ -93,33 +93,33 @@ namespace Telligent.RestSDK.IntegrationTests
             var endpoint = "forums.json";
 
 
-            var response = await Host.GetToDynamicAsync(2, endpoint,true,o);
+            var response = await Host.GetToDynamicAsync(2, endpoint, true, o);
             Assert.IsNotNull(response.Forums);
             Assert.AreEqual(50, response.PageSize);
         }
 
         [Test]
-        public async Task  can_do_batch_request_non_sequential_to_dynamic()
+        public async Task can_do_batch_request_non_sequential_to_dynamic()
         {
-            var req1 = new BatchRequest("info.json", 0) {ApiVersion = 2};
-            req1.RequestParameters.Add("ShowSiteSettings","true");
-           req1.RequestParameters.Add("IncludeHidden","true");
+            var req1 = new BatchRequest("info.json", 0) { ApiVersion = 2 };
+            req1.RequestParameters.Add("ShowSiteSettings", "true");
+            req1.RequestParameters.Add("IncludeHidden", "true");
 
             var req2 = new BatchRequest("users.json", 1);
-            req2.RequestParameters.Add("PageSize","5");
-            
+            req2.RequestParameters.Add("PageSize", "5");
 
-            var requests = new List<BatchRequest>() {req1, req2};
+
+            var requests = new List<BatchRequest>() { req1, req2 };
             var resp = await Host.BatchRequestToDynamicAsync(2, requests);
 
             Assert.IsNotNull(resp.BatchResponses);
             Assert.IsNotNull(resp.BatchResponses[0]);
             Assert.IsNotNull(resp.BatchResponses[1]);
-            Assert.AreEqual(200,resp.BatchResponses[0].StatusCode);
+            Assert.AreEqual(200, resp.BatchResponses[0].StatusCode);
             Assert.AreEqual(200, resp.BatchResponses[1].StatusCode);
             Assert.IsNotNull(resp.BatchResponses[0].BatchResponse.InfoResult);
             Assert.IsNotNull(resp.BatchResponses[1].BatchResponse.Users);
-           
+
         }
 
         [Test]
@@ -128,8 +128,30 @@ namespace Telligent.RestSDK.IntegrationTests
             var endpoint = "/users/2100.json";
             var info = await Host.GetToStringAsync(2, endpoint);
 
-           Assert.IsFalse(string.IsNullOrWhiteSpace(info));
+            Assert.IsFalse(string.IsNullOrWhiteSpace(info));
             Assert.IsTrue(info.Contains("admin"));
+        }
+        [Test]
+        public async Task can_do_get_single_stream_request()
+        {
+            var endpoint = "/users/info.json";
+
+            using (var info =await Host.GetToStreamAsync(2, endpoint))
+            {
+                Assert.IsNotNull(info);
+                Assert.Greater(info.Length, 0);
+            }
+        }
+        [Test]
+        public void can_do_get_single_stream_request_sync()
+        {
+            var endpoint = "/users/info.json";
+            using (var info = Host.GetToStream(2, endpoint))
+            {
+                Assert.IsNotNull(info);
+                Assert.Greater(info.Length, 0);
+            }
+
         }
     }
 }

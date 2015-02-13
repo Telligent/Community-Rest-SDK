@@ -266,6 +266,59 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
            return await Rest.BatchEndpointStringAsync(this, version, requests, enableImpersonation, options);
             
         }
+
+
+        public Stream GetToStream(int version, string endpoint, bool enableImpersonation = true, RestGetOptions options = null)
+        {
+            return Rest.GetEndpointStream(this, version, endpoint, enableImpersonation, options);
+        }
+
+        public Stream PutToStream(int version, string endpoint, bool enableImpersonation = true, RestPutOptions options = null)
+        {
+            return Rest.PutEndpointStream(this, version, endpoint, enableImpersonation, options);
+
+        }
+        public  Task<Stream> BatchRequestToStreamAsync(int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null)
+        {
+            return  Rest.BatchEndpointStreamAsync(this, version, requests, enableImpersonation, options);
+
+        }
+        public Stream PostToStream(int version, string endpoint, bool enableImpersonation = true, RestPostOptions options = null)
+        {
+            return Rest.PostEndpointStream(this, version, endpoint, enableImpersonation, options);
+        }
+        public Stream BatchRequestToStream(int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null)
+        {
+            return Rest.BatchEndpointStream(this, version, requests, enableImpersonation, options);
+        }
+        public Stream DeleteToStream(int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null)
+        {
+            return Rest.DeleteEndpointStream(this, version, endpoint, enableImpersonation, options);
+        }
+
+
+        public  Task<Stream> GetToStreamAsync(int version, string endpoint, bool enableImpersonation = true, RestGetOptions options = null)
+        {
+            return   Rest.GetEndpointStreamAsync(this, version, endpoint, enableImpersonation, options);
+
+        }
+
+        public Task<Stream> PutToStreamAsync(int version, string endpoint, bool enableImpersonation = true, RestPutOptions options = null)
+        {
+            return  Rest.PutEndpointStreamAsync(this, version, endpoint, enableImpersonation, options);
+        }
+
+        public  Task<Stream> PostToStreamAsync(int version, string endpoint, bool enableImpersonation = true, RestPostOptions options = null)
+        {
+            return  Rest.PostEndpointStreamAsync(this, version, endpoint, enableImpersonation, options);
+
+        }
+
+        public  Task<Stream> DeleteToStreamAsync(int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null)
+        {
+            return  Rest.DeleteEndpointStreamAsync(this, version, endpoint, enableImpersonation, options);
+
+        }
         #endregion
     }
 }

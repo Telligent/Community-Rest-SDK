@@ -420,5 +420,103 @@ namespace Telligent.Evolution.RestSDK.Implementations
                 return  reader.ReadToEnd();
             }
         }
+
+
+        public Task<Stream> GetEndpointStreamAsync(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestGetOptions options = null)
+        {
+            if (options == null)
+                options = new RestGetOptions();
+            var processedEndpoint = ProcessGetEndpoint(endpoint, options);
+            return _proxy.GetAsync(host, MakeEndpointUrl(host, version, processedEndpoint),
+                (req) => AdjustGetRequest(host, req, enableImpersonation, options));
+        }
+
+        public Task<Stream> PutEndpointStreamAsync(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestPutOptions options = null)
+        {
+            if (options == null)
+                options = new RestPutOptions();
+            var processedEndpoint = ProcessPutEndpoint(endpoint, options);
+
+            string postData = options.PostParameters.MakeQuerystring(true);
+            return _proxy.PostAsync(host, MakeEndpointUrl(host, version, processedEndpoint),postData,
+                (req) => AdjustPutRequest(host, req, enableImpersonation, options));
+        }
+
+        public Task<Stream> PostEndpointStreamAsync(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestPostOptions options = null)
+        {
+            if (options == null)
+                options = new RestPostOptions();
+            var processedEndpoint = ProcessPostEndpoint(endpoint, options);
+
+            string postData = options.PostParameters.MakeQuerystring(true);
+            return _proxy.PostAsync(host, MakeEndpointUrl(host, version, processedEndpoint), postData,
+                (req) => AdjustPostRequest(host, req, enableImpersonation, options));
+        }
+
+        public Task<Stream> DeleteEndpointStreamAsync(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null)
+        {
+            if (options == null)
+                options = new RestDeleteOptions();
+            var processedEndpoint = ProcessDeleteEndpoint(endpoint, options);
+
+      
+            return _proxy.PostAsync(host, MakeEndpointUrl(host, version, processedEndpoint),null,
+                (req) => AdjustDeleteRequest(host, req, enableImpersonation, options));
+        }
+
+        public Stream GetEndpointStream(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestGetOptions options = null)
+        {
+            if (options == null)
+                options = new RestGetOptions();
+            var processedEndpoint = ProcessGetEndpoint(endpoint, options);
+            return _proxy.Get(host, MakeEndpointUrl(host, version, processedEndpoint),
+                (req) => AdjustGetRequest(host, req, enableImpersonation, options));
+        }
+
+        public Stream PutEndpointStream(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestPutOptions options = null)
+        {
+            if (options == null)
+                options = new RestPutOptions();
+            var processedEndpoint = ProcessPutEndpoint(endpoint, options);
+
+            string postData = options.PostParameters.MakeQuerystring(true);
+            return _proxy.Post(host, MakeEndpointUrl(host, version, processedEndpoint), postData,
+                (req) => AdjustPutRequest(host, req, enableImpersonation, options));
+        }
+
+        public Stream PostEndpointStream(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestPostOptions options = null)
+        {
+            if (options == null)
+                options = new RestPostOptions();
+            var processedEndpoint = ProcessPostEndpoint(endpoint, options);
+
+            string postData = options.PostParameters.MakeQuerystring(true);
+            return _proxy.Post(host, MakeEndpointUrl(host, version, processedEndpoint), postData,
+                (req) => AdjustPostRequest(host, req, enableImpersonation, options));
+        }
+
+        public Stream DeleteEndpointStream(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null)
+        {
+            if (options == null)
+                options = new RestDeleteOptions();
+            var processedEndpoint = ProcessDeleteEndpoint(endpoint, options);
+
+
+            return _proxy.Post(host, MakeEndpointUrl(host, version, processedEndpoint), null,
+                (req) => AdjustDeleteRequest(host, req, enableImpersonation, options));
+        }
+
+
+        public Task<Stream> BatchEndpointStreamAsync(RestHost host, int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null)
+        {
+            var postData = CreatePostBatchData(requests, options);
+            return _proxy.PostAsync(host, MakeEndpointUrl(host, version, "batch.json"), postData, (request) => AdjustBatchRequest(host, request, enableImpersonation, options));
+        }
+
+        public Stream BatchEndpointStream(RestHost host, int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null)
+        {
+            var postData = CreatePostBatchData(requests, options);
+            return _proxy.Post(host, MakeEndpointUrl(host, version, "batch.json"), postData, (request) => AdjustBatchRequest(host, request, enableImpersonation, options));
+        }
     }
 }
