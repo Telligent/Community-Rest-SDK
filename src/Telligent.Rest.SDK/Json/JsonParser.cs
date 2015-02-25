@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Telligent.Evolution.RestSDK.Exceptions;
 using Telligent.Evolution.RestSDK.Extensions;
 
@@ -7,6 +8,17 @@ namespace Telligent.Evolution.RestSDK.Json
 {
     public class JsonParser
     {
+        private static IDictionary<string, string> _controlChars = new Dictionary<string, string>()
+        {
+            {"b", "\b"},
+            {"f", "\f"},
+            {"n", "\n"},
+            {"r", "\r"},
+            {"t", "\t"},
+            {"v", "\v"},
+            {"0", "\0"}
+        };
+        private static readonly Regex _jsonUnescape = new Regex( @"(?:\\(?:(?<continuation>[\n\r]+)|(?<octal>(?:[1-7][0-7]{0,2}|[0-7]{2,3}))|u(?:{(?<unicodepoint>[0-f]+)}|(?<unicode>[0-f]{4,4}))|(?<control>[bfnrtv0])|(?<literal>.{1,1})))");
         public static string ReadAsString(char[] json)
         {
             var start = 0;
@@ -35,7 +47,7 @@ namespace Telligent.Evolution.RestSDK.Json
                 previous = current;
             }
 
-            return !found ? string.Empty : ToString(json, start, end);
+            return !found ? string.Empty : Unescape(ToString(json, start, end));
         }
 
         public static double? ReadAsNumber(char[] json)
@@ -273,6 +285,36 @@ namespace Telligent.Evolution.RestSDK.Json
         {
             var length = end - start;
             return length > 0 ? new string(json, start, length) : string.Empty;
+        }
+        private static string Unescape(string json)
+        {
+
+            return _jsonUnescape.Replace(json, m =>
+            {
+                if (m.Groups["literal"].Success)
+                    return m.Groups["literal"].Value;
+                else if (m.Groups["continuation"].Success)
+                    return string.Empty;
+                else if (m.Groups["octal"].Success)
+                {
+                    var code = Convert.ToInt32(m.Groups["octal"].Value, 8);
+                    return char.ConvertFromUtf32(code).ToString();
+                }
+                else if (m.Groups["unicode"].Success)
+                {
+                    return char.ConvertFromUtf32(Convert.ToInt32(m.Groups["unicode"].Value, 16)).ToString();
+                }
+                else if (m.Groups["control"].Success)
+                {
+                    var val = m.Groups["control"].Value;
+                    var replace = _controlChars[val.ToLowerInvariant()];
+                    if (!string.IsNullOrEmpty(replace))
+                        return replace;
+
+                }
+                return m.Value;
+
+            });
         }
     }
 }

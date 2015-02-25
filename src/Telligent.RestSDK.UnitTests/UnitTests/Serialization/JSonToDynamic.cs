@@ -652,5 +652,7 @@ namespace Telligent.RestSDK.IntegrationTests.UnitTests.Serialization
 
             Assert.IsNotNull(obj.Users);
         }
+
+    
    }
 }

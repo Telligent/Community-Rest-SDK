@@ -33,6 +33,10 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         }
         public NameValueCollection PathParameters { get; set; }
     }
+    public class FileUploadOptions
+    {
+
+    }
     public class RestPostOptions : RestOptions
     {
         public RestPostOptions()
@@ -83,9 +87,11 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             EndpointUrl = endpointUrl;
             Sequence = sequence;
             RequestParameters = new NameValueCollection();
+            PathParameters = new NameValueCollection();
         }
         public int ApiVersion { get; set; }
         public int Sequence { get; set; }
+        public NameValueCollection PathParameters { get; set; }
         private string _endpointUrl = null;
 
         public string EndpointUrl
@@ -93,6 +99,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             get { return string.Concat("~/api.ashx/v", this.ApiVersion, "/", _endpointUrl); }
             set
             {
+               
                 _endpointUrl = value.TrimStart(new[] { '~', '/' });
             }
         }

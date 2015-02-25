@@ -396,6 +396,11 @@ namespace Telligent.Evolution.RestSDK.Implementations
 
              if(requests == null || !requests.Any())
                 throw new ArgumentException("Request must contain at least 1 request","requests");
+
+            foreach (var req in requests)
+            {
+                req.EndpointUrl = ReplaceTokens(req.EndpointUrl, req.PathParameters);
+            }
             var postDataArr = requests.Select(r => r.ToString()).ToArray();
             var postData = string.Join("&", postDataArr);
             return postData + "&Sequential=" + options.RunSequentially.ToString().ToLowerInvariant();
@@ -518,5 +523,26 @@ namespace Telligent.Evolution.RestSDK.Implementations
             var postData = CreatePostBatchData(requests, options);
             return _proxy.Post(host, MakeEndpointUrl(host, version, "batch.json"), postData, (request) => AdjustBatchRequest(host, request, enableImpersonation, options));
         }
+
+        //public string UploadFile(RestHost host, Stream fileData, bool enableImpersonation = true,
+        //    FileUploadOptions options = null)
+        //{
+            
+        //}
+
+        //private int ReadChunk(Stream stream, byte[] chunk)
+        //{
+        //    int index = 0;
+        //    while (index < chunk.Length)
+        //    {
+        //        int bytesRead = stream.Read(chunk, index, chunk.Length - index);
+        //        if (bytesRead == 0)
+        //        {
+        //            break;
+        //        }
+        //        index += bytesRead;
+        //    }
+        //    return index;
+        //}
     }
 }

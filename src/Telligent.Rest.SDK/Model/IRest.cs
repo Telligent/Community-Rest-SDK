@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -57,7 +58,11 @@ namespace Telligent.Rest.SDK.Model
         Stream PostEndpointStream(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestPostOptions options = null);
         Stream DeleteEndpointStream(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null);
 
+
+
+
         string ReplaceTokens(string url,NameValueCollection parameters);
         string BuildQueryString(string url, NameValueCollection nvc);
+      //  IList<byte[]> SplitFile(Stream fileData, int maxChunkSize);
     }
 }
