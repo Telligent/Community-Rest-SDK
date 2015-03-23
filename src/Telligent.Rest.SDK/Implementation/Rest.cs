@@ -25,6 +25,7 @@ namespace Telligent.Evolution.RestSDK.Implementations
         private const string Json = ".json";
         private const string Xml = ".xml";
        
+       
         private IRestCommunicationProxy _proxy;
 
         public Rest(IRestCommunicationProxy proxy)
@@ -169,7 +170,11 @@ namespace Telligent.Evolution.RestSDK.Implementations
 
             request.Headers["Rest-Method"] = "DELETE";
         }
-
+        private void AdjustFileRequest(RestHost host, HttpWebRequest request, RestFileOptions  options)
+        {
+            if (options != null && options.AdditionalHeaders != null)
+                SetAdditionalHeaders(request, options.AdditionalHeaders);
+        }
 		private void AdjustRequestBase(RestHost host, HttpWebRequest request, bool enableImpersonation)
 		{
 			host.ApplyAuthenticationToHostRequest(request, enableImpersonation);
@@ -524,25 +529,32 @@ namespace Telligent.Evolution.RestSDK.Implementations
             return _proxy.Post(host, MakeEndpointUrl(host, version, "batch.json"), postData, (request) => AdjustBatchRequest(host, request, enableImpersonation, options));
         }
 
-        //public string UploadFile(RestHost host, Stream fileData, bool enableImpersonation = true,
-        //    FileUploadOptions options = null)
-        //{
-            
-        //}
+        public UploadedFileInfo TransmitFile(RestHost host, UploadedFile file,RestFileOptions options = null)
+        {
+            if (options == null)
+                options = new RestFileOptions();
 
-        //private int ReadChunk(Stream stream, byte[] chunk)
-        //{
-        //    int index = 0;
-        //    while (index < chunk.Length)
-        //    {
-        //        int bytesRead = stream.Read(chunk, index, chunk.Length - index);
-        //        if (bytesRead == 0)
-        //        {
-        //            break;
-        //        }
-        //        index += bytesRead;
-        //    }
-        //    return index;
-        //}
+            string url = GetUploadUrl(host.EvolutionRootUrl, file.UploadContext);
+            return _proxy.TransmitFile(host, url,file,options.UploadProgress,
+                (request) => AdjustFileRequest(host, request, options));
+
+
+        }
+        public Task<UploadedFileInfo> TransmitFileAsync(RestHost host, UploadedFile file, RestFileOptions options = null)
+        {
+            if (options == null)
+                options = new RestFileOptions();
+
+            string url = GetUploadUrl(host.EvolutionRootUrl, file.UploadContext);
+            return _proxy.TransmitFileAsync(host, url, file, options.UploadProgress,
+                (request) => AdjustFileRequest(host, request, options));
+
+
+        }
+        private string GetUploadUrl(string rootUrl,Guid uploadContext)
+        {
+            return rootUrl + (rootUrl.EndsWith("/") ? "" : "/") + "multipleupload?UploadContext=" + uploadContext.ToString("N");
+        }
+ 
     }
 }

@@ -15,6 +15,12 @@ namespace Telligent.Rest.SDK.Model
         Task<Stream> GetAsync(RestHost host, string url, Action<HttpWebRequest> adjustRequest);
         Stream Get(RestHost host, string url, Action<HttpWebRequest> adjustRequest);
 
+        Task<UploadedFileInfo> TransmitFileAsync(RestHost host, string url, UploadedFile file,
+            Action<FileUploadProgress> progressAction,
+            Action<HttpWebRequest> adjustRequest);
 
+        UploadedFileInfo TransmitFile(RestHost host, string url, UploadedFile file,
+            Action<FileUploadProgress> progressAction,
+            Action<HttpWebRequest> adjustRequest);
     }
 }

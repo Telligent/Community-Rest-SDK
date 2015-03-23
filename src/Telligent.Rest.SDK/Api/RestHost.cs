@@ -319,6 +319,15 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             return  Rest.DeleteEndpointStreamAsync(this, version, endpoint, enableImpersonation, options);
 
         }
+
+        public UploadedFileInfo UploadFile(UploadedFile file, RestFileOptions options = null)
+        {
+            return Rest.TransmitFile(this, file, options);
+        }
+        public Task<UploadedFileInfo> UploadFileAsync(UploadedFile file, RestFileOptions options = null)
+        {
+            return Rest.TransmitFileAsync(this, file, options);
+        }
         #endregion
     }
 }

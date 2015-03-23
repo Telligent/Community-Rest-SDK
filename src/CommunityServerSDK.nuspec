@@ -9,7 +9,7 @@
         <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
         <projectUrl>https://github.com/Zimbra/Social-Rest-SDK</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>An SDK that allows for SSO and rich REST API interaction with Community Server</description>
+        <description>An SDK that allows for SSO and rich REST API interaction with Community Server. BETA- Not yet for production use</description>
         <releaseNotes>BETA- Not for Production Use</releaseNotes>
         <copyright>Copyright 2015 Telligent</copyright>
     </metadata>

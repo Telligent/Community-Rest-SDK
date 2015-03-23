@@ -78,6 +78,11 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         public bool RunSequentially { get; set; }
     }
 
+    public class RestFileOptions:RestOptions
+    {
+        public Action<FileUploadProgress> UploadProgress { get; set; }
+    }
+
     public class BatchRequest
     {
         public BatchRequest(string endpointUrl, int sequence)

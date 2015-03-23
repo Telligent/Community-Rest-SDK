@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Api\Host.cs" />
     <Compile Include="Api\ILocalUserResolver.cs" />
+    <Compile Include="Api\UploadedFile.cs" />
     <Compile Include="Implementation\FileSystemConfigurationFile.cs" />
     <Compile Include="Implementation\HostConfiguration.cs" />
     <Compile Include="Implementation\HostConfigurationManager.cs" />

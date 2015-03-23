@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Runtime.ExceptionServices;
+using System.Security.Policy;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -23,7 +25,10 @@ namespace Telligent.Rest.SDK.Implementation
                                                        RegexOptions.IgnorePatternWhitespace |
                                                        RegexOptions.Compiled);
 
-        private HttpWebRequest BuildStandardPostRequest(RestHost host, string url, string data,Stream stream, Action<HttpWebRequest> adjustRequest,out byte[] bytes)
+        private static readonly int MAX_CHUNK_SIZE_BYTES = 15728640;
+        private static readonly string MULTI_FORM_FORMAT = "UploadContext={0}&name={1}&chunk={2}&chunks={3}";
+
+        private HttpWebRequest BuildStandardPostRequest(RestHost host, string url, string data, Stream stream, Action<HttpWebRequest> adjustRequest, out byte[] bytes)
         {
             HttpWebRequest request = null;
             request = CreateRequest(host, url, adjustRequest, host.PostTimeout);
@@ -61,7 +66,7 @@ namespace Telligent.Rest.SDK.Implementation
                 {
                     byte[] bytes = null;
 
-                    request = BuildStandardPostRequest(host, url, data,null, adjustRequest, out bytes);
+                    request = BuildStandardPostRequest(host, url, data, null, adjustRequest, out bytes);
                     using (var requestStream = await request.GetRequestStreamAsync())
                     {
                         await requestStream.WriteAsync(bytes, 0, bytes.Length);
@@ -111,17 +116,17 @@ namespace Telligent.Rest.SDK.Implementation
                 {
                     byte[] bytes = null;
 
-                     request = BuildStandardPostRequest(host, url, data,null, adjustRequest, out bytes);
+                    request = BuildStandardPostRequest(host, url, data, null, adjustRequest, out bytes);
                     using (var requestStream = request.GetRequestStream())
                     {
                         requestStream.Write(bytes, 0, bytes.Length);
                         requestStream.Close();
                     }
-                    var response = (HttpWebResponse) request.GetResponse();
-                        return response.GetResponseStream();
-                    
+                    var response = (HttpWebResponse)request.GetResponse();
+                    return response.GetResponseStream();
+
                 }
-                catch (WebException   ex)
+                catch (WebException ex)
                 {
                     var errorResponse = ex.Response as HttpWebResponse;
                     if (errorResponse != null && errorResponse.StatusCode == HttpStatusCode.Forbidden && host.RetryFailedRemoteRequest(request))
@@ -202,7 +207,7 @@ namespace Telligent.Rest.SDK.Implementation
 
             return null;
         }
-       
+
         public async Task<Stream> GetAsync(RestHost host, string url, Action<HttpWebRequest> adjustRequest)
         {
             bool retry = true;
@@ -216,8 +221,8 @@ namespace Telligent.Rest.SDK.Implementation
                 {
                     request = BuildGetRequest(host, url, adjustRequest);
 
-                    var response = await request.GetResponseAsync() ;
-                         return ((HttpWebResponse) response).GetResponseStream();
+                    var response = await request.GetResponseAsync();
+                    return ((HttpWebResponse)response).GetResponseStream();
                 }
                 catch (WebException ex)
                 {
@@ -234,7 +239,7 @@ namespace Telligent.Rest.SDK.Implementation
                     if (errorResponse != null && errorResponse.StatusCode == HttpStatusCode.Forbidden && host.RetryFailedRemoteRequest(request))
                         retry = true;
                     else if (errorResponse != null && errorResponse.StatusCode == HttpStatusCode.InternalServerError)
-                        return  errorResponse.GetResponseStream();
+                        return errorResponse.GetResponseStream();
                     else
                         capturedException.Throw();
                 }
@@ -258,11 +263,11 @@ namespace Telligent.Rest.SDK.Implementation
                 try
                 {
                     request = BuildGetRequest(host, url, adjustRequest);
-                    var response =  (HttpWebResponse)request.GetResponse();
+                    var response = (HttpWebResponse)request.GetResponse();
                     Stream stream = null;
 
-                       var str = response.GetResponseStream();
-                      return str;
+                    var str = response.GetResponseStream();
+                    return str;
                 }
                 catch (WebException ex)
                 {
@@ -298,15 +303,170 @@ namespace Telligent.Rest.SDK.Implementation
             return request;
         }
 
-      
+        private byte[] PrepareDataChunk(byte[] chunk,int currentChunk,string boundary,int totalChunks,UploadedFile file)
+        {
+            StringBuilder sb = new StringBuilder();
+            string fmtFileName = !String.IsNullOrEmpty(file.FileName) ? file.FileName.Remove(0, file.FileName.LastIndexOf("\\") + 1) : "noname";
+
+
+            sb.Append(GetMultipartFormdata(boundary, "name", fmtFileName));
+            sb.Append(GetMultipartFormdata(boundary, "chunk", currentChunk.ToString()));
+            sb.Append(GetMultipartFormdata(boundary, "chunks", totalChunks.ToString()));
+            sb.Append(GetFileMultipartFormdataFile(boundary, file.FileName, file.ContentType));
+
+            var startDataBytes = Encoding.UTF8.GetBytes(sb.ToString());
+            var endDataBytes = Encoding.UTF8.GetBytes("\r\n--" + boundary + "--\r\n");
+
+            byte[] bytesToSend = new byte[startDataBytes.Length + chunk.Length + endDataBytes.Length];
+            startDataBytes.CopyTo(bytesToSend, 0);
+            chunk.CopyTo(bytesToSend, startDataBytes.Length);
+            endDataBytes.CopyTo(bytesToSend, startDataBytes.Length + chunk.Length);
+
+            return bytesToSend;
+        }
+        public UploadedFileInfo TransmitFile(RestHost host, string url, UploadedFile file,Action<FileUploadProgress> progressAction,
+            Action<HttpWebRequest> adjustRequest)
+        {
+
+            int totalChunks = (int)Math.Ceiling((double)file.FileData.Length / MAX_CHUNK_SIZE_BYTES);
+            int currentChunk = 1;
+            UploadedFileInfo fileResponse = new UploadedFileInfo(file.UploadContext);
+            using (var rdr = new BinaryReader(file.FileData))
+                
+                for(var i =currentChunk;i<= totalChunks;i++)
+                {
+                    FileUploadProgress progress = new FileUploadProgress() {UploadContext = file.UploadContext };
+                    string boundary = Guid.NewGuid().ToString("N");
+                    var chunk = rdr.ReadBytes(MAX_CHUNK_SIZE_BYTES);
+                    var bytesToSend = PrepareDataChunk(chunk, currentChunk, boundary, totalChunks, file);
+
+                    var request = CreateRequest(host, url, adjustRequest, host.PostTimeout);
+                    request.Method = "POST";
+         
+                        try
+                        {
+
+                            request.ContentType = "multipart/form-data; boundary=" + boundary;
+                            request.ContentLength = bytesToSend.Length;
+                            using (var requestStream = request.GetRequestStream())
+                            {
+                                requestStream.Write(bytesToSend, 0, bytesToSend.Length);
+                               
+                                requestStream.Close();
+                            }
+
+                            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                            {
+                                var str = response.GetResponseStream();
+                            }
+
+
+                            if (progressAction != null)
+                                progressAction(progress);
+
+                            currentChunk ++;
+                            
+                        }
+                        catch (Exception  ex)
+                        {
+                           
+                         //   var msg = ReadResponseStream(errorResponse.GetResponseStream());
+                            fileResponse.IsError = true;
+                        //    fileResponse.Message = msg;
+                            return fileResponse;
+                        }
+                        
+                }
+            return fileResponse;
+        }
+        public async Task<UploadedFileInfo> TransmitFileAsync(RestHost host, string url, UploadedFile file, Action<FileUploadProgress> progressAction,
+             Action<HttpWebRequest> adjustRequest)
+        {
+            ExceptionDispatchInfo capturedException = null;
+            int totalChunks = (int)Math.Ceiling((double)file.FileData.Length / MAX_CHUNK_SIZE_BYTES);
+            int currentChunk = 1;
+            UploadedFileInfo fileResponse = new UploadedFileInfo(file.UploadContext);
+            using (var rdr = new BinaryReader(file.FileData))
+
+                for (var i = currentChunk; i <= totalChunks; i++)
+                {
+                    FileUploadProgress progress = new FileUploadProgress() { UploadContext = file.UploadContext };
+                    string boundary = Guid.NewGuid().ToString("N");
+                    var chunk = rdr.ReadBytes(MAX_CHUNK_SIZE_BYTES);
+                    var bytesToSend = PrepareDataChunk(chunk, currentChunk, boundary, totalChunks, file);
+
+                    var request = CreateRequest(host, url, adjustRequest, host.PostTimeout);
+                    request.Method = "POST";
+
+                    try
+                    {
+
+                        request.ContentType = "multipart/form-data; boundary=" + boundary;
+                        request.ContentLength = bytesToSend.Length;
+                        using (var requestStream =await  request.GetRequestStreamAsync())
+                        {
+                            await requestStream.WriteAsync(bytesToSend, 0, bytesToSend.Length);
+
+                            requestStream.Close();
+                        }
+
+                        using (HttpWebResponse response =  (HttpWebResponse)await request.GetResponseAsync())
+                        {
+                            var str = response.GetResponseStream();
+                        }
+
+
+                        if (progressAction != null)
+                            progressAction(progress);
+
+                        currentChunk++;
+
+                    }
+                    catch (Exception ex)
+                    {
+
+                        capturedException = ExceptionDispatchInfo.Capture(ex);
+                    }
+
+                    if (capturedException != null)
+                    {
+                        fileResponse.IsError = true;
+                        
+                    }
+
+                }
+            return fileResponse;
+        }
+
         private string GetMultipartFormdata(string boundary, string name, string value)
         {
             return String.Format("--" + boundary + "\r\n" + "Content-Disposition: form-data; name=\"{0}\"\r\n\r\n{1}\r\n", name, value);
         }
 
-        private string GetFileMultipartFormdata(string boundary, string fileName, string contentType)
+        private string GetFileMultipartFormdataFile(string boundary, string fileName, string contentType)
         {
             return String.Format("--" + boundary + "\r\n" + "Content-Disposition: form-data; name=\"file\"; filename=\"{0}\"\r\nContent-Type: {1}\r\n\r\n", fileName, contentType);
+        }
+
+        private async Task<string> ReadResponseStreamAsync(Stream str)
+        {
+            if (str == null)
+                return null;
+            // str.Position = 0;
+            using (var reader = new StreamReader(str))
+            {
+                return await reader.ReadToEndAsync();
+            }
+        }
+        private string ReadResponseStream(Stream str)
+        {
+            if (str == null)
+                return null;
+            //str.Position = 0;
+            using (var reader = new StreamReader(str))
+            {
+                return reader.ReadToEnd();
+            }
         }
     }
 }

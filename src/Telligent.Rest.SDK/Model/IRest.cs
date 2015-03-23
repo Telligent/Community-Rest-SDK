@@ -63,6 +63,8 @@ namespace Telligent.Rest.SDK.Model
 
         string ReplaceTokens(string url,NameValueCollection parameters);
         string BuildQueryString(string url, NameValueCollection nvc);
-      //  IList<byte[]> SplitFile(Stream fileData, int maxChunkSize);
+
+        Task<UploadedFileInfo> TransmitFileAsync(RestHost host, UploadedFile file, RestFileOptions options = null);
+        UploadedFileInfo TransmitFile(RestHost host, UploadedFile file, RestFileOptions options = null);
     }
 }
