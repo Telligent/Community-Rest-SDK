@@ -14,6 +14,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             FileName = fileName;
             ContentType = contentType;
             FileData = fileData;
+            UploadContext = uploadContext;
         }
         public string FileName { get; private set; }
         public string ContentType { get; private set; }

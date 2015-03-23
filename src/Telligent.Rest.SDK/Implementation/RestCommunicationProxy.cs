@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Script.Serialization;
 using Telligent.Evolution.Extensibility.Rest.Version1;
 using Telligent.Rest.SDK.Model;
 
@@ -369,11 +370,23 @@ namespace Telligent.Rest.SDK.Implementation
                         }
                         catch (Exception  ex)
                         {
-                           
-                         //   var msg = ReadResponseStream(errorResponse.GetResponseStream());
+
                             fileResponse.IsError = true;
-                        //    fileResponse.Message = msg;
-                            return fileResponse;
+                            fileResponse.Message =ex.Message;
+                            var webException =  ex as WebException;
+                            if (webException != null)
+                            {
+                                var errorResponse = webException.Response as HttpWebResponse;
+                                if (errorResponse != null && errorResponse.StatusCode == HttpStatusCode.InternalServerError)
+                                {
+                                    var resp =  ReadUploadError(errorResponse.GetResponseStream());
+                                    if (resp != null && resp.error != null)
+                                    {
+                                        fileResponse.Message = resp.error.message;
+                                    }
+
+                                }
+                            }
                         }
                         
                 }
@@ -428,10 +441,24 @@ namespace Telligent.Rest.SDK.Implementation
                         capturedException = ExceptionDispatchInfo.Capture(ex);
                     }
 
-                    if (capturedException != null)
+                    if (capturedException != null )
                     {
                         fileResponse.IsError = true;
-                        
+                        fileResponse.Message = capturedException.SourceException.Message;
+                        var webException = capturedException.SourceException as WebException;
+                        if (webException != null  )
+                        {
+                            var errorResponse = webException.Response as HttpWebResponse;
+                            if (errorResponse != null && errorResponse.StatusCode == HttpStatusCode.InternalServerError)
+                            {
+                                var resp = await ReadUploadErrorAsync(errorResponse.GetResponseStream());
+                                if (resp != null && resp.error != null)
+                                {
+                                    fileResponse.Message = resp.error.message;
+                                }
+
+                            }
+                        }
                     }
 
                 }
@@ -468,5 +495,44 @@ namespace Telligent.Rest.SDK.Implementation
                 return reader.ReadToEnd();
             }
         }
+
+        private UploadEndpointResponse ReadUploadError(Stream response)
+        {
+            var serializer = new JavaScriptSerializer();
+            var data = ReadResponseStream(response);
+            if (!string.IsNullOrEmpty(data))
+            {
+                var result = serializer.Deserialize<UploadEndpointResponse>(data);
+                return result;
+            }
+            return null;
+            
+        }
+        private async Task<UploadEndpointResponse> ReadUploadErrorAsync(Stream response)
+        {
+            var serializer = new JavaScriptSerializer();
+            var data =await ReadResponseStreamAsync(response);
+            if (!string.IsNullOrEmpty(data))
+            {
+                var result = serializer.Deserialize<UploadEndpointResponse>(data);
+                return result;
+            }
+            return null;
+
+        }
+    }
+
+    internal class UploadEndpointResponse
+    {
+        public string jsonrpc { get; set; }
+        public string result { get; set; }
+        public string id { get; set; }
+        public UploadEndpointError error { get; set; }
+    }
+
+    internal class UploadEndpointError
+    {
+        public string code { get; set; }
+        public string message { get; set; }
     }
 }
