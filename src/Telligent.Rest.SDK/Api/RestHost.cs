@@ -10,9 +10,7 @@ using System.Web;
 using System.Web.UI;
 using System.Xml;
 using System.Xml.Linq;
-//using Telligent.Common.Security;
 using Telligent.Evolution.RestSDK.Json;
-// Telligent.Evolution.RestSDK.Services;
 using Telligent.Evolution.RestSDK.Services;
 using Telligent.Rest.SDK.Model;
 

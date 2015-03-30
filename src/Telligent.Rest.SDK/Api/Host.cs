@@ -30,7 +30,11 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         #region Rest Host Members
 
        
-
+        /// <summary>
+        /// Called before a request is made to apply the appropriate OAuth header fro the logged in user or default user
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="forAccessingUser"></param>
         public override void ApplyAuthenticationToHostRequest(HttpWebRequest request, bool forAccessingUser)
         {
             User user = null;
@@ -46,7 +50,9 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
 
             request.Credentials = EvolutionCredentials;
         }
-
+        /// <summary>
+        /// Teh root url for the community site
+        /// </summary>
         public override string EvolutionRootUrl
         {
             get { return _settings.CommunityServerUrl.EndsWith("/") ? _settings.CommunityServerUrl : _settings.CommunityServerUrl + "/"; }
@@ -54,13 +60,18 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         #endregion
 
         #region Default Host Settings
-
+        /// <summary>
+        /// The name of the host as specified int he configuration file
+        /// </summary>
         public virtual string Name
         {
             get { return _settings.Name; }
         }
 
-    
+    /// <summary>
+    /// Checks for valid host settings as read by the configuration file
+    /// </summary>
+    /// <param name="settings"></param>
         private void ValidateSettings(HostConfiguration settings)
         {
             if (String.IsNullOrEmpty(settings.OAuth.OauthCallbackUrl))
@@ -97,6 +108,10 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
 
 
         #region OAuth Members
+
+        /// <summary>
+        /// When true, means that user information is taken from the host site and a user is automatically matched in community or created.
+        /// </summary>
         public bool EnableEvolutionUserCreation
         {
             get
@@ -104,7 +119,9 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
                    return   _settings.OAuth.LocalUserCreation.Enabled;
             }
         }
-
+        /// <summary>
+        /// The user name used to create users when EnableEvolutionUserCreation is true.
+        /// </summary>
         public string EvolutionUserCreationManagementUserName
         {
             get
@@ -113,7 +130,9 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
                     return _settings.OAuth.LocalUserCreation.MembershipAdministrationUserName;
             }
         }
-
+        /// <summary>
+        /// The user name used for local user creation.  In this case it invokes a defined instance of ILocalUserResolver to obtain this information
+        /// </summary>
         public   string LocalUserName
         {
             get
@@ -124,7 +143,9 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
                 return null;
             }
         }
-
+        /// <summary>
+        /// The email used for local user creation.  In this case it invokes a defined instance of ILocalUserResolver to obtain this information
+        /// </summary>
         public   string LocalUserEmailAddress
         {
             get
@@ -135,7 +156,9 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
                 return null;
             }
         }
-
+        /// <summary>
+        /// Additonal Profile fields that can be defined for a local user. In this case it invokes a defined instance of ILocalUserResolver to obtain this information
+        /// </summary>
         public   Dictionary<string, string> LocalUserDetails
         {
             get
@@ -146,7 +169,14 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
                 return null;
             }
         }
-
+        /// <summary>
+        /// Invoked by the framework when a user cannot be created in the community
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="emailAddress"></param>
+        /// <param name="userData"></param>
+        /// <param name="message"></param>
+        /// <param name="errorResponse"></param>
         public virtual void UserCreationFailed(string username, string emailAddress, IDictionary<string, string> userData, string message, ErrorResponse errorResponse)
         {
             LogError(errorResponse.ToString() + ":" + message,
@@ -154,12 +184,16 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
                   emailAddress, errorResponse)));
         }
 
-
+        /// <summary>
+        /// The base url of the community, same value as EvolutionRootUrl
+        /// </summary>
         public Uri EvolutionBaseUrl
         {
             get { return new Uri(this.EvolutionRootUrl); }
         }
-
+        /// <summary>
+        /// The application escaped location of an HttpHandler for handling Oauth reponses.
+        /// </summary>
         public Uri LocalOAuthClientHttpHandlerUrl
         {
             get
@@ -167,32 +201,45 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
                 return new Uri(GetCurrentHttpContext().Request.Url, GetCurrentHttpContext().Response.ApplyAppPathModifier(_settings.OAuth.OauthCallbackUrl));
             }
         }
-
+        /// <summary>
+        /// The community Oauth Client Id as specified in configuration
+        /// </summary>
         public string OAuthClientId
         {
             get { return _settings.OAuth.OauthClientId; }
         }
-
+        /// <summary>
+        ///  The community Oauth Client secret as specified in configuration
+        /// </summary>
         public string OAuthClientSecret
         {
             get { return _settings.OAuth.OauthSecret; }
         }
-
+        /// <summary>
+        /// Used to get through a windows challeng on the community side. Defined in configuration
+        /// </summary>
         public NetworkCredential EvolutionCredentials
         {
             get { return _settings.NetworkCredentials; }
         }
-
+        /// <summary>
+        /// This is used when a user is not signed in, traditionally anonymous.
+        /// </summary>
         public string DefaultUserName
         {
             get { return _settings.OAuth.AnonymousUsername; }
         }
-
+        /// <summary>
+        /// The default language: MAY BE REMOVED
+        /// </summary>
         public string DefaultUserLanguageKey
         {
             get { return _settings.OAuth.DefaultLanguageKey; }
         }
-
+        /// <summary>
+        /// Internal method that creates a local cookie identifying the logged on user.
+        /// </summary>
+        /// <param name="value"></param>
         public virtual void SetAuthorizationCookie(string value)
         {
             HttpContextBase context = GetCurrentHttpContext();
@@ -235,7 +282,10 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
                 response.Cookies.Add(cookie);
             }
         }
-
+        /// <summary>
+        /// Reads the cookie set in the SetAuthorizationCookie method
+        /// </summary>
+        /// <returns></returns>
         public virtual string GetAuthorizationCookieValue()
         {
             HttpContextBase context = GetCurrentHttpContext();
@@ -259,7 +309,10 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
 
             return null;
         }
-
+        /// <summary>
+        /// Fired by the framework once a user is authenticaed by Oauth
+        /// </summary>
+        /// <param name="state"></param>
         public virtual void UserLoggedIn(NameValueCollection state)
         {
             var usr = OAuthAuthentication.GetAuthenticatedUser(this.Name);
@@ -274,12 +327,18 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
 
             GetCurrentHttpContext().Response.Redirect(rtnUrl);
         }
-
+        /// <summary>
+        /// Invoked by the framework when a user fails to authenticate using OAuth
+        /// </summary>
+        /// <param name="state"></param>
         public virtual void UserLoginFailed(NameValueCollection state)
         {
             LogError("Login Failed", null);
         }
-
+        /// <summary>
+        /// Invoked by the framework when a user logs out via oauth
+        /// </summary>
+        /// <param name="state"></param>
         public virtual void UserLoggedOut(NameValueCollection state)
         {
             string rtnUrl = null;
@@ -293,17 +352,25 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
 
             GetCurrentHttpContext().Response.Redirect(rtnUrl);
         }
-
+        /// <summary>
+        /// Invoked by the framework when a user fails to log out via Oauth
+        /// </summary>
+        /// <param name="state"></param>
         public virtual void UserLogOutFailed(NameValueCollection state)
         {
             LogError("Logout Failed", null);
         }
-
+        /// <summary>
+        /// Set via config file, turns on Single Sign on
+        /// </summary>
         public virtual bool EnableEvolutionUserSynchronization
         {
             get { return EnableEvolutionUserCreation && _settings.OAuth.LocalUserCreation.SSO.Enabled; }
         }
-
+        /// <summary>
+        /// Reads the sync cookie generated by community when EnableEvolutionUserSynchronization is true.
+        /// </summary>
+        /// <returns></returns>
         public virtual string GetEvolutionUserSynchronizationCookieValue()
         {
             var context = GetCurrentHttpContext();
@@ -316,7 +383,12 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             return null;
         }
         #endregion
+
         #region Helpers
+        /// <summary>
+        /// Gets the logged on user and stores it in context for the request.  It will also invoke the login and SSO process if enabled.
+        /// </summary>
+        /// <returns></returns>
         private User GetAccessingUser()
         {
             bool isGet = false;
@@ -362,7 +434,11 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         }
         #endregion
 
-      
+      /// <summary>
+      /// Provides static access to get a host or force it to be loaded from configuration
+      /// </summary>
+      /// <param name="name">The name of the host from the configuraton file</param>
+      /// <returns>Telligent.Evolution.Extensibility.Version1.Host</returns>
         public static Host Get(string name)
         {
             var cachedHost = OAuthAuthentication.GetConfiguration(name);
