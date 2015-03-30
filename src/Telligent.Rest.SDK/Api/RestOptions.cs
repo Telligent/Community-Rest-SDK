@@ -16,7 +16,13 @@ namespace Telligent.Rest.SDK
             AdditionalHeaders = new NameValueCollection();
             QueryStringParameters = new NameValueCollection();
         }
+        /// <summary>
+        /// Additional headers applied to ever REST request
+        /// </summary>
         public NameValueCollection AdditionalHeaders { get; set; }
+        /// <summary>
+        /// Adds these to the request querystring
+        /// </summary>
         public NameValueCollection QueryStringParameters { get; set; }
 
     }
@@ -31,6 +37,9 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         {
             PathParameters = new NameValueCollection();
         }
+        /// <summary>
+        /// Substitues path variables in the url with the specified value.  e.g {username} can be specified in this collection with a value and it will replace it.
+        /// </summary>
         public NameValueCollection PathParameters { get; set; }
     }
     public class FileUploadOptions
@@ -44,7 +53,13 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             PathParameters = new NameValueCollection();
             PostParameters = new NameValueCollection();
         }
+        /// <summary>
+        /// Substitues path variables in the url with the specified value.  e.g {username} can be specified in this collection with a value and it will replace it.
+        /// </summary>
         public NameValueCollection PathParameters { get; set; }
+        /// <summary>
+        /// These values are added to the  body of the request
+        /// </summary>
         public NameValueCollection PostParameters { get; set; }
     }
     public class RestPutOptions : RestOptions
@@ -54,7 +69,13 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             PathParameters = new NameValueCollection();
             PostParameters = new NameValueCollection();
         }
+        /// <summary>
+        /// Substitues path variables in the url with the specified value.  e.g {username} can be specified in this collection with a value and it will replace it.
+        /// </summary>
         public NameValueCollection PathParameters { get; set; }
+        /// <summary>
+        /// These values are added to the  body of the request
+        /// </summary>
         public NameValueCollection PostParameters { get; set; }
     }
     public class RestDeleteOptions : RestOptions
@@ -64,6 +85,9 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             PathParameters = new NameValueCollection();
 
         }
+        /// <summary>
+        /// Substitues path variables in the url with the specified value.  e.g {username} can be specified in this collection with a value and it will replace it.
+        /// </summary>
         public NameValueCollection PathParameters { get; set; }
 
     }
@@ -74,12 +98,21 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         {
             RunSequentially = false;
         }
+        /// <summary>
+        /// Additional headers applied to ever REST request
+        /// </summary>
         public NameValueCollection AdditionalHeaders { get; set; }
+        /// <summary>
+        /// Indicates whether the batch requests should be run in order
+        /// </summary>
         public bool RunSequentially { get; set; }
     }
 
     public class RestFileOptions:RestOptions
     {
+        /// <summary>
+        /// Fired every chunk of file is uploaded providing a percentage of completion
+        /// </summary>
         public Action<FileUploadProgress> UploadProgress { get; set; }
     }
 
@@ -94,11 +127,23 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             RequestParameters = new NameValueCollection();
             PathParameters = new NameValueCollection();
         }
+        /// <summary>
+        /// The API version of REST you wish to access, default is 2
+        /// </summary>
         public int ApiVersion { get; set; }
+        /// <summary>
+        /// The order in which to execute this request, most important when its a sequential request.
+        /// </summary>
         public int Sequence { get; set; }
+        /// <summary>
+        /// Substitues path variables in the url with the specified value.  e.g {username} can be specified in this collection with a value and it will replace it.
+        /// </summary>
         public NameValueCollection PathParameters { get; set; }
         private string _endpointUrl = null;
 
+        /// <summary>
+        /// The REST endpoint to execute without api.ashx and version
+        /// </summary>
         public string EndpointUrl
         {
             get { return string.Concat("~/api.ashx/v", this.ApiVersion, "/", _endpointUrl); }
@@ -108,7 +153,13 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
                 _endpointUrl = value.TrimStart(new[] { '~', '/' });
             }
         }
+        /// <summary>
+        /// GET,POST,PUT of DELETE
+        /// </summary>
         public RestMethod RestMethod { get; set; }
+        /// <summary>
+        /// Applied to the querystring or body depending on the Http Method
+        /// </summary>
         public NameValueCollection RequestParameters { get; set; }
 
         public override string ToString()
