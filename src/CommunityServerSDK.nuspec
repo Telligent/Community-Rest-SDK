@@ -3,14 +3,14 @@
     <metadata>
         <id>CommunityServerSDK</id>
         <version>1.0.0</version>
-        <title>Telligent Community Server REST SDK(BETA)</title>
+        <title>Telligent Community Server REST SDK</title>
         <authors>Telligent</authors>
         <owners>Telligent</owners>
         <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
         <projectUrl>https://github.com/Zimbra/Social-Rest-SDK</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>An SDK that allows for SSO and rich REST API interaction with Community Server. BETA- Not yet for production use</description>
-        <releaseNotes>BETA- Not for Production Use</releaseNotes>
+        <releaseNotes>Initial Release</releaseNotes>
         <copyright>Copyright 2015 Telligent</copyright>
     </metadata>
     <files>
