@@ -101,7 +101,7 @@ namespace Telligent.Evolution.RestSDK.Implementations
                     if (localAuth.Attribute("membershipAdministrationUsername") != null)
                         config.OAuth.LocalUserCreation.MembershipAdministrationUserName = localAuth.Attribute("membershipAdministrationUsername").Value;
 
-                    if (localAuth.Attribute("userResolver") != null)
+                    if (localAuth.Attribute("userResolver") != null && config.OAuth.LocalUserCreation.Enabled)
                     {
                         var resolver = localAuth.Attribute("userResolver").Value;
                         try
