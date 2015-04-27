@@ -11,14 +11,7 @@ using Telligent.Rest.SDK.Model;
 
 namespace Telligent.RestSDK.IntegrationTests.Configuration
 {
-    public class TestUserResolver:ILocalUserResolver
-    {
-
-        public LocalUser GetLocalUserDetails(System.Web.HttpContextBase copntext, Host host)
-        {
-            return new LocalUser("testuser", "dummy@localhost.com");
-        }
-    }
+    
 
     [TestFixture]
     public class configuration_load_tests
@@ -33,9 +26,10 @@ namespace Telligent.RestSDK.IntegrationTests.Configuration
            defaultLanguage=""en-GB""
            anonymousUsername=""Anon"">
         <localAuthentication enabled =""true"" membershipAdministrationUsername=""myadmin"" userResolver=""Telligent.RestSDK.IntegrationTests.Configuration.TestUserResolver, Telligent.RestSDK.UnitTests"">
-        <sso enabled=""true"" synchronizationCookieName=""SyncCookie"" />
+       
       </localAuthentication>
     </oauth>
+ <sso enabled=""true"" synchronizationCookieName=""SyncCookie"" />
   </host>
 </communityServerHosts>";
 
@@ -54,7 +48,7 @@ namespace Telligent.RestSDK.IntegrationTests.Configuration
         [Test]
         public void sso_is_enabled()
         {
-            Assert.IsTrue(_config.OAuth.LocalUserCreation.SSO.Enabled);
+            Assert.IsTrue(_config.SSO.Enabled);
         }
         [Test]
         public void local_auth_is_enabled()
@@ -72,7 +66,7 @@ namespace Telligent.RestSDK.IntegrationTests.Configuration
         public void sso_sync_cookie()
         {
             
-            Assert.IsTrue(_config.OAuth.LocalUserCreation.SSO.SynchronizationCookieName.Equals("SyncCookie", StringComparison.CurrentCultureIgnoreCase));
+            Assert.IsTrue(_config.SSO.SynchronizationCookieName.Equals("SyncCookie", StringComparison.CurrentCultureIgnoreCase));
         }
         [Test]
         public void oauth_callback()
@@ -139,15 +133,7 @@ namespace Telligent.RestSDK.IntegrationTests.Configuration
             Assert.IsTrue(_config.NetworkCredentials.Domain.Equals("domain", StringComparison.CurrentCultureIgnoreCase));
         }
 
-        [Test]
-        public void UserResolver_not_null()
-        {
-          Assert.IsNotNull(_config.OAuth.LocalUserCreation.UserResolver);  
-        }
-        [Test]
-        public void UserResolver_is_of_type()
-        {
-            Assert.IsAssignableFrom<TestUserResolver>(_config.OAuth.LocalUserCreation.UserResolver);
-        }
+       
+       
     }
 }

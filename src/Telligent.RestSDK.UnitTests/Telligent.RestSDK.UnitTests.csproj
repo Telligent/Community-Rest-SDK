@@ -57,6 +57,7 @@
     <Compile Include="UnitTests\BatchRequestConstruction.cs" />
     <Compile Include="UnitTests\RequestParameterTests.cs" />
     <Compile Include="UnitTests\Serialization\JsonToDynamic.cs" />
+    <Compile Include="Urls\when_parsing_callback_url.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

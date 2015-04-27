@@ -76,6 +76,25 @@ namespace Telligent.Evolution.RestSDK.Implementations
                 if (!string.IsNullOrWhiteSpace(networkDomain))
                     config.NetworkCredentials.Domain = networkDomain;
             }
+            var proxyNode = hostNode.Element("remoteProxy");
+            if (proxyNode != null)
+            {
+                if (proxyNode.Attribute("enabled") != null)
+                    config.Proxy.Enabled = bool.Parse(proxyNode.Attribute("enabled").Value);
+                if (proxyNode.Attribute("callbackUrl") != null)
+                    config.Proxy.CallbackUrl = proxyNode.Attribute("callbackUrl").Value;
+
+              
+            }
+
+            var sso = hostNode.Element("sso");
+            if (sso != null)
+            {
+                if (sso.Attribute("enabled") != null)
+                    config.SSO.Enabled = bool.Parse(sso.Attribute("enabled").Value);
+                if (sso.Attribute("synchronizationCookieName") != null)
+                    config.SSO.SynchronizationCookieName = sso.Attribute("synchronizationCookieName").Value;
+            }
 
             var oauthNode = hostNode.Element("oauth");
             if (oauthNode != null)
@@ -101,41 +120,9 @@ namespace Telligent.Evolution.RestSDK.Implementations
                     if (localAuth.Attribute("membershipAdministrationUsername") != null)
                         config.OAuth.LocalUserCreation.MembershipAdministrationUserName = localAuth.Attribute("membershipAdministrationUsername").Value;
 
-                    if (localAuth.Attribute("userResolver") != null && config.OAuth.LocalUserCreation.Enabled)
-                    {
-                        var resolver = localAuth.Attribute("userResolver").Value;
-                        try
-                        {
-                            var resolverType = Type.GetType(resolver);
-                            var userResolverObj = Activator.CreateInstance(resolverType);
-                            if (userResolverObj != null)
-                            {
-                                ILocalUserResolver userResolver = userResolverObj as ILocalUserResolver;
-                                if(userResolver == null)
-                                    throw new ApplicationException("Value in userResolver is not of type ILocalUserResolver");
-                                config.OAuth.LocalUserCreation.UserResolver = userResolver;
-                            }
-                        }
+                  
 
-                        catch (Exception ex)
-                        {
-                              throw new ApplicationException(
-                                "Failed to load userResolver value. Verify it is of the create type of ILocalUserResolver, has a parameterless constructor and the class is public.");
-
-                        }
-                    }
-                       
-
-
-
-                    var sso = localAuth.Element("sso");
-                    if (sso != null)
-                    {
-                        if (sso.Attribute("enabled") != null)
-                            config.OAuth.LocalUserCreation.SSO.Enabled = bool.Parse(sso.Attribute("enabled").Value);
-                        if (sso.Attribute("synchronizationCookieName") != null)
-                            config.OAuth.LocalUserCreation.SSO.SynchronizationCookieName = sso.Attribute("synchronizationCookieName").Value;
-                    }
+                   
                 }
             }
 

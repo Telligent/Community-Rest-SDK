@@ -26,6 +26,9 @@ namespace Telligent.RestSDK.IntegrationTests
 
                     _host = new TestRestHost(Setup.CommunityUrl,Setup.Token);
                 }
+
+                
+
                 return _host;
             }
         }

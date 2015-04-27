@@ -10,11 +10,10 @@ namespace Telligent.Evolution.RestSDK.Implementations
         {
             MembershipAdministrationUserName = "admin";
             Enabled = false;
-            SSO = new SSOConfiguration();
+           
         }
         public string MembershipAdministrationUserName { get; set; }
-        public ILocalUserResolver  UserResolver { get; set; }
         public bool Enabled { get; set; }
-        public SSOConfiguration SSO { get; set; }
+       
     }
 }

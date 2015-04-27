@@ -44,13 +44,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api\DelegateOptions.cs" />
     <Compile Include="Api\Host.cs" />
-    <Compile Include="Api\ILocalUserResolver.cs" />
     <Compile Include="Api\UploadedFile.cs" />
+    <Compile Include="HttpHandler\HttpHandler.cs" />
+    <Compile Include="Implementation\Decode.cs" />
+    <Compile Include="Implementation\Encode.cs" />
     <Compile Include="Implementation\FileSystemConfigurationFile.cs" />
     <Compile Include="Implementation\HostConfiguration.cs" />
     <Compile Include="Implementation\HostConfigurationManager.cs" />
+    <Compile Include="Implementation\HostFactory.cs" />
+    <Compile Include="Implementation\ProxyConfiguration.cs" />
     <Compile Include="Implementation\NamevalueCollectionExtensions.cs" />
+    <Compile Include="Implementation\ProxyService.cs" />
+    <Compile Include="Implementation\UrlManipulationService.cs" />
     <Compile Include="Model\IConfigurationFile.cs" />
     <Compile Include="Api\LocalUser.cs" />
     <Compile Include="Implementation\LocalUserConfiguration.cs" />
@@ -61,7 +68,10 @@
     <Compile Include="Implementation\Deserializer.cs" />
     <Compile Include="Exceptions\JsonBadFormat.cs" />
     <Compile Include="Exceptions\JsonParseError.cs" />
+    <Compile Include="Model\IDecode.cs" />
+    <Compile Include="Model\IEncode.cs" />
     <Compile Include="Model\IHostConfigurationManager.cs" />
+    <Compile Include="Model\IRemoteSiteProxy.cs" />
     <Compile Include="Model\IRestCommunicationProxy.cs" />
     <Compile Include="Implementation\RestCommunicationProxy.cs" />
     <Compile Include="Model\IDeserializer.cs" />
@@ -73,6 +83,7 @@
     <Compile Include="Json\JsonObject.cs" />
     <Compile Include="Json\JsonParser.cs" />
     <Compile Include="Json\JsonReader.cs" />
+    <Compile Include="Model\IUrlManipulationService.cs" />
     <Compile Include="OAuthAuthentication\Api\IOAuthClientConfiguration.cs" />
     <Compile Include="OAuthAuthentication\Api\OAuthAuthentication.cs" />
     <Compile Include="OAuthAuthentication\Api\OAuthClientHttpHandler.cs" />

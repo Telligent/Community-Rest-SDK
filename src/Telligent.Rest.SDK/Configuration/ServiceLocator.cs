@@ -6,6 +6,7 @@ using Telligent.Evolution.Extensibility.Rest.Version1;
 using Telligent.Evolution.Extensions.OAuthAuthentication.Implementations;
 using Telligent.Evolution.Extensions.OAuthAuthentication.Services;
 using Telligent.Evolution.RestSDK.Implementations;
+using Telligent.Rest.SDK;
 using Telligent.Rest.SDK.Implementation;
 using Telligent.Rest.SDK.Model;
 
@@ -71,7 +72,18 @@ namespace Telligent.Evolution.RestSDK.Services
                             localInstances[typeof(IUserSyncService)] = userSyncService;
                             localInstances[typeof(IOAuthCredentialService)] = new OAuthCredentialService(userSyncService);
                             localInstances[typeof(IDefaultOAuthUserService)] = new DefaultOAuthUserService();
-                            localInstances[typeof(IConfigurationManagerService)] = new ConfigurationManagerService(cache,configManager);
+                            localInstances[typeof(IConfigurationManagerService)] = new ConfigurationManagerService();
+
+                            var encode = new Encode();
+                            var decode = new Decode();
+                            var urlmanipulation = new UrlManipulationService(encode, decode);
+                            var urlProxy = new ProxyService(rest);
+
+                            localInstances[typeof (IEncode)] = encode;
+                            localInstances[typeof(IDecode)] = decode;
+                            localInstances[typeof(IUrlManipulationService)] = urlmanipulation;
+                            localInstances[typeof(IProxyService)] = urlProxy;
+
                             _instances = localInstances;
                         }
             }

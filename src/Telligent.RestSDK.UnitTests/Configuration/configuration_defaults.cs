@@ -28,13 +28,13 @@ namespace Telligent.RestSDK.IntegrationTests.Configuration
         public void sso_is_not_null()
         {
             HostConfiguration h = new HostConfiguration();
-            Assert.IsNotNull(h.OAuth.LocalUserCreation.SSO);
+            Assert.IsNotNull(h.SSO);
         }
         [Test]
         public void sso_is_not_enabled()
         {
             HostConfiguration h = new HostConfiguration();
-            Assert.IsFalse(h.OAuth.LocalUserCreation.SSO.Enabled);
+            Assert.IsFalse(h.SSO.Enabled);
         }
         [Test]
         public void local_auth_is_not_enabled()
@@ -52,7 +52,7 @@ namespace Telligent.RestSDK.IntegrationTests.Configuration
         public void sso_sync_cookie()
         {
             HostConfiguration h = new HostConfiguration();
-            Assert.IsTrue(h.OAuth.LocalUserCreation.SSO.SynchronizationCookieName.Equals("EvolutionSync", StringComparison.CurrentCultureIgnoreCase));
+            Assert.IsTrue(h.SSO.SynchronizationCookieName.Equals("EvolutionSync", StringComparison.CurrentCultureIgnoreCase));
         }
         [Test]
         public void oauth_callback()
@@ -120,11 +120,6 @@ namespace Telligent.RestSDK.IntegrationTests.Configuration
             HostConfiguration h = new HostConfiguration();
             Assert.IsNull(h.NetworkCredentials);
         }
-        [Test]
-        public void UserResolver_Null()
-        {
-            HostConfiguration h = new HostConfiguration();
-            Assert.IsNull(h.OAuth.LocalUserCreation.UserResolver);
-        }
+       
     }
 }

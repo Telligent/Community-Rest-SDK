@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,34 +13,29 @@ namespace Telligent.Evolution.Extensions.OAuthAuthentication.Implementations
 	internal class ConfigurationManagerService : IConfigurationManagerService
 	{
 
-	    private IRestCache _cache;
-	    private string HostCacheKey = "communityServer:Oauth::Host::";
-	    private IHostConfigurationManager _configuration;
-		internal ConfigurationManagerService(IRestCache cache,IHostConfigurationManager configManager)
+	    private static readonly ConcurrentDictionary<string, IOAuthClientConfiguration> _hosts =
+	        new ConcurrentDictionary<string, IOAuthClientConfiguration>();
+		internal ConfigurationManagerService()
 		{
-		    _cache = cache;
-		    _configuration = configManager;
+
 		}
 
 		#region IConfigurationManagerService Members
 
 		public void Add(IOAuthClientConfiguration configuration)
 		{
-			_cache.Put(GetCacheKey(configuration.Name),configuration,300);
+		    _hosts.TryAdd(configuration.Name, configuration);
 		}
         public void Remove(string name)
         {
-            _cache.Remove(GetCacheKey(name));
+            IOAuthClientConfiguration client = null;
+            _hosts.TryRemove(name, out client);
         }
 	    public IOAuthClientConfiguration Get(string name)
 	    {
-	        var host = _cache.Get(GetCacheKey(name));
-	        return host as IOAuthClientConfiguration;
-	    }
-
-	    private string GetCacheKey(string name)
-	    {
-	        return string.Concat(HostCacheKey, name);
+	        IOAuthClientConfiguration client = null;
+            _hosts.TryGetValue(name, out client);
+	        return client;
 	    }
 
 	    #endregion

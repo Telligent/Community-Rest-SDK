@@ -24,15 +24,15 @@ namespace Telligent.Evolution.RestSDK.Implementations
         private static readonly Regex _tokenPattern = new Regex(@"(?<token>{(?<tokenValue>[a-zA-Z0-9]*)})", RegexOptions.Singleline | RegexOptions.Compiled);
         private const string Json = ".json";
         private const string Xml = ".xml";
-       
-       
+
+
         private IRestCommunicationProxy _proxy;
 
         public Rest(IRestCommunicationProxy proxy)
         {
             _proxy = proxy;
         }
-		
+
         public string FormatDateTime(DateTime date)
         {
             return date.ToString("yyyy-MM-ddTHH:mm:ss.fff");
@@ -40,20 +40,20 @@ namespace Telligent.Evolution.RestSDK.Implementations
 
         public string BuildQueryString(string url, NameValueCollection nvc)
         {
-          
+
             var qs = nvc.MakeQuerystring();
             var delimiter = "?";
 
             if (url.IndexOf("?") >= 0)
                 delimiter = "&";
 
-             return string.Concat(url, delimiter, qs);
-        
+            return string.Concat(url, delimiter, qs);
+
         }
-        public string ReplaceTokens(string url,NameValueCollection parameters)
+        public string ReplaceTokens(string url, NameValueCollection parameters)
         {
-            
-            var newUrl =_tokenPattern.Replace(url, (m) =>
+
+            var newUrl = _tokenPattern.Replace(url, (m) =>
             {
                 var tokenValue = m.Groups["tokenValue"].Value;
                 if (parameters[tokenValue] != null)
@@ -61,7 +61,7 @@ namespace Telligent.Evolution.RestSDK.Implementations
                     var val = parameters[tokenValue];
                     return val;
                 }
-                
+
                 return m.Value;
             });
 
@@ -72,7 +72,7 @@ namespace Telligent.Evolution.RestSDK.Implementations
         private string ProcessGetEndpoint(string endpoint, RestGetOptions options)
         {
             var processedEndpoint = endpoint;
-          
+
             if (options.PathParameters.HasKeys())
                 processedEndpoint = ReplaceTokens(endpoint, options.PathParameters);
             if (options.QueryStringParameters.HasKeys())
@@ -82,7 +82,7 @@ namespace Telligent.Evolution.RestSDK.Implementations
         private string ProcessPostEndpoint(string endpoint, RestPostOptions options)
         {
             var processedEndpoint = endpoint;
-         
+
             if (options.PathParameters.HasKeys())
                 processedEndpoint = ReplaceTokens(endpoint, options.PathParameters);
             if (options.QueryStringParameters.HasKeys())
@@ -90,10 +90,10 @@ namespace Telligent.Evolution.RestSDK.Implementations
 
             return processedEndpoint;
         }
-        private string ProcessPutEndpoint(string endpoint, RestPutOptions  options)
+        private string ProcessPutEndpoint(string endpoint, RestPutOptions options)
         {
             var processedEndpoint = endpoint;
-          
+
             if (options.PathParameters.HasKeys())
                 processedEndpoint = ReplaceTokens(endpoint, options.PathParameters);
             if (options.QueryStringParameters.HasKeys())
@@ -101,10 +101,10 @@ namespace Telligent.Evolution.RestSDK.Implementations
 
             return processedEndpoint;
         }
-        private string ProcessDeleteEndpoint(string endpoint, RestDeleteOptions  options)
+        private string ProcessDeleteEndpoint(string endpoint, RestDeleteOptions options)
         {
             var processedEndpoint = endpoint;
-           
+
             if (options.PathParameters.HasKeys())
                 processedEndpoint = ReplaceTokens(endpoint, options.PathParameters);
             if (options.QueryStringParameters.HasKeys())
@@ -112,7 +112,7 @@ namespace Telligent.Evolution.RestSDK.Implementations
 
             return processedEndpoint;
         }
-       
+
         #region Helpers
 
         public string MakeEndpointUrl(RestHost host, int version, string endpoint)
@@ -121,37 +121,45 @@ namespace Telligent.Evolution.RestSDK.Implementations
             if (!restUrl.EndsWith("/"))
                 restUrl += "/";
 
-          
-			return string.Concat(restUrl, "api.ashx/v",version, "/",endpoint);
+
+            return string.Concat(restUrl, "api.ashx/v", version, "/", endpoint);
         }
 
         private void SetAdditionalHeaders(HttpWebRequest req, NameValueCollection nvc)
         {
             foreach (string key in nvc)
             {
-                req.Headers[key] = nvc[key];
+                if (req.Headers[key] != null)
+                {
+                    if (nvc[key] == null)
+                        req.Headers.Remove(key);
+                    else
+                        req.Headers[key] = nvc[key];
+                }
+                else
+                    req.Headers[key] = nvc[key];
             }
         }
-		private void AdjustGetRequest(RestHost host, HttpWebRequest request, bool enableImpersonation,RestGetOptions options)
+        private void AdjustGetRequest(RestHost host, HttpWebRequest request, bool enableImpersonation, RestGetOptions options)
         {
-			AdjustRequestBase(host, request, enableImpersonation);
-            if(options != null && options.AdditionalHeaders != null)
-                SetAdditionalHeaders(request,options.AdditionalHeaders);
+            AdjustRequestBase(host, request, enableImpersonation);
+            if (options != null && options.AdditionalHeaders != null)
+                SetAdditionalHeaders(request, options.AdditionalHeaders);
         }
 
-		private void AdjustPutRequest(RestHost host, HttpWebRequest request, bool enableImpersonation,RestPutOptions options)
+        private void AdjustPutRequest(RestHost host, HttpWebRequest request, bool enableImpersonation, RestPutOptions options)
         {
-			AdjustRequestBase(host, request, enableImpersonation);
-            
+            AdjustRequestBase(host, request, enableImpersonation);
+
             if (options != null && options.AdditionalHeaders != null)
                 SetAdditionalHeaders(request, options.AdditionalHeaders);
 
             request.Headers["Rest-Method"] = "PUT";
         }
 
-		private void AdjustPostRequest(RestHost host, HttpWebRequest request, bool enableImpersonation,RestPostOptions options)
+        private void AdjustPostRequest(RestHost host, HttpWebRequest request, bool enableImpersonation, RestPostOptions options)
         {
-			AdjustRequestBase(host, request, enableImpersonation);
+            AdjustRequestBase(host, request, enableImpersonation);
             if (options != null && options.AdditionalHeaders != null)
                 SetAdditionalHeaders(request, options.AdditionalHeaders);
         }
@@ -161,24 +169,25 @@ namespace Telligent.Evolution.RestSDK.Implementations
             if (options != null && options.AdditionalHeaders != null)
                 SetAdditionalHeaders(request, options.AdditionalHeaders);
         }
-		private void AdjustDeleteRequest(RestHost host, HttpWebRequest request, bool enableImpersonation,RestDeleteOptions options)
+        private void AdjustDeleteRequest(RestHost host, HttpWebRequest request, bool enableImpersonation, RestDeleteOptions options)
         {
-			AdjustRequestBase(host, request, enableImpersonation);
-			
+            AdjustRequestBase(host, request, enableImpersonation);
+
             if (options != null && options.AdditionalHeaders != null)
                 SetAdditionalHeaders(request, options.AdditionalHeaders);
 
             request.Headers["Rest-Method"] = "DELETE";
         }
-        private void AdjustFileRequest(RestHost host, HttpWebRequest request, RestFileOptions  options)
+        private void AdjustFileRequest(RestHost host, HttpWebRequest request, RestFileOptions options)
         {
             if (options != null && options.AdditionalHeaders != null)
                 SetAdditionalHeaders(request, options.AdditionalHeaders);
         }
-		private void AdjustRequestBase(RestHost host, HttpWebRequest request, bool enableImpersonation)
-		{
-			host.ApplyAuthenticationToHostRequest(request, enableImpersonation);
-		}
+        private void AdjustRequestBase(RestHost host, HttpWebRequest request, bool enableImpersonation)
+        {
+            host.ApplyAuthenticationToHostRequest(request, enableImpersonation);
+            host.ApplyRemoteHeadersToRequest(request);
+        }
 
         #endregion
 
@@ -187,8 +196,8 @@ namespace Telligent.Evolution.RestSDK.Implementations
             if (options == null)
                 options = new RestGetOptions();
             var processedEndpoint = ProcessGetEndpoint(endpoint, options);
-          
-            return XElement.Parse(ReadResponseStream(_proxy.Get(host, MakeEndpointUrl(host, version, processedEndpoint), (request) => AdjustGetRequest(host, request, enableImpersonation,options))));
+
+            return XElement.Parse(ReadResponseStream(_proxy.Get(host, MakeEndpointUrl(host, version, processedEndpoint), (request) => AdjustGetRequest(host, request, enableImpersonation, options))));
         }
 
         public XElement PutEndpointXml(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestPutOptions options = null)
@@ -196,35 +205,35 @@ namespace Telligent.Evolution.RestSDK.Implementations
             if (options == null)
                 options = new RestPutOptions();
             var processedEndpoint = ProcessPutEndpoint(endpoint, options);
-           
+
 
             string postData = options.PostParameters.MakeQuerystring(true);
 
-            return XElement.Parse(ReadResponseStream(  _proxy.Post(host, MakeEndpointUrl(host, version, processedEndpoint), postData,  (request) => AdjustPutRequest(host, request, enableImpersonation,options))));
+            return XElement.Parse(ReadResponseStream(_proxy.Post(host, MakeEndpointUrl(host, version, processedEndpoint), postData, (request) => AdjustPutRequest(host, request, enableImpersonation, options))));
         }
 
-        public XElement PostEndpointXml(RestHost host, int version, string endpoint,  HttpPostedFileBase file = null, bool enableImpersonation = true, RestPostOptions options = null)
+        public XElement PostEndpointXml(RestHost host, int version, string endpoint, HttpPostedFileBase file = null, bool enableImpersonation = true, RestPostOptions options = null)
         {
 
             if (options == null)
                 options = new RestPostOptions();
 
             var processedEndpoint = ProcessPostEndpoint(endpoint, options);
-           
+
 
             string postData = options.PostParameters.MakeQuerystring(true);
-            return XElement.Parse(ReadResponseStream( _proxy.Post(host, MakeEndpointUrl(host, version, processedEndpoint), postData, (request) => AdjustPostRequest(host, request, true,options))));
+            return XElement.Parse(ReadResponseStream(_proxy.Post(host, MakeEndpointUrl(host, version, processedEndpoint), postData, (request) => AdjustPostRequest(host, request, true, options))));
         }
 
-        public XElement  DeleteEndpointXml(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null)
+        public XElement DeleteEndpointXml(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null)
         {
 
             if (options == null)
                 options = new RestDeleteOptions();
             var processedEndpoint = ProcessDeleteEndpoint(endpoint, options);
-           
 
-            return XElement.Parse( ReadResponseStream( _proxy.Post(host, MakeEndpointUrl(host, version, processedEndpoint), null,  (request) => AdjustDeleteRequest(host, request, enableImpersonation,options))));
+
+            return XElement.Parse(ReadResponseStream(_proxy.Post(host, MakeEndpointUrl(host, version, processedEndpoint), null, (request) => AdjustDeleteRequest(host, request, enableImpersonation, options))));
         }
 
         public async Task<XElement> GetEndpointXmlAsync(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestGetOptions options = null)
@@ -272,62 +281,62 @@ namespace Telligent.Evolution.RestSDK.Implementations
             return XElement.Parse(await ReadResponseStreamAsync(await _proxy.PostAsync(host, MakeEndpointUrl(host, version, processedEndpoint), null, (request) => AdjustDeleteRequest(host, request, enableImpersonation, options))));
         }
 
-       
-       public async Task<Stream> PostEndpointStream(RestHost host, int version, string endpoint, Stream postStream, bool enableImpersonation, Action<WebResponse> responseAction, RestPostOptions options = null)
-       {
-           //TODO: Review this for refactor, is it necessary or can it be collpased
-           return
-               await
-                   _proxy.PostEndpointStream(host, MakeEndpointUrl(host, version, endpoint), postStream,
-                       (request) => AdjustPostRequest(host, request, enableImpersonation,options), responseAction);
 
-       }
+        public async Task<Stream> PostEndpointStream(RestHost host, int version, string endpoint, Stream postStream, bool enableImpersonation, Action<WebResponse> responseAction, RestPostOptions options = null)
+        {
+            //TODO: Review this for refactor, is it necessary or can it be collpased
+            return
+                await
+                    _proxy.PostEndpointStream(host, MakeEndpointUrl(host, version, endpoint), postStream,
+                        (request) => AdjustPostRequest(host, request, enableImpersonation, options), responseAction);
 
-       public string GetEndpointString(RestHost host, int version, string endpoint,bool enableImpersonation =true, RestGetOptions options = null)
+        }
+
+        public string GetEndpointString(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestGetOptions options = null)
         {
             if (options == null)
                 options = new RestGetOptions();
             var processedEndpoint = ProcessGetEndpoint(endpoint, options);
-            Stream stream = _proxy.Get(host, MakeEndpointUrl(host, version, processedEndpoint), (request) => AdjustGetRequest(host, request, enableImpersonation,options));
-           return ReadResponseStream(stream);
+            Stream stream = _proxy.Get(host, MakeEndpointUrl(host, version, processedEndpoint), (request) => AdjustGetRequest(host, request, enableImpersonation, options));
+            return ReadResponseStream(stream);
         }
 
-        public string  PutEndpointString(RestHost host, int version, string endpoint,  bool enableImpersonation = true, RestPutOptions options = null)
+        public string PutEndpointString(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestPutOptions options = null)
         {
             if (options == null)
                 options = new RestPutOptions();
             var processedEndpoint = ProcessPutEndpoint(endpoint, options);
-           
+
             string postData = options.PostParameters.MakeQuerystring(true);
 
-            var stream = _proxy.Post(host, MakeEndpointUrl(host, version, processedEndpoint), postData,  (request) => AdjustPutRequest(host, request, enableImpersonation,options));
+            var stream = _proxy.Post(host, MakeEndpointUrl(host, version, processedEndpoint), postData, (request) => AdjustPutRequest(host, request, enableImpersonation, options));
             return ReadResponseStream(stream);
         }
 
-        public string PostEndpointString(RestHost host, int version, string endpoint,  bool enableImpersonation = true,  RestPostOptions options = null)
+        public string PostEndpointString(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestPostOptions options = null)
         {
             if (options == null)
                 options = new RestPostOptions();
-            var processedEndpoint = ProcessPostEndpoint(endpoint,options);
-           
+            var processedEndpoint = ProcessPostEndpoint(endpoint, options);
+
             string postData = options.PostParameters.MakeQuerystring(true);
 
-            var stream =  _proxy.Post(host, MakeEndpointUrl(host, version, processedEndpoint), postData,  (request) => AdjustPostRequest(host, request, true,options));
+            var stream = _proxy.Post(host, MakeEndpointUrl(host, version, processedEndpoint), postData, (request) => AdjustPostRequest(host, request, true, options));
             return ReadResponseStream(stream);
         }
 
-        public string  DeleteEndpointString(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null)
+        public string DeleteEndpointString(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestDeleteOptions options = null)
         {
             if (options == null)
                 options = new RestDeleteOptions();
             var processedEndpoint = ProcessDeleteEndpoint(endpoint, options);
-           
 
-            var stream = _proxy.Post(host, MakeEndpointUrl(host, version, processedEndpoint), null,  (request) => AdjustDeleteRequest(host, request, enableImpersonation,options));
+
+            var stream = _proxy.Post(host, MakeEndpointUrl(host, version, processedEndpoint), null, (request) => AdjustDeleteRequest(host, request, enableImpersonation, options));
             return ReadResponseStream(stream);
         }
 
-        public async Task<string> GetEndpointStringAsync(RestHost host, int version, string endpoint,bool enableImpersonation=true, RestGetOptions options = null)
+        public async Task<string> GetEndpointStringAsync(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestGetOptions options = null)
         {
             if (options == null)
                 options = new RestGetOptions();
@@ -348,7 +357,7 @@ namespace Telligent.Evolution.RestSDK.Implementations
             return await ReadResponseStreamAsync(stream);
         }
 
-        public async Task<string> PostEndpointStringAsync(RestHost host, int version, string endpoint, bool enableImpersonation = true,  RestPostOptions options = null)
+        public async Task<string> PostEndpointStringAsync(RestHost host, int version, string endpoint, bool enableImpersonation = true, RestPostOptions options = null)
         {
             if (options == null)
                 options = new RestPostOptions();
@@ -367,7 +376,7 @@ namespace Telligent.Evolution.RestSDK.Implementations
             var processedEndpoint = ProcessDeleteEndpoint(endpoint, options);
 
 
-            var stream = await  _proxy.PostAsync(host, MakeEndpointUrl(host, version, processedEndpoint), null, (request) => AdjustDeleteRequest(host, request, enableImpersonation, options));
+            var stream = await _proxy.PostAsync(host, MakeEndpointUrl(host, version, processedEndpoint), null, (request) => AdjustDeleteRequest(host, request, enableImpersonation, options));
             return await ReadResponseStreamAsync(stream);
         }
 
@@ -375,32 +384,32 @@ namespace Telligent.Evolution.RestSDK.Implementations
 
         public async Task<string> BatchEndpointStringAsync(RestHost host, int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null)
         {
-            var postData = CreatePostBatchData(requests,options);
-           var str = await _proxy.PostAsync(host, MakeEndpointUrl(host,version,"batch.json"), postData, (request) => AdjustBatchRequest(host, request, enableImpersonation, options));
+            var postData = CreatePostBatchData(requests, options);
+            var str = await _proxy.PostAsync(host, MakeEndpointUrl(host, version, "batch.json"), postData, (request) => AdjustBatchRequest(host, request, enableImpersonation, options));
             return await ReadResponseStreamAsync(str);
         }
         public async Task<XElement> BatchEndpointXmlAsync(RestHost host, int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null)
         {
-            var postData = CreatePostBatchData(requests,options);
-            return XElement.Parse(await ReadResponseStreamAsync(await _proxy.PostAsync(host, MakeEndpointUrl(host, version, "batch.json"), postData,  (request) => AdjustBatchRequest(host, request, enableImpersonation, options))));
+            var postData = CreatePostBatchData(requests, options);
+            return XElement.Parse(await ReadResponseStreamAsync(await _proxy.PostAsync(host, MakeEndpointUrl(host, version, "batch.json"), postData, (request) => AdjustBatchRequest(host, request, enableImpersonation, options))));
         }
         public string BatchEndpointString(RestHost host, int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null)
         {
             var postData = CreatePostBatchData(requests, options);
-            return ReadResponseStream( _proxy.Post(host, MakeEndpointUrl(host, version, "batch.json"), postData, (request) => AdjustBatchRequest(host, request, enableImpersonation, options)));
+            return ReadResponseStream(_proxy.Post(host, MakeEndpointUrl(host, version, "batch.json"), postData, (request) => AdjustBatchRequest(host, request, enableImpersonation, options)));
         }
         public XElement BatchEndpointXml(RestHost host, int version, IList<BatchRequest> requests, bool enableImpersonation = true, BatchRequestOptions options = null)
         {
             var postData = CreatePostBatchData(requests, options);
             return XElement.Parse(ReadResponseStream(_proxy.Post(host, MakeEndpointUrl(host, version, "batch.json"), postData, (request) => AdjustBatchRequest(host, request, enableImpersonation, options))));
         }
-        private string CreatePostBatchData(IList<BatchRequest> requests,BatchRequestOptions options)
+        private string CreatePostBatchData(IList<BatchRequest> requests, BatchRequestOptions options)
         {
             if (options == null)
                 options = new BatchRequestOptions();
 
-             if(requests == null || !requests.Any())
-                throw new ArgumentException("Request must contain at least 1 request","requests");
+            if (requests == null || !requests.Any())
+                throw new ArgumentException("Request must contain at least 1 request", "requests");
 
             foreach (var req in requests)
             {
@@ -414,7 +423,7 @@ namespace Telligent.Evolution.RestSDK.Implementations
         {
             if (str == null)
                 return null;
-           // str.Position = 0;
+            // str.Position = 0;
             using (var reader = new StreamReader(str))
             {
                 return await reader.ReadToEndAsync();
@@ -427,7 +436,7 @@ namespace Telligent.Evolution.RestSDK.Implementations
             //str.Position = 0;
             using (var reader = new StreamReader(str))
             {
-                return  reader.ReadToEnd();
+                return reader.ReadToEnd();
             }
         }
 
@@ -448,7 +457,7 @@ namespace Telligent.Evolution.RestSDK.Implementations
             var processedEndpoint = ProcessPutEndpoint(endpoint, options);
 
             string postData = options.PostParameters.MakeQuerystring(true);
-            return _proxy.PostAsync(host, MakeEndpointUrl(host, version, processedEndpoint),postData,
+            return _proxy.PostAsync(host, MakeEndpointUrl(host, version, processedEndpoint), postData,
                 (req) => AdjustPutRequest(host, req, enableImpersonation, options));
         }
 
@@ -469,8 +478,8 @@ namespace Telligent.Evolution.RestSDK.Implementations
                 options = new RestDeleteOptions();
             var processedEndpoint = ProcessDeleteEndpoint(endpoint, options);
 
-      
-            return _proxy.PostAsync(host, MakeEndpointUrl(host, version, processedEndpoint),null,
+
+            return _proxy.PostAsync(host, MakeEndpointUrl(host, version, processedEndpoint), null,
                 (req) => AdjustDeleteRequest(host, req, enableImpersonation, options));
         }
 
@@ -529,13 +538,13 @@ namespace Telligent.Evolution.RestSDK.Implementations
             return _proxy.Post(host, MakeEndpointUrl(host, version, "batch.json"), postData, (request) => AdjustBatchRequest(host, request, enableImpersonation, options));
         }
 
-        public UploadedFileInfo TransmitFile(RestHost host, UploadedFile file,RestFileOptions options = null)
+        public UploadedFileInfo TransmitFile(RestHost host, UploadedFile file, RestFileOptions options = null)
         {
             if (options == null)
                 options = new RestFileOptions();
 
             string url = GetUploadUrl(host.EvolutionRootUrl, file.UploadContext);
-            return _proxy.TransmitFile(host, url,file,options.UploadProgress,
+            return _proxy.TransmitFile(host, url, file, options.UploadProgress,
                 (request) => AdjustFileRequest(host, request, options));
 
 
@@ -551,10 +560,10 @@ namespace Telligent.Evolution.RestSDK.Implementations
 
 
         }
-        private string GetUploadUrl(string rootUrl,Guid uploadContext)
+        private string GetUploadUrl(string rootUrl, Guid uploadContext)
         {
             return rootUrl + (rootUrl.EndsWith("/") ? "" : "/") + "multipleupload?UploadContext=" + uploadContext.ToString("N");
         }
- 
+
     }
 }

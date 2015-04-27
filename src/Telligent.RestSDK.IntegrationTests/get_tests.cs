@@ -153,5 +153,23 @@ namespace Telligent.RestSDK.IntegrationTests
             }
 
         }
+        [Test]
+        public void can_force_url_translation()
+        {
+            var options = new NameValueCollection();
+            options.Add("PageSize", "50");
+            options.Add("PageIndex", "0");
+            options.Add("SortBy", "LastPost");
+            options.Add("SortOrder", "Descending");
+            RestGetOptions o = new RestGetOptions();
+            o.QueryStringParameters = options;
+            var endpoint = "forums.json";
+
+            o.AdditionalHeaders.Add("X-Remote-Redirect-Url","http://mysite.com/proxy.ashx/");
+            o.AdditionalHeaders.Add("X-Remote-UrlEncode-Redirects","False");
+
+            var response = Host.GetToDynamic(2, endpoint, true, o);
+           
+        }
     }
 }

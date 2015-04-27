@@ -6,6 +6,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using Telligent.Evolution.Extensibility.Rest.Version1;
 
 namespace Telligent.RestSDK.IntegrationTests
 {
@@ -18,14 +19,16 @@ namespace Telligent.RestSDK.IntegrationTests
         /// <summary>
         /// Modify the following values with values from your community in order to execute tests
         /// </summary>
-        private static readonly string _oauthClientId = "8c0a07b1-e1c8-4b02-a28b-1a62f4996768";
-        private static readonly string _oauthSecret = "5b503959345c45bba85ab2e1714fa5941f5f3689143c4ffab4ba9eaa003d851c";
+        private static readonly string _oauthClientId = "e5bd8f4b-bdb1-4829-a56d-ec608a56c3de";
+        private static readonly string _oauthSecret = "619e9542ad0947cfa9e950263b6b979856b7f376633d451b9952b1048ce8cd95";
         private static readonly string _communityUserName = "admin";
-        public static readonly string CommunityUrl = "http://trunk/";
+        public static readonly string CommunityUrl = "http://trunk.local.com/";
 
         [SetUp]
         public void SetupTests()
         {
+
+          
             if (Token == null)
             {
                 var request = (HttpWebRequest)WebRequest.Create(CommunityUrl + "api.ashx/v2/oauth/token");

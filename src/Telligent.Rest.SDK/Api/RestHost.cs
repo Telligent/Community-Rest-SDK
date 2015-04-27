@@ -28,8 +28,15 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         {
             Rest = ServiceLocator.Get<IRest>();
         }
+        /// <summary>
+        /// Applies additional headers to every REST request as required.  These can be overriden per request using the headers collection in the options objects
+        /// </summary>
+        /// <param name="request"></param>
+        public  virtual void ApplyRemoteHeadersToRequest(System.Net.HttpWebRequest request)
+        {
+          
 
-
+        }
         #region Remote Authentication
         /// <summary>
         /// Used to apply authentication headers to a REST requests.  Called for each request.
