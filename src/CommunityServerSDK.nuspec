@@ -9,8 +9,8 @@
         <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
         <projectUrl>https://github.com/Telligent/Social-Rest-SDK</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>An SDK that allows for SSO and rich REST API interaction with Community Server. BETA- Not yet for production use</description>
-        <releaseNotes>Initial Release</releaseNotes>
+        <description>An SDK that allows for SSO and rich REST API interaction with Community Server.</description>
+        <releaseNotes></releaseNotes>
         <copyright>Copyright 2015 Telligent</copyright>
     </metadata>
     <files>
