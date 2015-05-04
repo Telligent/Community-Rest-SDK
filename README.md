@@ -4,6 +4,21 @@
 - Zimbra Social 8.0 or higher
 - .NET Framework version 4.5
 
+##Release Notes  (v1.0.40)
+While we make an effort not to break anything in new releases sometimes it is necessary in order t0 add features or improve existing ones. v1.0.40 introduces the following breaking changes:
+
+1.  The SSO node of the config file should be moved under the Host node rather than its current location
+2.  IUserResolver has been removed in favor of a delegate pattern.  It is easy to update your code.  Most of it can be copied and pasted into the new pattern.  Below is a snippet of the new pattern and should be run when your application initializes, such as your application start in global.asax.  You should also remove the userResolver from the config file.
+
+```c#
+
+            Host.Get("default").ResolveLocalUser = (host, resolveArgs) =>
+            {
+                
+                return new LocalUser(userNameOfLocalUser,emailOfLocalUser);
+            };
+```
+
 ###Executing the Tests
 To execute all the tests you must modify some items. 
 - In your Community site, create an Oauth Client that is confidential using Client Credentials
