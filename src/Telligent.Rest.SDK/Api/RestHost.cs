@@ -127,10 +127,29 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         /// <param name="ex"></param>
         public virtual void LogError(string message, Exception ex)
         {
+            if (LogErr != null)
+            {
+                this.LogErr(message, ex);
+            }
+            else
+            {   // Default logging to W3SVC file
+                try
+                {
+                    HttpContext.Current.Response.AppendToLog(
+                        this.GetType().FullName + " " +
+                        message + "\n" + ex.ToString()
+                        );
+                }
+                catch
+                {
+                }
+            }
         }
 
         #endregion
       
+        public Action<string, Exception> LogErr { private get; set; }
+
 		#region REST
 
         /// <summary>
