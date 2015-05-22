@@ -127,9 +127,9 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         /// <param name="ex"></param>
         public virtual void LogError(string message, Exception ex)
         {
-            if (LogErr != null)
+            if (HandleError != null)
             {
-                this.LogErr(message, ex);
+                this.HandleError(this, message, ex);
             }
             else
             {   // Default logging to W3SVC file
@@ -147,10 +147,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         }
 
         #endregion
-      
-        public Action<string, Exception> LogErr { private get; set; }
-
-		#region REST
+        #region REST
 
         /// <summary>
         /// REST GET Request(Async) for Xml
@@ -698,5 +695,12 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         }
 
         #endregion
+
+        #region  Delegates
+
+        public Action<RestHost, string, Exception> HandleError { private get; set; }
+        
+        #endregion
+
     }
 }
