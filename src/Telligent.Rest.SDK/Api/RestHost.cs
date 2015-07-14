@@ -1,14 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
-using System.Web.UI;
-using System.Xml;
 using System.Xml.Linq;
 using Telligent.Evolution.RestSDK.Json;
 using Telligent.Evolution.RestSDK.Services;
@@ -17,9 +11,7 @@ using Telligent.Rest.SDK.Model;
 namespace Telligent.Evolution.Extensibility.Rest.Version1
 {
     public abstract class RestHost
-    {
-      
-       
+    {  
         private readonly IRest Rest;
       
 		private System.Collections.Hashtable _items = new System.Collections.Hashtable();
@@ -28,6 +20,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         {
             Rest = ServiceLocator.Get<IRest>();
         }
+
         /// <summary>
         /// Applies additional headers to every REST request as required.  These can be overriden per request using the headers collection in the options objects
         /// </summary>
@@ -37,7 +30,9 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
           
 
         }
+
         #region Remote Authentication
+
         /// <summary>
         /// Used to apply authentication headers to a REST requests.  Called for each request.
         /// </summary>
@@ -45,32 +40,37 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         /// <param name="forAccessingUser"></param>
 		public abstract void ApplyAuthenticationToHostRequest(System.Net.HttpWebRequest request, bool forAccessingUser);
 
-	
         /// <summary>
         /// OBSOLETE: Will be removed in a future version
         /// </summary>
         /// <param name="failedRequest"></param>
         /// <returns></returns>
-        
 		public virtual bool RetryFailedRemoteRequest(System.Net.HttpWebRequest failedRequest)
 		{
 			return false;
 		}
+        
         /// <summary>
         /// The root Url of the community
         /// </summary>
         public abstract string EvolutionRootUrl { get; }
+
+        /// <summary>
+        /// The name of the host as specified int he configuration file
+        /// </summary>
+        public abstract string Name { get; }
+        
         /// <summary>
         /// The timeout applied to GET requests
         /// </summary>
         public virtual int GetTimeout { get { return 90000; } }
+        
         /// <summary>
         /// The timeout applied to POST,PUT and DELETE requests
         /// </summary>
         public virtual int PostTimeout { get { return 90000; } }
 
         #endregion
-
 		
         /// <summary>
         /// Returns the current HttpContextBase object
@@ -147,6 +147,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         }
 
         #endregion
+
         #region REST
 
         /// <summary>
@@ -162,6 +163,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         {
             return Rest.GetEndpointXmlAsync(this, version,endpoint, enableImpersonation,options);
         }
+        
         /// <summary>
         /// REST PUT Request(Async) for Xml
         /// </summary>
@@ -183,11 +185,11 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         /// <param name="enableImpersonation">Use the locally authenticated user versus the default</param>
         /// <param name="options">Additional options for this request type.</param>
         /// <returns>XElement</returns>
-
         public Task<XElement> PostToXmlAsync(int version, string endpoint, HttpPostedFileBase file, bool enableImpersonation,RestPostOptions options = null)
         {
             return Rest.PostEndpointXmlAsync(this, version, endpoint, file, enableImpersonation, options);
         }
+        
         /// <summary>
         /// REST DELETE Request(Async) for Xml
         /// </summary>
@@ -200,6 +202,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         {
             return Rest.DeleteEndpointXmlAsync(this, version, endpoint, enableImpersonation, options);
         }
+        
         /// <summary>
         /// REST Batch Request for xml (Async)
         /// </summary>
@@ -212,6 +215,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         {
             return Rest.BatchEndpointXmlAsync(this, version, requests, enableImpersonation, options);
         }
+        
         /// <summary>
         /// REST GET Request(Async) for JSON
         /// </summary>
@@ -225,6 +229,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             var json = await Rest.GetEndpointStringAsync(this, version, endpoint,enableImpersonation, options);
             return json != null ? JsonConvert.Deserialize(json) : null;
         }
+        
         /// <summary>
         /// REST PUT Request(Async) for JSON
         /// </summary>
@@ -238,6 +243,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             var json = await Rest.PutEndpointStringAsync(this, version, endpoint, enableImpersonation, options);
             return json != null ? JsonConvert.Deserialize(json) : null;
         }
+        
         /// <summary>
         /// REST POST Request(Async) for JSON
         /// </summary>
@@ -251,6 +257,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             var json = await Rest.PostEndpointStringAsync(this, version, endpoint, enableImpersonation, options);
             return json != null ? JsonConvert.Deserialize(json) : null;
         }
+        
         /// <summary>
         /// REST DELETE Request(Async) for JSON
         /// </summary>
@@ -264,6 +271,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             var json = await Rest.DeleteEndpointStringAsync(this, version, endpoint, enableImpersonation, options);
             return json != null ? JsonConvert.Deserialize(json) : null;
         }
+        
         /// <summary>
         /// REST Batch Request for JSON (Async)
         /// </summary>
@@ -277,6 +285,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             var json = await Rest.BatchEndpointStringAsync(this, version,  requests, enableImpersonation, options);
             return json != null ? JsonConvert.Deserialize(json) : null;
         }
+        
         /// <summary>
         /// REST GET Request for Xml
         /// </summary>
@@ -290,6 +299,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         {
             return Rest.GetEndpointXml( this, version, endpoint, enableImpersonation, options);
         }
+        
         /// <summary>
         /// REST PUT Request for Xml
         /// </summary>
@@ -303,6 +313,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         {
             return Rest.PutEndpointXml(this, version, endpoint, enableImpersonation, options);
         }
+        
         /// <summary>
         /// REST Batch Request for JSON 
         /// </summary>
@@ -329,6 +340,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         {
             return Rest.PostEndpointXml( this, version, endpoint, file, enableImpersonation, options);
         }
+        
         /// <summary>
         /// REST DELETE Request for Xml
         /// </summary>
@@ -342,6 +354,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         {
             return Rest.DeleteEndpointXml(this, version, endpoint, enableImpersonation, options);
         }
+        
         /// <summary>
         /// REST GET Request for JSON
         /// </summary>
@@ -355,6 +368,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             var json =  Rest.GetEndpointString(this, version, endpoint,enableImpersonation, options);
             return json != null ? JsonConvert.Deserialize(json) : null;
         }
+        
         /// <summary>
         /// REST PUT Request for JSON
         /// </summary>
@@ -368,6 +382,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             var json =  Rest.PutEndpointString(this, version, endpoint, enableImpersonation, options);
             return json != null ? JsonConvert.Deserialize(json) : null;
         }
+        
         /// <summary>
         /// POST GET Request for JSON
         /// </summary>
@@ -381,6 +396,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             var json =  Rest.PostEndpointString(this, version, endpoint, enableImpersonation, options);
             return json != null ? JsonConvert.Deserialize(json) : null;
         }
+        
         /// <summary>
         /// REST Batch Request for JSON 
         /// </summary>
@@ -421,6 +437,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         {
             return Rest.GetEndpointString(this,version, endpoint, enableImpersonation, options);
         }
+        
         /// <summary>
         /// REST PUT Request
         /// </summary>
@@ -434,6 +451,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             return Rest.PutEndpointString( this,version, endpoint, enableImpersonation, options);
 
         }
+        
         /// <summary>
         /// REST POST Request
         /// </summary>
@@ -446,6 +464,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         {
             return Rest.PostEndpointString( this,version, endpoint, enableImpersonation, options);
         }
+        
         /// <summary>
         /// REST Batch Request
         /// </summary>
@@ -458,6 +477,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         {
             return Rest.BatchEndpointString( this,version, requests, enableImpersonation, options);
         }
+        
         /// <summary>
         /// REST DELETE Request(Async)
         /// </summary>
@@ -470,6 +490,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         {
             return Rest.DeleteEndpointString(this,version, endpoint, enableImpersonation, options);
         }
+        
         /// <summary>
         /// REST GET Request(Async)
         /// </summary>
@@ -483,6 +504,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             return await Rest.GetEndpointStringAsync(this, version, endpoint, enableImpersonation,options);
 
         }
+        
         /// <summary>
         /// REST PUT Request(Async)
         /// </summary>
@@ -495,6 +517,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         {
             return await Rest.PutEndpointStringAsync(this, version, endpoint, enableImpersonation, options);
         }
+        
         /// <summary>
         /// REST POST Request(Async)
         /// </summary>
@@ -508,6 +531,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             return await Rest.PostEndpointStringAsync(this, version, endpoint, enableImpersonation, options);
 
         }
+        
         /// <summary>
         /// REST DELETE Request(Async)
         /// </summary>
@@ -521,6 +545,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             return await Rest.DeleteEndpointStringAsync(this, version, endpoint, enableImpersonation, options);
 
         }
+        
         /// <summary>
         /// REST Batch Request(Async)
         /// </summary>
@@ -547,6 +572,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         {
             return Rest.GetEndpointStream(this, version, endpoint, enableImpersonation, options);
         }
+        
         /// <summary>
         /// REST PUT Request
         /// </summary>
@@ -573,6 +599,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         {
             return Rest.PostEndpointStream(this, version, endpoint, enableImpersonation, options);
         }
+        
         /// <summary>
         /// REST Batch Request
         /// </summary>
@@ -585,6 +612,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         {
             return Rest.BatchEndpointStream(this, version, requests, enableImpersonation, options);
         }
+        
         /// <summary>
         /// REST DELETE Request
         /// </summary>
@@ -652,6 +680,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             return  Rest.DeleteEndpointStreamAsync(this, version, endpoint, enableImpersonation, options);
 
         }
+        
         /// <summary>
         /// REST Batch Request(Async)
         /// </summary>
@@ -665,6 +694,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             return Rest.BatchEndpointStreamAsync(this, version, requests, enableImpersonation, options);
 
         }
+        
         /// <summary>
         /// Uploads a file to your community site for use in later requests such as attachments
         /// </summary>
@@ -675,6 +705,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         {
             return Rest.TransmitFile(this, file, options);
         }
+        
         /// <summary>
         /// Uploads a file to your community site for use in later requests such as attachments(Async)
         /// </summary>
@@ -685,6 +716,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         {
             return Rest.TransmitFileAsync(this, file, options);
         }
+        
         #endregion
 
         #region Helpers
@@ -701,6 +733,5 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         public Action<RestHost, string, Exception> HandleError { private get; set; }
         
         #endregion
-
     }
 }

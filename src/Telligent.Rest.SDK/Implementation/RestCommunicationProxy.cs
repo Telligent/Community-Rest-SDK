@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Script.Serialization;
 using Telligent.Evolution.Extensibility.Rest.Version1;
+using Telligent.Evolution.RestSDK.Json;
 using Telligent.Rest.SDK.Model;
 
 namespace Telligent.Rest.SDK.Implementation
@@ -356,9 +357,22 @@ namespace Telligent.Rest.SDK.Implementation
                                 requestStream.Close();
                             }
 
-                            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                            using (var response = (HttpWebResponse)request.GetResponse())
                             {
-                                var str = response.GetResponseStream();
+                                var stream = response.GetResponseStream();
+                                if (stream != null)
+                                {
+                                   using (var reader = new StreamReader(stream))
+                                    {
+                                        var responseData = reader.ReadToEnd();
+                                        if (!string.IsNullOrEmpty(responseData))
+                                        {
+                                            dynamic uploadResponse = JsonConvert.Deserialize(responseData);
+                                            fileResponse.DownloadDirectUrl = host.EvolutionRootUrl.TrimEnd('/') + uploadResponse.result.downloadUrl;
+                                            fileResponse.DownloadLocalUrl = "~/callback.ashx/rhn_" + host.Name + "/~" + uploadResponse.result.downloadUrl;
+                                        }
+                                    }
+                                }
                             }
 
 

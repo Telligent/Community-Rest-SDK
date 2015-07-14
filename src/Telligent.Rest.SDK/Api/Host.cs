@@ -35,8 +35,8 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             _settings = _configurationManager.GetOptions(name);
             ValidateSettings(_settings);
         }
+        
         #region Rest Host Members
-
 
         /// <summary>
         /// Called before a request is made to apply the appropriate OAuth header fro the logged in user or default user
@@ -58,6 +58,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
 
             request.Credentials = EvolutionCredentials;
         }
+        
         /// <summary>
         /// Teh root url for the community site
         /// </summary>
@@ -65,17 +66,18 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         {
             get { return _settings.CommunityServerUrl.EndsWith("/") ? _settings.CommunityServerUrl : _settings.CommunityServerUrl + "/"; }
         }
+        
         #endregion
 
         #region Default Host Settings
+
         /// <summary>
         /// The name of the host as specified int he configuration file
         /// </summary>
-        public virtual string Name
+        public override string Name
         {
             get { return _settings.Name; }
         }
-
 
         /// <summary>
         /// Checks for valid host settings as read by the configuration file
@@ -114,7 +116,6 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
 
         #endregion
 
-
         #region OAuth Members
 
         /// <summary>
@@ -127,6 +128,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
                 return _settings.OAuth.LocalUserCreation.Enabled;
             }
         }
+        
         /// <summary>
         /// The user name used to create users when EnableEvolutionUserCreation is true.
         /// </summary>
@@ -138,6 +140,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
                 return _settings.OAuth.LocalUserCreation.MembershipAdministrationUserName;
             }
         }
+        
         /// <summary>
         /// The user name used for local user creation.  Requires you provide an implementation of the ResolveLocalUser function of the host.
         /// </summary>
@@ -163,6 +166,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
                 return null;
             }
         }
+        
         /// <summary>
         /// The email used for local user creation.  Requires you provide an implementation of the ResolveLocalUser function of the host.
         /// </summary>
@@ -188,6 +192,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
                 return null;
             }
         }
+        
         /// <summary>
         /// Additonal Profile fields that can be defined for a local user.  Requires you provide an implementation of the ResolveLocalUser function of the host
         /// </summary>
@@ -216,6 +221,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
                 return null;
             }
         }
+        
         /// <summary>
         /// Invoked by the framework when a user cannot be created in the community
         /// </summary>
@@ -248,6 +254,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         {
             get { return new Uri(this.EvolutionRootUrl); }
         }
+        
         /// <summary>
         /// The application escaped location of an HttpHandler for handling Oauth reponses.
         /// </summary>
@@ -258,6 +265,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
                 return new Uri(GetCurrentHttpContext().Request.Url, GetCurrentHttpContext().Response.ApplyAppPathModifier(_settings.OAuth.OauthCallbackUrl));
             }
         }
+        
         /// <summary>
         /// The community Oauth Client Id as specified in configuration
         /// </summary>
@@ -265,6 +273,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         {
             get { return _settings.OAuth.OauthClientId; }
         }
+        
         /// <summary>
         ///  The community Oauth Client secret as specified in configuration
         /// </summary>
@@ -272,6 +281,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         {
             get { return _settings.OAuth.OauthSecret; }
         }
+        
         /// <summary>
         /// Used to get through a windows challeng on the community side. Defined in configuration
         /// </summary>
@@ -279,6 +289,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         {
             get { return _settings.NetworkCredentials; }
         }
+        
         /// <summary>
         /// This is used when a user is not signed in, traditionally anonymous.
         /// </summary>
@@ -286,6 +297,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         {
             get { return _settings.OAuth.AnonymousUsername; }
         }
+        
         /// <summary>
         /// The default language: MAY BE REMOVED
         /// </summary>
@@ -293,6 +305,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         {
             get { return _settings.OAuth.DefaultLanguageKey; }
         }
+        
         /// <summary>
         /// Internal method that creates a local cookie identifying the logged on user.
         /// </summary>
@@ -339,6 +352,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
                 response.Cookies.Add(cookie);
             }
         }
+        
         /// <summary>
         /// Reads the cookie set in the SetAuthorizationCookie method
         /// </summary>
@@ -366,6 +380,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
 
             return null;
         }
+        
         /// <summary>
         /// Fired by the framework once a user is authenticaed by Oauth
         /// </summary>
@@ -393,6 +408,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             }
            
         }
+        
         /// <summary>
         /// Invoked by the framework when a user fails to authenticate using OAuth
         /// </summary>
@@ -403,6 +419,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             if(this.OAuthLoginFailed != null)
                 OAuthLoginFailed(this, new OAuthLoginFailedArgs(GetCurrentHttpContext()) { State = state});
         }
+        
         /// <summary>
         /// Invoked by the framework when a user logs out via oauth
         /// </summary>
@@ -428,6 +445,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             }
            
         }
+        
         /// <summary>
         /// Invoked by the framework when a user fails to log out via Oauth
         /// </summary>
@@ -438,6 +456,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             if (this.OAuthLogoutFailed != null)
                 OAuthLogoutFailed(this, new OAuthLogoutFailedArgs(GetCurrentHttpContext()) { State = state });
         }
+        
         /// <summary>
         /// Set via config file, turns on Single Sign on
         /// </summary>
@@ -445,6 +464,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         {
             get { return  _settings.SSO.Enabled; }
         }
+        
         /// <summary>
         /// Reads the sync cookie generated by community when EnableEvolutionUserSynchronization is true.
         /// </summary>
@@ -460,9 +480,11 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             }
             return null;
         }
+        
         #endregion
 
         #region Helpers
+        
         /// <summary>
         /// Gets the logged on user and stores it in context for the request.  It will also invoke the login and SSO process if enabled.
         /// </summary>
@@ -510,6 +532,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
 
             return user;
         }
+        
         #endregion
 
         /// <summary>
@@ -529,7 +552,9 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             return newHost;
 
         }
+        
         #region Proxying
+        
         internal string ResolveRemoteUrlsToHostUrls(string text)
         {
             if (string.IsNullOrEmpty(text))
@@ -578,6 +603,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
 
             return resolveUrls(text);
         }
+        
         public override void ApplyRemoteHeadersToRequest(System.Net.HttpWebRequest request)
         {
             if (_settings.Proxy.Enabled)
@@ -587,7 +613,6 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             }
 
         }
-
 
         private string CallbackUrl
         {
@@ -608,8 +633,8 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
 
             return _proxyService.MakeFullUrl(this, url);
         }
+        
         #endregion
-
 
         #region  Delegates
 
@@ -624,6 +649,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         #endregion
 
         #region Login and Logout APIs
+        
         public virtual string ProcessSynchronizedLogin(string returnUrl)
         {
 
@@ -670,6 +696,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
 
             return null;
         }
+        
         public void CommunityOAuthLogout()
         {
 
@@ -680,8 +707,8 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
             }
 
         }
+        
         #endregion
-
     }
 
 
