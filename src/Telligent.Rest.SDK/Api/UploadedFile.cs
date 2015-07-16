@@ -72,12 +72,8 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         /// </summary>
         public string Message { get; internal set; }
         /// <summary>
-        /// Specifies the direct Evolution download URL
+        /// Specifies the download URL
         /// </summary>
-        public string DownloadDirectUrl { get; internal set; }
-        /// <summary>
-        /// Specifies the local tokenized download URL
-        /// </summary>
-        public string DownloadLocalUrl { get; internal set; }
+        public string DownloadUrl { get; internal set; }
     }
 }

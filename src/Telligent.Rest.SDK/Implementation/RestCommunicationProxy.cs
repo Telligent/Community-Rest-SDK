@@ -367,9 +367,8 @@ namespace Telligent.Rest.SDK.Implementation
                                         var responseData = reader.ReadToEnd();
                                         if (!string.IsNullOrEmpty(responseData))
                                         {
-                                            dynamic uploadResponse = JsonConvert.Deserialize(responseData);
-                                            fileResponse.DownloadDirectUrl = host.EvolutionRootUrl.TrimEnd('/') + uploadResponse.result.downloadUrl;
-                                            fileResponse.DownloadLocalUrl = "~/callback.ashx/rhn_" + host.Name + "/~" + uploadResponse.result.downloadUrl;
+                                            var uploadResponse = JsonConvert.Deserialize(responseData);
+                                            fileResponse.DownloadUrl = uploadResponse.result.downloadUrl;
                                         }
                                     }
                                 }
