@@ -17,7 +17,7 @@ namespace Telligent.RestSDK.IntegrationTests.ClientCredentials
         public async Task can_do_get_single_dynamic_request()
         {
             var host = new ClientCredentialsRestHost();
-            var endpoint = "/users/2100.json";
+            var endpoint = "users/2100.json";
             dynamic info = await host.GetToDynamicAsync(2, endpoint);
 
             Assert.IsNotNull(info.User.Username);
