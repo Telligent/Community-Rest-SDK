@@ -69,11 +69,15 @@ namespace Telligent.Rest.SDK.Implementation
                     byte[] bytes = null;
 
                     request = BuildStandardPostRequest(host, url, data, null, adjustRequest, out bytes);
-                    using (var requestStream = await request.GetRequestStreamAsync())
+                    if (request.ContentLength > 0)
                     {
-                        await requestStream.WriteAsync(bytes, 0, bytes.Length);
-                        requestStream.Close();
+                        using (var requestStream = await request.GetRequestStreamAsync())
+                        {
+                            await requestStream.WriteAsync(bytes, 0, bytes.Length);
+                            requestStream.Close();
+                        }
                     }
+                   
 
                     var response = (HttpWebResponse)request.GetResponse();
                     return response.GetResponseStream();
@@ -119,11 +123,15 @@ namespace Telligent.Rest.SDK.Implementation
                     byte[] bytes = null;
 
                     request = BuildStandardPostRequest(host, url, data, null, adjustRequest, out bytes);
-                    using (var requestStream = request.GetRequestStream())
+                    if (request.ContentLength > 0)
                     {
-                        requestStream.Write(bytes, 0, bytes.Length);
-                        requestStream.Close();
+                        using (var requestStream = request.GetRequestStream())
+                        {
+                            requestStream.Write(bytes, 0, bytes.Length);
+                            requestStream.Close();
+                        }
                     }
+                   
                     var response = (HttpWebResponse)request.GetResponse();
                     return response.GetResponseStream();
 
