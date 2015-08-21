@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api\ClientCredentialsRestHost.cs" />
     <Compile Include="Api\DelegateOptions.cs" />
     <Compile Include="Api\Host.cs" />
     <Compile Include="Api\UploadedFile.cs" />

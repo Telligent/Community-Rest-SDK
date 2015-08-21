@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -19,15 +20,34 @@ namespace Telligent.RestSDK.IntegrationTests
         /// <summary>
         /// Modify the following values with values from your community in order to execute tests
         /// </summary>
-        private static readonly string _oauthClientId = "e5bd8f4b-bdb1-4829-a56d-ec608a56c3de";
-        private static readonly string _oauthSecret = "619e9542ad0947cfa9e950263b6b979856b7f376633d451b9952b1048ce8cd95";
-        private static readonly string _communityUserName = "admin";
-        public static readonly string CommunityUrl = "http://trunk.local.com/";
+        private static  string _oauthClientId = null;
+        private static  string _oauthSecret = null;
+        private static  string _communityUserName = "admin";
+        public static  string CommunityUrl = "http://localhost/";
 
         [SetUp]
         public void SetupTests()
         {
+            var config = ConfigurationManager.AppSettings;
 
+            if (string.IsNullOrEmpty(config["defaultUsername"]))
+                throw new ConfigurationErrorsException("defaultUsername is expected in the appSettings section of the application configuration");
+
+            if (string.IsNullOrEmpty(config["communityUrl"]))
+                throw new ConfigurationErrorsException("communityUrl is expected in the appSettings section of the application configuration");
+
+            if (string.IsNullOrEmpty(config["clientId"]))
+                throw new ConfigurationErrorsException("clientId is expected in the appSettings section of the application configuration");
+
+            if (string.IsNullOrEmpty(config["clientSecret"]))
+                throw new ConfigurationErrorsException("clientSecret is expected in the appSettings section of the application configuration");
+
+            _communityUserName = config["DefaultUsername"];
+            _oauthClientId = config["clientId"];
+            _oauthSecret = config["clientSecret"];
+
+            var url = config["communityUrl"];
+            CommunityUrl = url.EndsWith("/") ? url : url + "/";
           
             if (Token == null)
             {

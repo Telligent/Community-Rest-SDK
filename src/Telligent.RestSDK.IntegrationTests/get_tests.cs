@@ -136,7 +136,7 @@ namespace Telligent.RestSDK.IntegrationTests
         {
             var endpoint = "/users/info.json";
 
-            using (var info =await Host.GetToStreamAsync(2, endpoint))
+            using (var info = await Host.GetToStreamAsync(2, endpoint))
             {
                 Assert.IsNotNull(info);
                 Assert.Greater(info.Length, 0);
@@ -165,11 +165,11 @@ namespace Telligent.RestSDK.IntegrationTests
             o.QueryStringParameters = options;
             var endpoint = "forums.json";
 
-            o.AdditionalHeaders.Add("X-Remote-Redirect-Url","http://mysite.com/proxy.ashx/");
-            o.AdditionalHeaders.Add("X-Remote-UrlEncode-Redirects","False");
+            o.AdditionalHeaders.Add("X-Remote-Redirect-Url", "http://mysite.com/proxy.ashx/");
+            o.AdditionalHeaders.Add("X-Remote-UrlEncode-Redirects", "False");
 
             var response = Host.GetToDynamic(2, endpoint, true, o);
-           
+
         }
     }
 }

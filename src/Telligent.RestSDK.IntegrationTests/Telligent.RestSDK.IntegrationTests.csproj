@@ -50,9 +50,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClientCredentialsHost\get_tests.cs" />
     <Compile Include="FileUpload.cs" />
-    <Compile Include="post_tests.cs" />
     <Compile Include="get_tests.cs" />
+    <Compile Include="post_tests.cs" />
     <Compile Include="IntegrationTestBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Setup.cs" />
