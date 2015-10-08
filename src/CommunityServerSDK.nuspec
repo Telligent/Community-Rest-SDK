@@ -9,9 +9,9 @@
         <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
         <projectUrl>https://github.com/Telligent/Social-Rest-SDK</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>An SDK that allows for SSO and rich REST API interaction with Community Server.</description>
+        <description>An SDK that allows for SSO and rich REST API interaction with Telligent Community.</description>
         <releaseNotes></releaseNotes>
-        <copyright>Copyright 2015 Telligent</copyright>
+        <copyright>Copyright 2015 Telligent, A Verint Company</copyright>
     </metadata>
     <files>
 	    <file src="Telligent.Rest.SDK\bin\Release\Telligent.Rest.SDK.dll" target="lib\net45\Telligent.Rest.SDK.dll" />
