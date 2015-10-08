@@ -146,7 +146,7 @@ namespace Telligent.Evolution.Extensibility.Rest.Version1
         /// </summary>
         public string EndpointUrl
         {
-            get { return _endpointUrl.StartsWith("api.ashx/",StringComparison.CurrentCultureIgnoreCase) ? _endpointUrl :  string.Concat("/api.ashx/v", this.ApiVersion, "/", _endpointUrl); }
+            get { return _endpointUrl.StartsWith("api.ashx/",StringComparison.CurrentCultureIgnoreCase) ? _endpointUrl :  string.Concat("~/api.ashx/v", this.ApiVersion, "/", _endpointUrl); }
             set
             {
                
