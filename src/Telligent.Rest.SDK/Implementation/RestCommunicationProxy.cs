@@ -339,11 +339,11 @@ namespace Telligent.Rest.SDK.Implementation
         {
 
             int totalChunks = (int)Math.Ceiling((double)file.FileData.Length / MAX_CHUNK_SIZE_BYTES);
-            int currentChunk = 1;
+            int currentChunk = 0;
             UploadedFileInfo fileResponse = new UploadedFileInfo(file.UploadContext);
             using (var rdr = new BinaryReader(file.FileData))
                 
-                for(var i =currentChunk;i<= totalChunks;i++)
+                for(var i =currentChunk;i<= totalChunks-1;i++)
                 {
                     FileUploadProgress progress = new FileUploadProgress() {UploadContext = file.UploadContext };
                     string boundary = Guid.NewGuid().ToString("N");
@@ -418,11 +418,11 @@ namespace Telligent.Rest.SDK.Implementation
         {
             ExceptionDispatchInfo capturedException = null;
             int totalChunks = (int)Math.Ceiling((double)file.FileData.Length / MAX_CHUNK_SIZE_BYTES);
-            int currentChunk = 1;
+            int currentChunk = 0;
             UploadedFileInfo fileResponse = new UploadedFileInfo(file.UploadContext);
             using (var rdr = new BinaryReader(file.FileData))
 
-                for (var i = currentChunk; i <= totalChunks; i++)
+                for (var i = currentChunk; i <= totalChunks-1; i++)
                 {
                     FileUploadProgress progress = new FileUploadProgress() { UploadContext = file.UploadContext };
                     string boundary = Guid.NewGuid().ToString("N");

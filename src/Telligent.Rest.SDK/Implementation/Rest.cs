@@ -178,8 +178,10 @@ namespace Telligent.Evolution.RestSDK.Implementations
 
             request.Headers["Rest-Method"] = "DELETE";
         }
-        private void AdjustFileRequest(RestHost host, HttpWebRequest request, RestFileOptions options)
+        private void AdjustFileRequest(RestHost host, HttpWebRequest request,bool enableImpersonation, RestFileOptions options)
         {
+            AdjustRequestBase(host, request, enableImpersonation);
+
             if (options != null && options.AdditionalHeaders != null)
                 SetAdditionalHeaders(request, options.AdditionalHeaders);
         }
@@ -540,23 +542,32 @@ namespace Telligent.Evolution.RestSDK.Implementations
 
         public UploadedFileInfo TransmitFile(RestHost host, UploadedFile file, RestFileOptions options = null)
         {
+            return TransmitFile(host, file, true, options);
+        }
+
+        public Task<UploadedFileInfo> TransmitFileAsync(RestHost host, UploadedFile file, RestFileOptions options = null)
+        {
+            return TransmitFileAsync(host, file, true, options);
+        }
+        public UploadedFileInfo TransmitFile(RestHost host, UploadedFile file,bool enableImpersonation, RestFileOptions options = null)
+        {
             if (options == null)
                 options = new RestFileOptions();
 
             string url = GetUploadUrl(host.EvolutionRootUrl, file.UploadContext);
             return _proxy.TransmitFile(host, url, file, options.UploadProgress,
-                (request) => AdjustFileRequest(host, request, options));
+                (request) => AdjustFileRequest(host, request,enableImpersonation, options));
 
 
         }
-        public Task<UploadedFileInfo> TransmitFileAsync(RestHost host, UploadedFile file, RestFileOptions options = null)
+        public Task<UploadedFileInfo> TransmitFileAsync(RestHost host, UploadedFile file, bool enableImpersonation, RestFileOptions options = null)
         {
             if (options == null)
                 options = new RestFileOptions();
 
             string url = GetUploadUrl(host.EvolutionRootUrl, file.UploadContext);
             return _proxy.TransmitFileAsync(host, url, file, options.UploadProgress,
-                (request) => AdjustFileRequest(host, request, options));
+                (request) => AdjustFileRequest(host, request,enableImpersonation, options));
 
 
         }
