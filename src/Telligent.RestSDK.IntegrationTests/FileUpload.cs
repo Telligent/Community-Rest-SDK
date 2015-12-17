@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -202,11 +203,19 @@ lives, our fortunes and our sacred honor.";
             sw.Write(_data);
             sw.Flush();
             ms.Position = 0;
-
+            int chunks = 0;
+            var percent = 0;
             Guid context = Guid.NewGuid();
             var rest = new Telligent.Evolution.RestSDK.Implementations.Rest(new RestCommunicationProxy());
             var file = new UploadedFile(context, "declaration.txt", "text\\plain", ms);
-          var info=  rest.TransmitFile(Host, file, new RestFileOptions());
+          var info=  rest.TransmitFile(Host, file, new RestFileOptions()
+          {
+              UploadProgress = (p) =>
+              {
+                  chunks++;
+                  percent= p.PercentComplete;
+              }
+          });
 
 
             ms.Close();
@@ -218,6 +227,8 @@ lives, our fortunes and our sacred honor.";
             Assert.IsNotNull(info);
             Assert.IsFalse(info.IsError);
             Assert.IsNullOrEmpty(info.Message);
+            Assert.AreEqual(1, chunks, "There should be 1 chunk");
+            Assert.AreEqual(100, percent, "Percentage  should be 100");
 
         }
         [Test]
@@ -230,12 +241,22 @@ lives, our fortunes and our sacred honor.";
                 sw.Write(_data);
                 sw.Flush();
             }
+
+            int chunks = 0;
+            int[] percents = new int[2];
            
             ms.Position = 0;
             Guid context = Guid.NewGuid();
             var rest = new Telligent.Evolution.RestSDK.Implementations.Rest(new RestCommunicationProxy());
             var file = new UploadedFile(context, "declaration.txt", "text\\plain", ms);
-            var info = rest.TransmitFile(Host, file, new RestFileOptions());
+            var info = rest.TransmitFile(Host, file, new RestFileOptions()
+            {
+                UploadProgress = (p) =>
+                {
+                    chunks ++;
+                    percents[chunks - 1] = p.PercentComplete;
+                }
+            });
 
 
             ms.Close();
@@ -247,6 +268,9 @@ lives, our fortunes and our sacred honor.";
             Assert.IsNotNull(info);
             Assert.IsFalse(info.IsError);
             Assert.IsNullOrEmpty(info.Message);
+            Assert.AreEqual(2,chunks,"There should be 2 chunks");
+            Assert.AreEqual(50, percents[0],"Percentage 1 should be 50");
+            Assert.AreEqual(100, percents[1],"Percentage 2 should be 100");
 
         }
 

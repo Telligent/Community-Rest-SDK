@@ -382,7 +382,7 @@ namespace Telligent.Rest.SDK.Implementation
                                 }
                             }
 
-
+                            progress.PercentComplete = Convert.ToInt32(Math.Round((((double)currentChunk + 1) / totalChunks) * 100));
                             if (progressAction != null)
                                 progressAction(progress);
 
@@ -449,7 +449,7 @@ namespace Telligent.Rest.SDK.Implementation
                             var str = response.GetResponseStream();
                         }
 
-
+                        progress.PercentComplete = Convert.ToInt32(Math.Round((((double)currentChunk + 1) / totalChunks) * 100));
                         if (progressAction != null)
                             progressAction(progress);
 
