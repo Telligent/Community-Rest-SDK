@@ -37,3 +37,6 @@ Please visit our [developer community](http://community.telligent.com/community/
 
 ####Can I contribute?
 Yes, we will have more details soon on how you can contribute.
+
+####Get Help
+Find documentation on how to use this SDK here: https://community.telligent.com/training/w/developer90/52432/rest-sdk
