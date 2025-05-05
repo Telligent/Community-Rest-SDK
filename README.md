@@ -1,4 +1,4 @@
-# Telligent Community REST SDK
+# Telligent Community REST SDK (No Longer Supported)
 
 ### System Requirements
 - Telligent Community 8.0 or higher
